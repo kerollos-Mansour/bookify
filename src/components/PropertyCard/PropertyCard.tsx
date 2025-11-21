@@ -1,50 +1,46 @@
-
-
-
-export default function ProperyCard() {
+export default function PropertyCard() {
   return (
-    <>
-      <div className="bg-neutral-primary-soft block max-w-sm p-6 border border-default rounded-base shadow-xs">
-        <a href="#">
-          <img
-            className="rounded-base"
-            src="/docs/images/blog/image-1.jpg"
-            alt=""
-          />
-        </a>
-        <a href="#">
-          <h5 className="mt-6 mb-2 text-2xl font-semibold tracking-tight text-heading">
-            Streamlining your design process today.
-          </h5>
-        </a>
-        <p className="mb-6 text-body">
-          In today’s fast-paced digital landscape, fostering seamless
-          collaboration among Developers and IT Operations.
-        </p>
-        <a
-          href="#"
-          className="inline-flex items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
-        >
-          Read more
-          <svg
-            className="w-4 h-4 ms-1.5 rtl:rotate-180 -me-0.5"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 12H5m14 0-4 4m4-4-4-4"
-            />
-          </svg>
-        </a>
+    <div className="w-full max-w-[320px] rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
+      <div className="relative">
+        <img
+          src="./card-photo.jpg"
+          alt="Ubanza Suites"
+          className="w-full h-48 object-cover"
+        />
       </div>
-    </>
+
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+            Ubanza Suites
+          </h3>
+          <div className="flex items-center gap-1 ml-2">
+            <span className="text-orange-500 text-sm">★</span>
+            <span className="text-sm font-medium text-gray-700">4.5</span>
+          </div>
+        </div>
+
+        <div className="flex items-center text-gray-500 text-sm mb-3">
+          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+          </svg>
+          <span className="text-gray-600">Main Road 123 Street, 23 Colony</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-2xl font-bold text-gray-900">$299</span>
+            <span className="text-sm text-gray-500">/night</span>
+          </div>
+
+          <a
+            href="#"
+            className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition shadow-sm"
+          >
+            Book Now
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
