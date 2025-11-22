@@ -3,8 +3,9 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Categories from "./components/categories/categories";
+import Categories from "./components/Categories/Categories";
 import Home from "./pages/home/home";
+import SearchResults from "./pages/SearchResult/SearchResults";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
       { path: "categories", element: <Categories /> },
     ],
   },
+  {path: "/search", element: <SearchResults/>}
 ]);
 
 createRoot(document.getElementById("root") as HTMLElement).render(
