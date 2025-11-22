@@ -9,6 +9,7 @@ import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
 import BookingInfo from "./pages/paymentSuccess/BookingInfo";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import Login from "./pages/login/Login";
+import SignUp from "./pages/signUp/SignUp";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: "booking-info", element: <BookingInfo /> },
       { path: "payment-success", element: <PaymentSuccess /> },
       { path: "login", element: <Login /> },
+      { path: "SignUp", element: <SignUp /> },
     ],
   },
 ]);
