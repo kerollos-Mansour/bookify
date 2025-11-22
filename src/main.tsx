@@ -5,7 +5,9 @@ import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Categories from "./components/categories/categories";
 import Home from "./pages/home/home";
-import PropertyDetails from "././pages/propertyDetails/propertyDetails";
+import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
+import BookingInfo from "./pages/paymentSuccess/BookingInfo";
+import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +17,8 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "categories", element: <Categories /> },
       { path: "property", element: <PropertyDetails /> },
+      { path: "booking-info", element: <BookingInfo /> },
+      { path: "payment-success", element: <PaymentSuccess /> },
     ],
   },
 ]);
