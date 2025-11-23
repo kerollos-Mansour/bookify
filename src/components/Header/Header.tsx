@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Menu, X, ChevronDown, MessageSquare } from "lucide-react";
+import { Link } from "react-router-dom";
+
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,24 +31,24 @@ export default function Header() {
               <span>USD</span>
               <span className="text-xl">United States</span>
             </button>
-            <a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">
+            <Link to="/" className="text-gray-700 hover:text-gray-900 transition-colors">
               List your property
-            </a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">
+            </Link>
+            <Link to="support" className="text-gray-700 hover:text-gray-900 transition-colors">
               Support
-            </a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">
+            </Link>
+            <Link to="/trips" className="text-gray-700 hover:text-gray-900 transition-colors">
               Trips
-            </a>
+            </Link>
 
             {/* Messages Icon Button */}
             <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
               <MessageSquare className="w-5 h-5 text-gray-700" />
             </button>
 
-            <a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">
+            <Link to="/Signup" className="text-gray-700 hover:text-gray-900 transition-colors">
               Sign In
-            </a>
+            </Link>
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -68,15 +70,15 @@ export default function Header() {
                 <ChevronDown className="w-5 h-5" />
               </button>
 
-              <a href="#" className="py-2 text-gray-700 hover:text-gray-900">
+              <Link to="#" className="py-2 text-gray-700 hover:text-gray-900">
                 List your property
-              </a>
-              <a href="#" className="py-2 text-gray-700 hover:text-gray-900">
+              </Link>
+              <Link to="support" className="py-2 text-gray-700 hover:text-gray-900">
                 Support
-              </a>
-              <a href="#" className="py-2 text-gray-700 hover:text-gray-900">
+              </Link>
+              <Link to="trips" className="py-2 text-gray-700 hover:text-gray-900">
                 Trips
-              </a>
+              </Link>
 
               <div className="py-3 text-gray-700 flex items-center gap-2">
                 <span className="text-lg">United States</span>

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./Signup.css";
+import { Link } from "react-router-dom";
+
 
 const Signup: React.FC = () => {
   const [username, setName] = useState<string>("");
@@ -25,47 +27,57 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="signup-container">
-      <h2>Create Account</h2>
+    <div className="signup-page">
+      <div className="left-section">
+        <img src="/lankastay.jpg" alt="Signup visual" />
 
-      <form onSubmit={handleSubmit}>
-        <label>User name:</label>
-        <input
-          type="text"
-          placeholder="Enter your user name"
-          value={username}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+      </div>
+          <div className="right-section">
 
-        <label>Email:</label>
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      <div className="signup-container">
+        <h2>Create Account</h2>
 
-        <label>Password:</label>
-        <input
-          type="password"
-          placeholder="Create a password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <label>Phone number</label>
-        <input type="number" placeholder="Enter your number" value={phonenumber} onChange={(e) => setphonenumber(e.target.valueAsNumber)} required>
-        </input>
-        <label>Country</label>
-        <input type="text" placeholder="Enter your number" value={phonenumber} onChange={(e) => setcountry(e.target.value)} required>
-        </input>
+        <form onSubmit={handleSubmit}>
+          <label>User name:</label>
+          <input
+            type="text"
+            placeholder="Enter your user name"
+            value={username}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
 
-        <button type="submit">Sign Up</button>
-      </form>
-      <a href="Login" id="loginlink">Log in</a>
+          <label>Email:</label>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <label>Password:</label>
+          <input
+            type="password"
+            placeholder="Create a password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <label>Phone number</label>
+          <input type="number" placeholder="Enter your number" value={phonenumber} onChange={(e) => setphonenumber(e.target.valueAsNumber)} required>
+          </input>
+          <label>Country</label>
+          <input type="text" placeholder="Enter your number" value={phonenumber} onChange={(e) => setcountry(e.target.value)} required>
+          </input>
+
+          <button type="submit">Sign Up</button>
+        </form>
+        <Link to="/Login" id="loginlink">Log in</Link>
+      </div>
     </div>
+        </div>
+
   );
 };
 
