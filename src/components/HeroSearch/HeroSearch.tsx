@@ -1,4 +1,4 @@
-import { SearchBar } from "../../components/SearchBar/SearchBar";
+import { SearchBar } from "../searchBar/SearchBar";
 
 // Constants for maintainability
 const HERO_IMAGE = "/hero-img.jpg";

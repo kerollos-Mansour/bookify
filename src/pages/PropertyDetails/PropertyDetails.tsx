@@ -254,7 +254,7 @@ export default function PropertyDetails() {
         </div>
 
         {/* Choose your room */}
-        <RoomsSection/>
+        <RoomsSection />
       </div>
     </>
   );

@@ -6,13 +6,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Categories from "./components/categories/categories";
 import Home from "./pages/home/home";
 
-import SearchResults from "./pages/searchResult/SearchResults";
-import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
-import BookingInfo from "./pages/paymentSuccess/BookingInfo";
-import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
-import Login from "./pages/login/Login";
-import SignUp from "./pages/signUp/SignUp";
-
+import SearchResults from "./pages/searchResult/searchResults";
+import PaymentSuccess from "./pages/paymentSuccess/paymentSuccess";
+import BookingInfo from "./pages/paymentSuccess/bookingInfo";
+import PropertyDetails from "./pages/propertyDetails/propertyDetails";
+import Login from "./pages/login/login";
+import SignUp from "./pages/signUp/signUp";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +25,7 @@ const router = createBrowserRouter([
       { path: "payment-success", element: <PaymentSuccess /> },
       { path: "login", element: <Login /> },
       { path: "SignUp", element: <SignUp /> },
-      {path: "/search", element: <SearchResults/>}
+      { path: "/search", element: <SearchResults /> },
     ],
   },
 ]);

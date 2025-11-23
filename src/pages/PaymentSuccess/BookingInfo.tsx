@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Minus, Plus } from "lucide-react";
-import { Logo, ProgressSteps } from "./PaymentSuccess";
+import { Logo, ProgressSteps } from "./paymentSuccess";
 import { useNavigate } from "react-router-dom";
 
 interface Hotel {
