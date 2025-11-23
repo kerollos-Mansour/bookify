@@ -1,13 +1,14 @@
-export interface DestinationCardType {
-  image: string;
-  title: string;
-  address: string;
-  rating: number;
-  price: number;
-  bestSeller?: boolean;
-}
+// export interface DestinationCardType {
+//   image: string;
+//   title: string;
+//   address: string;
+//   rating: number;
+//   price: number;
+//   bestSeller?: boolean;
 
-export const featuredData: DestinationCardType[] = [
+import { DestinationType } from "./DestinationType";
+
+export const featuredData: DestinationType[] = [
   {
     image:
       "https://images.unsplash.com/photo-1515263487990-61b07816b324?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBhcGFydG1lbnQlMjBidWlsZGluZ3xlbnwxfHx8fDE3NjM1NDI1NzF8MA&ixlib=rb-4.0.0&q=80&w=1080",

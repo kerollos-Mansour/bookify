@@ -1,6 +1,6 @@
-import { type DestinationCardType, featuredData } from "../../Data/featuredStays";
-
-function DestinationCard({ item }: { item: DestinationCardType }) {
+import { featuredData } from "../../Data/featuredStays";
+import {DestinationType} from "../../Data/DestinationType"
+function DestinationCard({ item }: { item: DestinationType }) {
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
       <div className="relative">
@@ -75,7 +75,7 @@ function DestinationCard({ item }: { item: DestinationCardType }) {
 export default function FeaturedStays({
   destinations,
 }: {
-  destinations: DestinationCardType[];
+  destinations: DestinationType[];
 }) {
   return (
     <section className="py-16 bg-[#f8f9fb]">

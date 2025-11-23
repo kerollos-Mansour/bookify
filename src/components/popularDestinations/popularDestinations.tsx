@@ -3,13 +3,13 @@ import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import {
   CATEGORIES,
   DESTINATIONS,
-  type Destination,
   type CategoryId,
 } from "../../Data/destinations";
+import {DestinationType} from "../../Data/DestinationType"
 
 const SCROLL_AMOUNT = 400;
 const CURRENCY = "EGP";
-function DestinationCard({ destination }: { destination: Destination }) {
+function DestinationCard({ destination }: { destination: DestinationType }) {
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -85,19 +85,19 @@ export function PopularDestinations() {
         >
           {CATEGORIES.map((cat) => (
             <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
               role="tab"
-              aria-selected={activeCategory === cat.id}
-              aria-controls={`destinations-${cat.id}`}
+              aria-selected={activeCategory === cat}
+              aria-controls={`destinations-${cat}`}
               className={`relative pb-3 md:pb-4 text-sm md:text-lg font-medium transition-colors whitespace-nowrap focus:ring-offset-2 rounded-t ${
-                activeCategory === cat.id
+                activeCategory === cat
                   ? "text-blue-600"
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >
-              {cat.label}
-              {activeCategory === cat.id && (
+              {cat}
+              {activeCategory === cat && (
                 <span
                   className="absolute bottom-0 left-0 right-0 h-0.5 md:h-1 bg-blue-600 rounded-full"
                   aria-hidden="true"

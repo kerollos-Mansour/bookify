@@ -1,27 +1,40 @@
-export type Destination = {
-  id: string;
-  name: string;
-  location: string;
-  price: number;
-  image: string;
-};
+// export type Destination = {
+//   id: string;
+//   name: string;
+//   location: string;
+//   price: number;
+//   image: string;
+// };
 
-export type CategoryId = "beach" | "culture" | "ski" | "family" | "wellness";
+// export type CategoryId = "beach" | "culture" | "ski" | "family" | "wellness";
 
-export type Category = {
-  id: CategoryId;
-  label: string;
-};
+// export type Category = {
+//   id: CategoryId;
+//   label: string;
+// };
 
-export const CATEGORIES: Category[] = [
-  { id: "beach", label: "Beach" },
-  { id: "culture", label: "Culture" },
-  { id: "ski", label: "Ski" },
-  { id: "family", label: "Family" },
-  { id: "wellness", label: "Wellness and Relaxation" },
-];
+// export const CATEGORIES: Category[] = [
+//   { id: "beach", label: "Beach" },
+//   { id: "culture", label: "Culture" },
+//   { id: "ski", label: "Ski" },
+//   { id: "family", label: "Family" },
+//   { id: "wellness", label: "Wellness and Relaxation" },
+// ];
+import { DestinationType } from "./DestinationType";
 
-export const DESTINATIONS: Record<CategoryId, Destination[]> = {
+
+export const CATEGORIES = [
+  "beach",
+  "culture",
+  "ski",
+  "family",
+  "wellness",
+] as const;
+
+export type CategoryId = (typeof CATEGORIES)[number];
+
+
+export const DESTINATIONS: Record<CategoryId, DestinationType[]> = {
   beach: [
     {
       id: "1",
