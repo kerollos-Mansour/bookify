@@ -117,7 +117,7 @@ function DestinationCard({ destination }: { destination: Destination }) {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <article className="flex-shrink-0 w-72 sm:w-80 md:w-96 bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start">
+    <article className="shrink-0 w-72 sm:w-80 md:w-96 bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start">
       <div className="relative aspect-video bg-gray-100 overflow-hidden">
         {!imageError ? (
           <img

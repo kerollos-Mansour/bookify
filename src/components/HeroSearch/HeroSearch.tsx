@@ -1,4 +1,4 @@
-import { SearchBar } from "../../components/searchBar/searchBar";
+import { SearchBar } from "../../components/SearchBar/SearchBar";
 
 // Constants for maintainability
 const HERO_IMAGE = "/hero-img.jpg";
@@ -21,7 +21,7 @@ export function HeroSearch() {
         aria-label="Hero background"
       >
         {/* Dark Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/30 to-black/70" />
       </div>
 
       {/* Main Content */}
