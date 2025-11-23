@@ -65,7 +65,7 @@ export default function HotelCard({ cardData }) {
                 </button>
             </div>
 
-            <Link to="/search#" className="p-5 w-full">
+            <div to="/search#" className="p-5 w-full">
                 <div>
                     <h3 className="text-lg font-bold text-gray-900">
                         {cardData.title}
@@ -76,8 +76,8 @@ export default function HotelCard({ cardData }) {
 
                     {/* Kitchen Icon */}
                     <ul className="flex items-center gap-2 mt-3 text-gray-700">
-                        {cardData.Amenities.map((a) => (
-                            <li className="text-sm">{a}</li>
+                        {cardData.Amenities.map((a,index) => (
+                            <li key={index} className="text-sm">{a}</li>
                         )) || null}
                     </ul>
 
@@ -134,7 +134,7 @@ export default function HotelCard({ cardData }) {
                         </div>
                     </div>
                 </div>
-            </Link>
+            </div>
         </div>
     );
 }

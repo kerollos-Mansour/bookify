@@ -6,8 +6,13 @@ import {
   MdPerson,
   MdClose,
 } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export function SearchBar() {
+  const navigate = useNavigate();
+  const { search } = useLocation();
+
   // States
   const [selectedLocation, setSelectedLocation] = useState(LOCATIONS[0]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,6 +49,29 @@ export function SearchBar() {
     });
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+
+    const urlLocation = params.get("location");
+    const urlCheckIn = params.get("checkIn");
+    const urlCheckOut = params.get("checkOut");
+    const urlAdults = params.get("adults");
+    const urlRooms = params.get("rooms");
+
+    if (urlLocation) {
+      const found = LOCATIONS.find(
+        (loc) => loc.name.toLowerCase() === urlLocation.toLowerCase()
+      );
+      if (found) setSelectedLocation(found);
+    }
+
+    if (urlCheckIn) setCheckInDate(urlCheckIn);
+    if (urlCheckOut) setCheckOutDate(urlCheckOut);
+    if (urlAdults) setAdults(Number(urlAdults));
+    if (urlRooms) setRooms(Number(urlRooms));
+  }, [search]);
+
+  
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -72,13 +100,15 @@ export function SearchBar() {
   }, []);
 
   const handleSearch = () => {
-    console.log("Searching...", {
-      location: selectedLocation,
+    const params = new URLSearchParams({
+      location: selectedLocation.name,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      adults,
-      rooms,
+      adults: adults.toString(),
+      rooms: rooms.toString(),
     });
+
+    navigate(`/search?${params.toString()}`);
   };
 
   return (

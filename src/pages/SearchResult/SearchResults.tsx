@@ -6,8 +6,18 @@ import { Building2, HomeIcon, Home, MapPin, Search, X } from "lucide-react";
 import Map from "../../components/map/map";
 import Tabs from "../../components/tabs/tabs";
 import FilterProperties from "../../components/filterProperties/filterProperties";
+import { Link, useLocation } from "react-router-dom";
 
 export default function SearchResult() {
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+
+  const selectedLocation = params.get("location") || "";
+  const checkIn = params.get("checkIn") || "";
+  const checkOut = params.get("checkOut") || "";
+  const adults = Number(params.get("adults")) || 1;
+  const rooms = Number(params.get("rooms")) || 1;
+
   const cardData = {
     data: [
       {
@@ -58,9 +68,16 @@ export default function SearchResult() {
   };
   const [showCompare, setShowCompare] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  
   useEffect(() => {
     console.log(activeTab);
   }, [activeTab]);
+
+    // Filter hotels based on the search query
+  const filteredHotels = cardData.data.filter((hotel) =>
+    hotel.location.toLowerCase().includes(selectedLocation.toLowerCase())
+  );
+
   return (
     <>
       <div className="min-h-screen bg-gray-50">
@@ -90,8 +107,12 @@ export default function SearchResult() {
             </div>
             <div className="bg-white p-6 mx-auto w-full">
               <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+              {/* {filteredHotels.map((card) => ( */}
               {cardData.data.map((card) => (
-                <HotelCard key={card.id} cardData={card} />
+                // <HotelCard key={card.id} cardData={card} />
+                <Link key={card.id} to={`/property/${card.id}`}>
+                  <HotelCard cardData={card} />
+                </Link>
               ))}
             </div>
           </div>

@@ -13,8 +13,10 @@ import { IoWifiSharp, IoRestaurantOutline } from "react-icons/io5";
 import { BiMessageDetail } from "react-icons/bi";
 import { BsCamera } from "react-icons/bs";
 import RoomsSection from "../../components/chooseRoom/chooseRoom";
+import { useParams } from "react-router-dom";
 
 export default function PropertyDetails() {
+  const { id } = useParams();
   const amenities = [
     { icon: <MdPool />, text: "Indoor pool" },
     { icon: <IoRestaurantOutline />, text: "Continental breakfast available" },
@@ -144,7 +146,7 @@ export default function PropertyDetails() {
             </button>
 
             <div className="mb-8">
-              <h2 className="text-2×l front-bold mb-4">About this property</h2>
+              <h2 className="text-2xl font-bold mb-4">About this property</h2>
               <p className="text-gray-700 mb-6">
                 Waterfront hotel with a full-service spa and a fitness center
               </p>
@@ -153,7 +155,7 @@ export default function PropertyDetails() {
               <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-6">
                 {amenities.map((amenity, index) => (
                   <div key={index} className="flex items-center gap-3">
-                    <span className="text 2×l text-gray-700">
+                    <span className="text 2xl text-gray-700">
                       {amenity.icon}
                     </span>
                     <span className="text-gray-800">{amenity.text}</span>
