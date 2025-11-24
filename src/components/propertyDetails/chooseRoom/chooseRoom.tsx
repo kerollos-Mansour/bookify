@@ -1,7 +1,7 @@
 // components/rooms/RoomsSection.tsx
 import { useState } from "react";
 import RoomCard from "./roomCard/roomCard";
-import { ROOMS_DATA, FILTERS } from "../../Data/rooms";
+import { ROOMS_DATA, FILTERS } from "../../../Data/rooms";
 
 export default function RoomsSection() {
   const [activeFilter, setActiveFilter] = useState("all");
