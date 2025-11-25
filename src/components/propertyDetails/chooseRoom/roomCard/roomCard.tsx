@@ -10,33 +10,10 @@ import {
   IoWifiOutline,
 } from "react-icons/io5";
 import { MdCameraAlt, MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { Room } from "../../../../Data/rooms";
 
 interface RoomCardProps {
-  room: {
-    id: number;
-    name: string;
-    images: string[];
-    amenities: {
-      breakfast: boolean;
-      parking: boolean;
-      size: string;
-      sleeps: number;
-      bedType: string;
-      allInclusive: boolean;
-      wifi: boolean;
-      bedrooms?: number;
-    };
-    refundable: {
-      isRefundable: boolean;
-      deadline: string;
-    };
-    price: {
-      original: number;
-      discounted: number;
-      discount: number;
-      currency: string;
-    };
-  };
+  room: Room;
 }
 export default function RoomCard({ room }: RoomCardProps) {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);

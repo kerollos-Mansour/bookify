@@ -1,6 +1,28 @@
 import { BiMessageDetail } from "react-icons/bi";
 
-export default function Treatments(props) {
+type Experience = {
+  title: string;
+  description: string;
+  heroImage: string;
+  gallery: string[];
+  guestQuote: string;
+};
+
+interface TreatmentsProps {
+  experience?: Experience;
+}
+
+export default function Treatments({ experience }: TreatmentsProps) {
+  if (!experience) {
+    return null; // or return nothing
+  }
+
+
+
+  const secondaryOne = experience.gallery[0];
+  const secondaryTwo = experience.gallery[1];
+  const hasSecondaryImages = secondaryOne && secondaryTwo;
+
   return (
     <>
       <div className="mb-12 mt-12">
@@ -13,38 +35,39 @@ export default function Treatments(props) {
           {/* Spa image */}
           <div className="h-64 md:h-96">
             <img
-              src="spa-main.png"
-              alt="Spa area"
+              src={experience?.heroImage}
+              alt={experience.title}
               className="w-full h-full object-cover rounded-lg"
+              onError={(event) => {
+                event.currentTarget.src = "/spa-main.png";
+              }}
             />
           </div>
 
           {/* Title and Description */}
           <div>
-            <h3 className="text-xl md:text-2xl font-bold mb-4">On the beach</h3>
+            <h3 className="text-xl md:text-2xl font-bold mb-4">{experience.title}</h3>
             <p className="text-gray-700 mb-6 leading-relaxed text-sm md:text-base">
-              This Art Deco-style all-inclusive property is located on the
-              beach. Take advantage of the beach loungers and beach towels at
-              the white sand beach. Some on-site activities to enjoy while
-              you're visiting include snorkeling, windsurfing, and
-              surfing/bodyboarding. Noteworthy nearby activities include
-              parasailing and scuba diving.
+              {experience.description}
             </p>
           </div>
 
           {/* Two smaller images */}
-          <div className="grid grid-cols-2 gap-4">
-            <img
-              src="spa-main2.png"
-              alt="Beach view 1"
+          {hasSecondaryImages && (
+            <div className="grid grid-cols-2 gap-4">
+            {[secondaryOne, secondaryTwo].map((img, index) => (
+              <img
+              key={`${img}-${index}`}
+              src={img}
+              alt={`${experience.title} ${index + 1}`}
               className="w-full h-40 md:h-48 object-cover rounded-lg"
-            />
-            <img
-              src="spa-main3.png"
-              alt="Beach view 2"
-              className="w-full h-40 md:h-48 object-cover rounded-lg"
-            />
+              onError={(event) => {
+                event.currentTarget.src = "/spa-main2.png";
+              }}
+              />
+            ))}
           </div>
+          )}
 
           {/* Guest Review Card */}
           <div className="bg-blue-50 p-4 md:p-6 rounded-lg">
@@ -57,8 +80,7 @@ export default function Treatments(props) {
               </h3>
             </div>
             <p className="text-gray-800 leading-relaxed text-sm md:text-base">
-              The beach was beautiful, clean, and swimmable with crystal clear
-              water and stunning views.
+              {experience.guestQuote}
             </p>
           </div>
 
@@ -74,34 +96,26 @@ export default function Treatments(props) {
           {/* Large spa image - Left side */}
           <div className="h-[450px]">
             <img
-              src="spa-main.png"
-              alt="Spa area"
+              src={experience.heroImage}
+              alt={experience.title}
               className="w-full h-full object-cover rounded-lg"
+             
             />
           </div>
 
           {/* Middle section */}
           <div className="flex flex-col">
-            <h3 className="text-2xl font-bold mb-4">On the beach</h3>
-            <p className="text-gray-700 mb-6 leading-relaxed">
-              This Art Deco-style all-inclusive property is located on the
-              beach. Take advantage of the beach loungers and beach towels at
-              the white sand beach. Some on-site activities to enjoy while
-              you're visiting include snorkeling, windsurfing, and
-              surfing/bodyboarding. Noteworthy nearby activities include
-              parasailing and scuba diving.
-            </p>
+            <h3 className="text-2xl font-bold mb-4">{experience.title}</h3>
+            <p className="text-gray-700 mb-6 leading-relaxed">{experience.description}</p>
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <img
-                src="spa-main2.png"
-                alt="Beach view 1"
-                className="w-full h-[180px] object-cover rounded-lg"
-              />
-              <img
-                src="spa-main3.png"
-                alt="Beach view 2"
-                className="w-full h-[180px] object-cover rounded-lg"
-              />
+              {[secondaryOne, secondaryTwo].map((img, index) => (
+                <img
+                  key={`${img}-${index}`}
+                  src={img}
+                  alt={`${experience.title} ${index + 1}`}
+                  className="w-full h-[180px] object-cover rounded-lg"
+                />
+              ))}
             </div>
             <button className="text-blue-600 hover:underline flex items-center gap-1 text-sm">
               See all beach amenities
@@ -120,8 +134,7 @@ export default function Treatments(props) {
               </h3>
             </div>
             <p className="text-gray-800 leading-relaxed text-sm">
-              The beach was beautiful, clean, and swimmable with crystal clear
-              water and stunning views.
+              {experience.guestQuote}
             </p>
           </div>
         </div>

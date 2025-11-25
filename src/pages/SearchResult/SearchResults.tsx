@@ -1,5 +1,4 @@
 import { SearchBar } from "../../components/searchBar/SearchBar";
-import Header from "../../components/header/header";
 import HotelCard from "../../components/HotelCard/HotelCard";
 import { useEffect, useState } from "react";
 import { Building2, HomeIcon, Home, MapPin, Search, X } from "lucide-react";

@@ -1,17 +1,29 @@
 // components/rooms/RoomsSection.tsx
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import RoomCard from "./roomCard/roomCard";
-import { ROOMS_DATA, FILTERS } from "../../../Data/rooms";
+import { FILTERS, Room } from "../../../Data/rooms";
 
-export default function RoomsSection() {
+interface RoomsSectionProps {
+  rooms?: Room[];
+}
+
+const parseBedCount = (bedType?: string) => {
+  if (!bedType) return 1;
+  const match = bedType.match(/\d+/);
+  return match ? Number(match[0]) : 1;
+};
+
+export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
   const [activeFilter, setActiveFilter] = useState("all");
 
-  const filteredRooms = ROOMS_DATA.filter((room) => {
-    if (activeFilter === "all") return true;
-    const bedCount = room.amenities.bedType.includes("2 Double") ? 2 : 1;
-    const filter = FILTERS.find((f) => f.id === activeFilter);
-    return bedCount === filter?.beds;
-  });
+  const filteredRooms = useMemo(() => {
+    return rooms.filter((room) => {
+      if (activeFilter === "all") return true;
+      const filter = FILTERS.find((f) => f.id === activeFilter);
+      if (!filter?.beds) return true;
+      return parseBedCount(room.amenities.bedType) === filter.beds;
+    });
+  }, [rooms, activeFilter]);
 
   return (
     <div className="mt-12 mb-12">
@@ -36,16 +48,19 @@ export default function RoomsSection() {
 
         {/* Room Count */}
         <div className="text-sm text-gray-700">
-          Showing {filteredRooms.length} of {ROOMS_DATA.length} rooms
+          Showing {filteredRooms.length} of {rooms.length} rooms
         </div>
       </div>
 
-      {/* Rooms Grid */}
-      <div className="grid grid-cols-3 gap-6">
-        {filteredRooms.map((room) => (
-          <RoomCard key={room.id} room={room} />
-        ))}
-      </div>
+      {rooms.length === 0 ? (
+        <p className="text-gray-500">No rooms are available for the selected property.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredRooms.map((room) => (
+            <RoomCard key={room.id} room={room} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

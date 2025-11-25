@@ -7,11 +7,11 @@ import Categories from "./components/categories/categories";
 import Home from "./pages/home/home";
 
 import SearchResults from "./pages/searchResult/SearchResults";
-import PaymentSuccess from "./pages/paymentSuccess/paymentSuccess";
-import BookingInfo from "./pages/paymentSuccess/bookingInfo";
+import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
+import BookingInfo from "./pages/paymentSuccess/BookingInfo";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
-import Login from "./pages/login/login";
-import SignUp from "./pages/signUp/signUp";
+import Login from "./pages/login/Login";
+import SignUp from "./pages/signUp/SignUp";
 
 const router = createBrowserRouter([
   {
