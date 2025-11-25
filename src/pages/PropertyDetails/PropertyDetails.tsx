@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { SearchBar } from "../../components/searchBar/SearchBar";
 import { FiArrowLeft, FiShare2 } from "react-icons/fi";
@@ -45,39 +45,34 @@ type HotelResponse = {
   countryCode?: string;
   rooms?: Room[];
   detail?: HotelDetail | null;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
 };
 
 export default function PropertyDetailsPage() {
   const [data, setData] = useState<HotelResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const { id } = useParams();
-
+  let navigate = useNavigate();
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const [hotelRes, roomsRes, detailRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/hotels/${id}`, {
-            signal: controller.signal,
-          }),
-          axios.get(`${API_BASE_URL}/rooms`, {
-            params: { hotelId: id },
-            signal: controller.signal,
-          }),
-          axios.get(`${API_BASE_URL}/hotelDetails`, {
-            params: { hotelId: id },
-            signal: controller.signal,
-          }),
-        ]);
+        const response = await axios.get(
+          `${API_BASE_URL}/hotels/${id}?_embed=rooms&_embed=hotelDetails`,
+          { signal: controller.signal }
+        );
+        const hotel = response.data;
 
         setData({
-          ...hotelRes.data,
-          rooms: roomsRes.data ?? [],
-          detail: detailRes.data?.[0] ?? null,
+          ...hotel,
+          rooms: hotel.rooms ?? [],
+          detail: hotel.hotelDetails?.[0] ?? null,
         });
       } catch (err) {
         if (axios.isCancel(err)) return;
@@ -135,7 +130,10 @@ export default function PropertyDetailsPage() {
 
         {/* Back link and action buttons */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
-          <button className="flex items-center gap-2 text-blue-600 hover:underline text-sm md:text-base">
+          <button
+            className="flex items-center gap-2 text-blue-600 hover:underline text-sm md:text-base"
+            onClick={() => navigate("/search")}
+          >
             <FiArrowLeft />
             See all properties
           </button>

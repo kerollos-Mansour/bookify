@@ -24,8 +24,8 @@ const router = createBrowserRouter([
       { path: "booking-info", element: <BookingInfo /> },
       { path: "payment-success", element: <PaymentSuccess /> },
       { path: "login", element: <Login /> },
-      { path: "SignUp", element: <SignUp /> },
-      { path: "/search", element: <SearchResults /> },
+      { path: "signUp", element: <SignUp /> },
+      { path: "search", element: <SearchResults /> },
     ],
   },
 ]);

@@ -1,5 +1,6 @@
 import { IoRestaurantOutline, IoWifiSharp } from "react-icons/io5";
 import { MdPets, MdPool, MdRestaurant, MdSpa } from "react-icons/md";
+import Map from "../../map/map";
 
 type HotelSummary = {
   name?: string;
@@ -11,6 +12,10 @@ type HotelSummary = {
   city?: string;
   stateProvinceCode?: string;
   countryCode?: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
 };
 
 type HotelDetail = {
@@ -52,7 +57,12 @@ export default function PropertyInfo({ hotel, detail }: PropertyInfoProps) {
     detail?.tagline ??
     hotel.shortDescription ??
     "Details about this property will be available soon.";
-  const address = [hotel.address1, hotel.city, hotel.stateProvinceCode, hotel.countryCode]
+  const address = [
+    hotel.address1,
+    hotel.city,
+    hotel.stateProvinceCode,
+    hotel.countryCode,
+  ]
     .filter(Boolean)
     .join(", ");
   const highlights = detail?.highlights ?? [];
@@ -107,9 +117,13 @@ export default function PropertyInfo({ hotel, detail }: PropertyInfoProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 mb-6">
               {amenities.map((text, index) => (
-                <div key={`${text}-${index}`} className="flex items-center gap-3">
+                <div
+                  key={`${text}-${index}`}
+                  className="flex items-center gap-3"
+                >
                   <span className="text-xl md:text-2xl text-gray-700">
-                    {amenityIcons[index] ?? amenityIcons[amenityIcons.length - 1]}
+                    {amenityIcons[index] ??
+                      amenityIcons[amenityIcons.length - 1]}
                   </span>
                   <span className="text-gray-800 text-sm md:text-base">
                     {text}
@@ -125,25 +139,12 @@ export default function PropertyInfo({ hotel, detail }: PropertyInfoProps) {
         </div>
 
         {/* Right column - Map */}
-        <div className="lg:col-span-1">
-          <h3 className="font-semibold text-base md:text-lg mb-4">
-            Explore the area
-          </h3>
-          <div className="w-full h-48 md:h-64 bg-gray-200 rounded-lg overflow-hidden mb-4">
-            <img
-              src="/map-placeholder.png"
-              alt="Location map"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          <p className="text-sm text-gray-800 mb-2">
-            {address || "Address details will be shared soon."}
-          </p>
-          <button className="text-blue-600 hover:underline text-sm flex items-center gap-1 mb-6">
-            View in a map <span>›</span>
-          </button>
-        </div>
+        <Map
+          location={{
+            latitude: hotel.location.latitude,
+            longitude: hotel.location.longitude,
+          }}
+        />
       </div>
     </>
   );
