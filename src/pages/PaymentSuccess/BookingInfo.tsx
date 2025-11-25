@@ -9,6 +9,7 @@ interface Hotel {
   image: string;
 }
 
+
 interface PriceBreakdown {
   pricePerNight: number;
   nights: number;

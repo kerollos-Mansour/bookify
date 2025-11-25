@@ -11,12 +11,14 @@ import {
 } from "react-icons/io5";
 import { MdCameraAlt, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { Room } from "../../../../Data/rooms";
+import { useNavigate } from "react-router-dom";
 
 interface RoomCardProps {
   room: Room;
 }
 export default function RoomCard({ room }: RoomCardProps) {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  let navigate = useNavigate();
 
   const handlNextImage = () => {
     setCurrentImgIndex((prev) =>
@@ -28,6 +30,24 @@ export default function RoomCard({ room }: RoomCardProps) {
     setCurrentImgIndex((prev) =>
       prev === 0 ? room.images.length - 1 : prev - 1
     );
+  };
+
+  const handleReserve = () => {
+    navigate("/booking-info", {
+      state: {
+        room: {
+          id: room.id,
+        },
+      },
+    });
+
+    console.log({
+      state: {
+        room: {
+          id: room.id,
+        },
+      },
+    });
   };
 
   return (
@@ -164,6 +184,13 @@ export default function RoomCard({ room }: RoomCardProps) {
             )}
           </div>
         </div>
+        {/* reserve button */}
+        <button
+          className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm md:text-base"
+          onClick={() => handleReserve()}
+        >
+          Reserve
+        </button>
       </div>
     </>
   );
