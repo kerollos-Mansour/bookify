@@ -18,6 +18,8 @@ export default function HotelCard({ cardData }) {
         );
     };
 
+
+    
     return (
         <div className="mb-4 w-full mx-auto bg-white rounded-2xl border border-cyan-200 overflow-hidden font-sans flex flex-col lg:flex-row">
             <div className="relative">

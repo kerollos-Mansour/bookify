@@ -12,6 +12,7 @@ import BookingInfo from "./pages/paymentSuccess/BookingInfo";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import Login from "./pages/login/Login";
 import SignUp from "./pages/signUp/SignUp";
+import NotFound from "./pages/notFound/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -26,8 +27,10 @@ const router = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "signUp", element: <SignUp /> },
       { path: "search", element: <SearchResults /> },
+      { path: "*", element: <NotFound /> },
     ],
   },
+  { path: "*", element: <NotFound /> },
 ]);
 
 createRoot(document.getElementById("root") as HTMLElement).render(
