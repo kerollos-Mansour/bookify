@@ -13,6 +13,7 @@ import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import Login from "./pages/login/Login";
 import SignUp from "./pages/signUp/SignUp";
 import NotFound from "./pages/notFound/NotFound";
+import ConfirmReservation from "./pages/PaymentSuccess/ConfirmReservation";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "signUp", element: <SignUp /> },
       { path: "search", element: <SearchResults /> },
+      { path: "confirm-reservation", element: <ConfirmReservation /> },
       { path: "*", element: <NotFound /> },
     ],
   },
