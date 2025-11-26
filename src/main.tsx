@@ -7,12 +7,13 @@ import Categories from "./components/categories/categories";
 import Home from "./pages/home/home";
 
 import SearchResults from "./pages/searchResult/SearchResults";
-import PaymentSuccess from "./pages/paymentSuccess/paymentSuccess";
+import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
 import BookingInfo from "./pages/paymentSuccess/BookingInfo";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import Login from "./pages/login/Login";
 import SignUp from "./pages/signUp/SignUp";
 import NotFound from "./pages/notFound/NotFound";
+import Account from "./pages/account/account";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,8 @@ const router = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "signUp", element: <SignUp /> },
       { path: "search", element: <SearchResults /> },
+      { path: "account", element: <Account /> },
+      
       { path: "*", element: <NotFound /> },
     ],
   },
