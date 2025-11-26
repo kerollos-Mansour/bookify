@@ -6,7 +6,7 @@ const profileSections = [
     description:
       "Make sure this information matches your travel ID, like your passport or license.",
     fields: [
-      { label: "Name", value: "time to drive" },
+      { label: "Name", value: "Mohamed Sabry" },
       { label: "Bio", value: "Not provided" },
       { label: "Date of birth", value: "Not provided" },
       { label: "Gender", value: "Not provided" },
@@ -20,7 +20,7 @@ const profileSections = [
     fields: [
       { label: "Mobile number", value: "Not provided" },
       { label: "Emergency contact", value: "Not provided" },
-      { label: "Email", value: "aannssans23@gmail.com" },
+      { label: "Email", value: "emailll@gmail.com" },
       { label: "Address", value: "Not provided" },
     ],
   },

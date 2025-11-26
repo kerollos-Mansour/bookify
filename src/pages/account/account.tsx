@@ -9,10 +9,10 @@ import {
   Tag,
   User,
 } from "lucide-react";
-import AccountIntro from "../../components/account/accountIntro/AccountIntro";
-import AccountSidebar from "../../components/account/accountSidebar/AccountSidebar";
-import ProfileTab from "../../components/account/profileTab/ProfileTab";
-import TabEmptyState from "../../components/account/tabEmptyState/TabEmptyState";
+import AccountIntro from "../../components/account/accountIntro/accountIntro";
+import AccountSidebar from "../../components/account/accountSidebar/accountSidebar";
+import ProfileTab from "../../components/account/profileTab/profileTab";
+import TabEmptyState from "../../components/account/tabEmptyState/tabEmptyState";
 
 type TabId =
   | "profile"
@@ -135,8 +135,8 @@ export default function Account() {
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Account intro , to say hi and etc. */}
         <AccountIntro
-          greeting="Hi, time"
-          headline="Your account"
+          greeting="Hi, Anas"
+          headline="My Account"
           subtext="Manage your personal details, preferences, and saved travelers."
         />
         {/* Account sidebar , that sshows the tabs , we're passing tabs and activeTab and onTabChange set Active */}
