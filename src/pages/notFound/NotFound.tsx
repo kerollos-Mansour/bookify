@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { SearchBar } from "../../components/searchBar/SearchBar";
+import { SearchBar } from "../../components/searchBar/searchBar";
 
 export default function NotFound() {
   return (
@@ -16,8 +16,8 @@ export default function NotFound() {
           We couldn’t find the page <br /> you were looking for.
         </h1>
         <p className="text-gray-600 mt-4 max-w-xl">
-          The link may be broken or the page may have been removed. Let’s get you
-          back to exploring the best stays and travel deals.
+          The link may be broken or the page may have been removed. Let’s get
+          you back to exploring the best stays and travel deals.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
@@ -38,4 +38,3 @@ export default function NotFound() {
     </div>
   );
 }
-

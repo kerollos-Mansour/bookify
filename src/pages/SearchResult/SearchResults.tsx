@@ -1,4 +1,4 @@
-import { SearchBar } from "../../components/searchBar/SearchBar";
+import { SearchBar } from "../../components/searchBar/searchBar";
 import HotelCard from "../../components/HotelCard/HotelCard";
 import { useEffect, useState } from "react";
 import { Building2, HomeIcon, Home, MapPin, Search, X } from "lucide-react";
@@ -67,12 +67,12 @@ export default function SearchResult() {
   };
   const [showCompare, setShowCompare] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
-  
+
   useEffect(() => {
     console.log(activeTab);
   }, [activeTab]);
 
-    // Filter hotels based on the search query
+  // Filter hotels based on the search query
   const filteredHotels = cardData.data.filter((hotel) =>
     hotel.location.toLowerCase().includes(selectedLocation.toLowerCase())
   );

@@ -7,7 +7,7 @@ import Categories from "./components/categories/categories";
 import Home from "./pages/home/home";
 
 import SearchResults from "./pages/searchResult/SearchResults";
-import PaymentSuccess from "./pages/paymentSuccess/PaymentSuccess";
+import PaymentSuccess from "./pages/paymentSuccess/paymentSuccess";
 import BookingInfo from "./pages/paymentSuccess/BookingInfo";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import Login from "./pages/login/Login";

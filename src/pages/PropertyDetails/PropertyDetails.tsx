@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { SearchBar } from "../../components/searchBar/SearchBar";
+import { SearchBar } from "../../components/searchBar/searchBar";
 import { FiArrowLeft, FiShare2 } from "react-icons/fi";
 import { AiOutlineHeart } from "react-icons/ai";
 import RoomsSection from "../../components/propertyDetails/chooseRoom/chooseRoom";
