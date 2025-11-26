@@ -1,14 +1,17 @@
 import { featuredData } from "../../Data/featuredStays";
-import {DestinationType} from "../../Data/DestinationType"
+import { DestinationType } from "../../Data/DestinationType";
+import { Link } from "react-router-dom";
 function DestinationCard({ item }: { item: DestinationType }) {
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
       <div className="relative">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-48 object-cover"
-        />
+        <Link to={`/property/${item.id}`}>
+          <img
+            src={item.image}
+            alt={item.title}
+            className="w-full h-48 object-cover"
+          />
+        </Link>
         {item.bestSeller && (
           <span className="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-sm font-medium shadow">
             Best Seller
@@ -63,9 +66,11 @@ function DestinationCard({ item }: { item: DestinationType }) {
           <p className="text-xl font-semibold">
             ${item.price} <span className="text-sm text-gray-400">/night</span>
           </p>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
-            Book Now
-          </button>
+          <Link to={`/property/${item.id}`}>
+            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
+              Book Now
+            </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -96,9 +101,9 @@ export default function FeaturedStays({
       </div>
 
       <div className="text-center mt-12">
-        <button className="px-6 py-3 border border-gray-400 rounded-full font-medium hover:bg-gray-100 transition">
+        <Link to={"/search"} className="px-6 py-3 border border-gray-400 rounded-full font-medium hover:bg-gray-100 transition">
           View All Destinations
-        </button>
+        </Link>
       </div>
     </section>
   );
