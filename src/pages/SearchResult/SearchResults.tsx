@@ -16,6 +16,7 @@ export default function SearchResult() {
   const checkOut = params.get("checkOut") || "";
   const adults = Number(params.get("adults")) || 1;
   const rooms = Number(params.get("rooms")) || 1;
+  const maxPrice = Number(params.get("maxPrice")) || Infinity;
 
   const cardData = {
     data: [
@@ -73,8 +74,10 @@ export default function SearchResult() {
   }, [activeTab]);
 
   // Filter hotels based on the search query
-  const filteredHotels = cardData.data.filter((hotel) =>
-    hotel.location.toLowerCase().includes(selectedLocation.toLowerCase())
+  const filteredHotels = cardData.data.filter(
+    (hotel) =>
+      hotel.location.toLowerCase().includes(selectedLocation.toLowerCase()) &&
+      hotel.prices.nightly <= maxPrice
   );
 
   return (
@@ -106,8 +109,8 @@ export default function SearchResult() {
             </div>
             <div className="bg-white p-6 mx-auto w-full">
               <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-              {/* {filteredHotels.map((card) => ( */}
-              {cardData.data.map((card) => (
+              {/* {cardData.data.map((card) => ( */}
+              {filteredHotels.map((card) => (
                 // <HotelCard key={card.id} cardData={card} />
                 <Link key={card.id} to={`/property/${card.id}`}>
                   <HotelCard cardData={card} />
