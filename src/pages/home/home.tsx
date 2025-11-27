@@ -9,7 +9,7 @@ export default function Home() {
     <>
       <HeroSearch />
       <WhiteFridaySale />
-      <FeaturedStays destinations={featuredData} />
+      <FeaturedStays />
       <PopularDestinations />
     </>
   );

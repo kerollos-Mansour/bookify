@@ -1,19 +1,43 @@
 import { featuredData } from "../../Data/featuredStays";
-import {DestinationType} from "../../Data/DestinationType"
+import { DestinationType } from "../../Data/DestinationType";
+import { Link } from "react-router-dom";
+import DestinationCardSkeleton from "../UI/FeaturedDestinationSkeleton";
+import { useEffect, useState } from "react";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import axios from "axios";
+
+const API_BASE_URL = "http://localhost:3000";
+
 function DestinationCard({ item }: { item: DestinationType }) {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const toggleFavorite = () => setIsFavorite((prev) => !prev);
+
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
       <div className="relative">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-48 object-cover"
-        />
+        <Link to={`/property/${item.id}`}>
+          <img
+            src={item.image}
+            alt={item.title}
+            className="w-full h-48 object-cover"
+          />
+        </Link>
         {item.bestSeller && (
           <span className="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-sm font-medium shadow">
             Best Seller
           </span>
         )}
+
+        <button
+          onClick={toggleFavorite}
+          className="absolute top-3 right-3 p-2 rounded-full bg-white shadow hover:bg-gray-100 transition"
+        >
+          {isFavorite ? (
+            <AiFillHeart className="text-red-500 w-6 h-6" />
+          ) : (
+            <AiOutlineHeart className="text-red-500 w-6 h-6" />
+          )}
+        </button>
       </div>
 
       <div className="p-5">
@@ -63,20 +87,72 @@ function DestinationCard({ item }: { item: DestinationType }) {
           <p className="text-xl font-semibold">
             ${item.price} <span className="text-sm text-gray-400">/night</span>
           </p>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
-            Book Now
-          </button>
+          <Link to={`/property/${item.id}`}>
+            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
+              Book Now
+            </button>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-export default function FeaturedStays({
-  destinations,
-}: {
-  destinations: DestinationType[];
-}) {
+export default function FeaturedStays({}: {}) {
+  const [loading, setLoading] = useState(true);
+  const [destinations, setDestinations] = useState<DestinationType[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   setLoading(true);
+
+  //   setTimeout(() => {
+  //     setDestinations(featuredData);
+  //     setLoading(false);
+  //   }, 1500);
+  // }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchFeatured = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get<DestinationType[]>(
+          `${API_BASE_URL}/featuredStays`,
+          { signal: controller.signal }
+        );
+        console.log("API response:", response.data);
+        setDestinations(response.data);
+      } catch (err) {
+        if (!axios.isCancel(err)) {
+          setError("Failed to load featured destinations");
+          console.error(err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeatured();
+
+    return () => controller.abort();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen text-red-600">
+        {error}
+      </div>
+    );
+  }
   return (
     <section className="py-16 bg-[#f8f9fb]">
       <div className="text-center mb-12">
@@ -90,16 +166,28 @@ export default function FeaturedStays({
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
-        {destinations.map((item, index) => (
+        {/* {destinations.map((item, index) => (
           <DestinationCard key={index} item={item} />
-        ))}
-      </div>
+        ))} */}
 
-      <div className="text-center mt-12">
-        <button className="px-6 py-3 border border-gray-400 rounded-full font-medium hover:bg-gray-100 transition">
-          View All Destinations
-        </button>
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <DestinationCardSkeleton key={i} />
+            ))
+          : destinations.map((item, index) => (
+              <DestinationCard key={index} item={item} />
+            ))}
       </div>
+      {!loading && (
+        <div className="text-center mt-12">
+          <Link
+            to={"/search"}
+            className="px-6 py-3 border border-gray-400 rounded-full font-medium hover:bg-gray-100 transition"
+          >
+            View All Destinations
+          </Link>
+        </div>
+      )}
     </section>
   );
 }
