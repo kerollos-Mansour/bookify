@@ -1,10 +1,10 @@
-import { featuredData } from "../../Data/featuredStays";
 import { DestinationType } from "../../Data/DestinationType";
 import { Link } from "react-router-dom";
 import DestinationCardSkeleton from "../UI/FeaturedDestinationSkeleton";
 import { useEffect, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import axios from "axios";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const API_BASE_URL = "http://localhost:3000";
 
@@ -98,6 +98,7 @@ function DestinationCard({ item }: { item: DestinationType }) {
   );
 }
 
+
 export default function FeaturedStays({}: {}) {
   const [loading, setLoading] = useState(true);
   const [destinations, setDestinations] = useState<DestinationType[]>([]);
@@ -153,6 +154,21 @@ export default function FeaturedStays({}: {}) {
       </div>
     );
   }
+
+  const scrollLeft = () => {
+    document.getElementById("destinations-row")?.scrollBy({
+      left: -300,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollRight = () => {
+    document.getElementById("destinations-row")?.scrollBy({
+      left: 300,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <section className="py-16 bg-[#f8f9fb]">
       <div className="text-center mb-12">
@@ -165,10 +181,10 @@ export default function FeaturedStays({}: {}) {
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
-        {/* {destinations.map((item, index) => (
+      {/* <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+        {destinations.map((item, index) => (
           <DestinationCard key={index} item={item} />
-        ))} */}
+        ))}
 
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
@@ -177,7 +193,43 @@ export default function FeaturedStays({}: {}) {
           : destinations.map((item, index) => (
               <DestinationCard key={index} item={item} />
             ))}
+      </div> */}
+
+      <div className="relative w-full max-w-7xl mx-auto mt-10">
+        <button
+          onClick={scrollLeft}
+          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 
+             bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
+        >
+          <FiChevronLeft size={22} />
+        </button>
+
+        <button
+          onClick={scrollRight}
+          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20
+             bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
+        >
+          <FiChevronRight size={22} />
+        </button>
+
+        <div
+          id="destinations-row"
+          className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar p-4"
+        >
+          {loading
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="min-w-[280px]">
+                  <DestinationCardSkeleton />
+                </div>
+              ))
+            : destinations.map((item, i) => (
+                <div key={i} className="min-w-[280px]">
+                  <DestinationCard item={item} />
+                </div>
+              ))}
+        </div>
       </div>
+
       {!loading && (
         <div className="text-center mt-12">
           <Link
