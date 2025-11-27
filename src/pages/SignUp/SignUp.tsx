@@ -9,11 +9,16 @@ const Signup: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [phonenumber, setphonenumber] = useState<number>();
   const [country, setcountry] = useState<string>("");
-
+ const [emailError, setEmailError] = useState<string>("");
 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+  if(!email.includes("@")){
+    setEmailError("Email must contain @");
+    return;
+  }
+    setEmailError(''); // Clear error if email is valid
 
     console.log("User Data:", {
       username,
@@ -49,12 +54,14 @@ const Signup: React.FC = () => {
 
           <label>Email:</label>
           <input
-            type="email"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className={emailError ? "error" : ""} // Add this line
             required
           />
+          {emailError && <p className="error-message">{emailError}</p>} {/* Updated this line */}
+
 
           <label>Password:</label>
           <input
@@ -68,7 +75,7 @@ const Signup: React.FC = () => {
           <input type="number" placeholder="Enter your number" value={phonenumber} onChange={(e) => setphonenumber(e.target.valueAsNumber)} required>
           </input>
           <label>Country</label>
-          <input type="text" placeholder="Enter your number" value={phonenumber} onChange={(e) => setcountry(e.target.value)} required>
+          <input type="text" placeholder="Enter your number" value={country} onChange={(e) => setcountry(e.target.value)} required>
           </input>
 
           <button type="submit">Sign Up</button>

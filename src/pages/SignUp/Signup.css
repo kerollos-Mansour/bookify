@@ -55,6 +55,19 @@
   font-weight: bold;
 }
 
+
+.signup-container input.error {
+  border: 2px solid #dc3545;
+  background-color: #fff8f8;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin: -10px 0 15px 0;
+  font-weight: bold;
+}
+
 .signup-container input {
   padding: 10px;
   border-radius: 8px;
