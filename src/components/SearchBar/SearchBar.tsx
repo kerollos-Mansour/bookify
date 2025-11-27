@@ -113,23 +113,23 @@ export function SearchBar() {
 
   return (
     <div className="relative mb-6">
-      <div className="flex items-center gap-0 bg-white rounded-full shadow-lg p-2">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-white rounded-xl md:rounded-full shadow-lg p-2 md:p-2">
         {/* Where to? */}
         <div
           ref={locationRef}
-          className="relative flex items-center gap-3 px-6 py-3 flex-1 border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-l-full transition-colors"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-t-xl md:rounded-t-none md:rounded-l-full transition-colors"
           onClick={() => {
             setShowLocationDropdown(!showLocationDropdown);
             setShowDatesDropdown(false);
             setShowTravelersDropdown(false);
           }}
         >
-          <MdLocationOn className="text-2xl text-gray-600 flex-shrink-0" />
+          <MdLocationOn className="text-xl sm:text-2xl text-gray-600 flex-shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
             <label className="text-xs text-gray-600 font-medium mb-1">
               Where to?
             </label>
-            <span className="text-sm font-medium text-gray-900 truncate">
+            <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
               {selectedLocation.name}
             </span>
           </div>
@@ -137,7 +137,7 @@ export function SearchBar() {
           {/* Location Dropdown */}
           {showLocationDropdown && (
             <div
-              className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-2xl p-4 z-50 w-96 max-h-96 overflow-y-auto"
+              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-white rounded-lg shadow-2xl p-4 z-50 w-full md:w-96 max-h-96 overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-3">
@@ -191,19 +191,19 @@ export function SearchBar() {
         {/* Dates */}
         <div
           ref={datesRef}
-          className="relative flex items-center gap-3 px-6 py-3 flex-1 border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
           onClick={() => {
             setShowDatesDropdown(!showDatesDropdown);
             setShowLocationDropdown(false);
             setShowTravelersDropdown(false);
           }}
         >
-          <MdCalendarToday className="text-2xl text-gray-600 flex-shrink-0" />
+          <MdCalendarToday className="text-xl sm:text-2xl text-gray-600 flex-shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
             <label className="text-xs text-gray-600 font-medium mb-1">
               Dates
             </label>
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
               {formatDate(checkInDate)} - {formatDate(checkOutDate)}
             </span>
           </div>
@@ -211,7 +211,7 @@ export function SearchBar() {
           {/* Dates Dropdown */}
           {showDatesDropdown && (
             <div
-              className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-2xl p-6 z-50 w-80"
+              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-white rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80"
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="font-semibold mb-4 text-gray-900">Select dates</h3>
@@ -256,19 +256,19 @@ export function SearchBar() {
         {/* Travelers */}
         <div
           ref={travelersRef}
-          className="relative flex items-center gap-3 px-6 py-3 flex-1 cursor-pointer hover:bg-gray-50 transition-colors"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 flex-1 cursor-pointer hover:bg-gray-50 transition-colors rounded-b-xl md:rounded-b-none"
           onClick={() => {
             setShowTravelersDropdown(!showTravelersDropdown);
             setShowLocationDropdown(false);
             setShowDatesDropdown(false);
           }}
         >
-          <MdPerson className="text-2xl text-gray-600 flex-shrink-0" />
+          <MdPerson className="text-xl sm:text-2xl text-gray-600 flex-shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
             <label className="text-xs text-gray-600 font-medium mb-1">
               Travelers
             </label>
-            <span className="text-sm font-medium text-gray-900">
+            <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
               {adults} traveler{adults > 1 ? "s" : ""}, {rooms} room
               {rooms > 1 ? "s" : ""}
             </span>
@@ -277,7 +277,7 @@ export function SearchBar() {
           {/* Travelers Dropdown */}
           {showTravelersDropdown && (
             <div
-              className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-2xl p-6 z-50 w-80"
+              className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-white rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80"
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="font-semibold mb-4 text-gray-900">Travelers</h3>
@@ -348,7 +348,7 @@ export function SearchBar() {
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold transition-colors flex-shrink-0 ml-2 shadow-md"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl md:rounded-full font-semibold transition-colors flex-shrink-0 mt-2 md:mt-0 md:ml-2 shadow-md text-sm sm:text-base w-full md:w-auto"
         >
           Search
         </button>
