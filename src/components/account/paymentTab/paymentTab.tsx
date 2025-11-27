@@ -33,7 +33,7 @@ const quickLinks = [
   "Reward programs",
 ];
 
-export default function ProfileTab() {
+export default function PaymentTab() {
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
       {profileSections.map((section) => (
