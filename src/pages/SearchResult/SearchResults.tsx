@@ -84,7 +84,7 @@ export default function SearchResult() {
     <>
       <div className="min-h-screen bg-gray-50">
         <div className="xl:max-w-[1200px] lg:max-w-[992px] md:max-w-[720px] sm:max-w-[540px] mx-auto mt-5">
-          <SearchBar />
+          <SearchBar hideOnMobile={false} />
           <div className="flex min-h-screen mt-5">
             <div className="bg-white hidden p-6 md:block w-fit">
               <Map />
