@@ -13,6 +13,8 @@ import AccountIntro from "../../components/account/accountIntro/accountIntro";
 import AccountSidebar from "../../components/account/accountSidebar/accountSidebar";
 import ProfileTab from "../../components/account/profileTab/profileTab";
 import TabEmptyState from "../../components/account/tabEmptyState/tabEmptyState";
+import SettingTap from "../../components/account/settingTap/settingTap";
+
 
 type TabId =
   | "profile"
@@ -166,6 +168,15 @@ export default function Account() {
                 message={activeTabCopy.message}
               />
             )} */}
+
+             {activeTab === "security" ? (
+              <SettingTap />
+            ) : (
+              <TabEmptyState
+                title={activeTabCopy.title}
+                message={activeTabCopy.message}
+              />
+            )}
           </section>
         </div>
       </div>
