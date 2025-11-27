@@ -1,11 +1,16 @@
 import "./App.css";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigation } from "react-router-dom";
 import Footer from "./components/footer/footer";
 import Header from "./components/header/header";
+import PageLoader from "./components/UI/PageLoader";
 
 function App() {
+  const navigation = useNavigation();
+  const isPageLoading =
+    navigation.state === "loading" || navigation.state === "submitting";
   return (
     <>
+      {isPageLoading && <PageLoader />}
       <Header />
       <main>
         <Outlet />

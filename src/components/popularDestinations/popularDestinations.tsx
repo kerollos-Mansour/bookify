@@ -1,19 +1,34 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import {
   CATEGORIES,
   DESTINATIONS,
   type CategoryId,
 } from "../../Data/destinations";
-import {DestinationType} from "../../Data/DestinationType"
+import { DestinationType } from "../../Data/DestinationType";
+import { useNavigate } from "react-router-dom";
+import DestinationCardSkeleton from "../UI/PopularDestinationSkeleton";
+import axios from "axios";
 
 const SCROLL_AMOUNT = 400;
 const CURRENCY = "EGP";
+const API_BASE_URL = "http://localhost:3000";
+
 function DestinationCard({ destination }: { destination: DestinationType }) {
   const [imageError, setImageError] = useState(false);
-
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(
+      `/search?location=${encodeURIComponent(destination.location)}&maxPrice=${
+        destination.price
+      }`
+    );
+  };
   return (
-    <article className="shrink-0 w-72 sm:w-80 md:w-96 bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start">
+    <article
+      onClick={handleClick}
+      className="shrink-0 w-72 sm:w-80 md:w-96 bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start"
+    >
       <div className="relative aspect-video bg-gray-100 overflow-hidden">
         {!imageError ? (
           <img
@@ -51,9 +66,50 @@ function DestinationCard({ destination }: { destination: DestinationType }) {
 // Main Component
 export function PopularDestinations() {
   const [activeCategory, setActiveCategory] = useState<CategoryId>("beach");
+  const [loading, setLoading] = useState(true);
+  const [destinations, setDestinations] = useState<DestinationType[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const currentDestinations = DESTINATIONS[activeCategory];
+  // useEffect(() => {
+  //   setLoading(true);
+
+  //   // fake API delay
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1500);
+  // }, [activeCategory]);
+
+useEffect(() => {
+  const controller = new AbortController();
+  setLoading(true);
+
+  const fetchDestinations = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/destinations?category=${activeCategory}`,
+        { signal: controller.signal }
+      );
+      console.log("API response data:", response.data);
+      
+      const categoryData = response.data[activeCategory];
+      setDestinations(Array.isArray(categoryData) ? categoryData : []);
+    } catch (err) {
+      if (!axios.isCancel(err)) {
+        setError("Failed to load destinations");
+        console.error(err);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDestinations();
+  return () => controller.abort();
+}, [activeCategory]);
+
+
+  // const currentDestinations = DESTINATIONS[activeCategory];
 
   const handleScroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -128,17 +184,37 @@ export function PopularDestinations() {
           </button>
 
           {/* Destinations */}
+          {/* <div
+            ref={scrollRef}
+            id={`destinations-${activeCategory}`}
+            role="tabpanel"
+            className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
+          >
+            {loading
+              ? Array.from({ length: currentDestinations.length }).map(
+                  (_, i) => <DestinationCardSkeleton key={i} />
+                )
+              : currentDestinations.map((dest) => (
+                  <DestinationCard key={dest.id} destination={dest} />
+                ))}
+          </div> */}
+
           <div
             ref={scrollRef}
             id={`destinations-${activeCategory}`}
             role="tabpanel"
             className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
           >
-            {currentDestinations.map((dest) => (
-              <DestinationCard key={dest.id} destination={dest} />
-            ))}
+            {loading
+              ? Array.from({ length: destinations.length }).map((_, i) => (
+                  <DestinationCardSkeleton key={i} />
+                ))
+              : destinations.map((dest) => (
+                  <DestinationCard key={dest.id} destination={dest} />
+                ))}
           </div>
         </div>
+        {error && <p className="text-red-600 mt-4">{error}</p>}
       </div>
     </section>
   );
