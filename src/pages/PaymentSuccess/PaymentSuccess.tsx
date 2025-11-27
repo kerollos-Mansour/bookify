@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ProgressStepsProps {
   currentStep: number;
@@ -60,6 +61,7 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
 }
 
 export default function PaymentSuccess() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-white flex flex-col items-center pt-6 px-4">
       <Logo />
@@ -72,23 +74,23 @@ export default function PaymentSuccess() {
         </p>
       </div>
 
-      <div className="w-full max-w-4xl flex p-6 md:p-10 flex-col md:flex-row gap-10 mt-4">
-        <div className="w-full md:w-1/2">
-          <p className="text-[18px]  text-[#4B5563] mb-4 font-medium">
+      <div className="w-full max-w-4xl flex p-6 md:p-10 flex-col md:flex-row gap-20 mt-4 ">
+        <div className="w-full md:w-1/2 pl-30 flex flex-col justify-start gap-8">
+          <p className="text-[18px]  text-[#4B5563]  font-medium">
             Transfer Expedia:
           </p>
-          <p className="text-[16px] leading-[1.85] text-[#4B5563] mb-6 font-medium">
+          <p className="text-[16px] leading-[1.85] text-[#4B5563]  font-medium">
             2 Days at Blue Origin Fams,
             <br />
             Galle, Sri Lanka
           </p>
-          <p className="text-[16px] text-[#4B5563] mb-2 font-medium">
+          <p className="text-[16px] text-[#4B5563] font-medium">
             Total:
-            <span className="font-bold text-blue-900 mb-2 ml-2">$400 USD</span>
+            <span className="font-bold text-blue-900 ml-2">$400 USD</span>
           </p>
           <p className="text-[16px] text-[#4B5563] font-medium">
             Initial Payment:
-            <span className="font-bold text-blue-900 mb-2 ml-2">$200</span>
+            <span className="font-bold text-blue-900 ml-2">$200</span>
           </p>
         </div>
 
@@ -140,7 +142,7 @@ export default function PaymentSuccess() {
       </div>
 
       <div className="flex flex-col items-center gap-4 mt-12 mb-10">
-        <button className="w-64 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
+        <button onClick={()=>navigate("/confirm-reservation")} className="w-64 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
           Pay Now
         </button>
         <button className="w-64 bg-gray-100 text-gray-600 py-3 rounded-lg font-medium">

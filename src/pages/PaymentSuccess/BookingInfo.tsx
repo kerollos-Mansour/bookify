@@ -9,7 +9,6 @@ interface Hotel {
   image: string;
 }
 
-
 interface PriceBreakdown {
   pricePerNight: number;
   nights: number;
@@ -81,7 +80,7 @@ export default function BookingInfo() {
       </div>
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
+          <div className="space-y-6 w-110">
             <div className="bg-white rounded-lg shadow-sm p-4">
               <img
                 src={hotel.image}
@@ -205,15 +204,14 @@ export default function BookingInfo() {
             </div>
           </div>
         </div>
-        <div className="mt-12 mb-6 max-w-md mx-auto space-y-4">
+        <div className="flex flex-col items-center gap-4 mt-12 mb-10">
           <button
             onClick={() => navigate("/payment-success")}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-lg transition text-lg"
+            className="w-64 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
           >
             Book Now
           </button>
-
-          <button className="w-full bg-gray-200 hover:bg-gray-100 text-gray-600 py-4 rounded-lg transition border border-gray-200">
+          <button className="w-64 bg-gray-100 text-gray-600 py-3 rounded-lg font-medium">
             Cancel
           </button>
         </div>
