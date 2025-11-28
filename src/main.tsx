@@ -6,13 +6,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Categories from "./components/categories/categories";
 import Home from "./pages/home/home";
 
-import SearchResults from "./pages/searchResult/SearchResults";
+import SearchResults from "./pages/searchResult/searchResults";
 import PaymentSuccess from "./pages/paymentSuccess/paymentSuccess";
 import BookingInfo from "./pages/paymentSuccess/bookingInfo";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import Login from "./pages/login/login";
-import SignUp from "./pages/signUp/SignUp";
-import NotFound from "./pages/notFound/NotFound";
+import SignUp from "./pages/signUp/signUp";
+import NotFound from "./pages/notFound/notFound";
 import Account from "./pages/account/account";
 import ConfirmReservation from "./pages/paymentSuccess/confirmReservation";
 
