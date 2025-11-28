@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, MessageSquare } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,7 +23,7 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handelScroll);
   }, [isHomePage]);
 
-  const textColor = scrolled 
+  const textColor = scrolled
     ? "text-gray-700 hover:text-gray-900"
     : "text-white hover:text-gray-200";
   const iconHoverBg = scrolled ? "hover:bg-gray-100" : "hover:bg-white/20";
@@ -75,16 +76,10 @@ export default function Header() {
             >
               List your property
             </a>
-            <a
-              href="#"
-              className={`transition-colors ${textColor}`}
-            >
+            <a href="#" className={`transition-colors ${textColor}`}>
               Support
             </a>
-            <a
-              href="#"
-              className={`transition-colors ${textColor}`}
-            >
+            <a href="#" className={`transition-colors ${textColor}`}>
               Trips
             </a>
 
@@ -99,9 +94,7 @@ export default function Header() {
               />
             </button>
             <Link to="/login">
-              <span
-                className={`cursor-pointer transition-colors ${textColor}`}
-              >
+              <span className={`cursor-pointer transition-colors ${textColor}`}>
                 Sign In
               </span>
             </Link>
@@ -138,97 +131,107 @@ export default function Header() {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div
-            className={`lg:hidden mt-4 pt-4 border-t ${
-              scrolled ? "border-gray-200" : "border-white/20"
-            }`}
-          >
-            <nav className="flex flex-col gap-2 pb-4">
-              <button
-                className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${
-                  scrolled
-                    ? "text-gray-800 hover:bg-gray-50"
-                    : "hover:bg-white/10"
-                }`}
-              >
-                Shop travel
-                <ChevronDown className="w-5 h-5" />
-              </button>
-
-              <a
-                href="#"
-                className={`py-2 px-2 rounded-lg transition-colors ${
-                  scrolled
-                    ? "text-gray-700 hover:bg-gray-50"
-                    : " hover:bg-white/10"
-                }`}
-              >
-                List your property
-              </a>
-              <a
-                href="#"
-                className={`py-2 px-2 rounded-lg transition-colors ${
-                  scrolled
-                    ? "text-gray-700 hover:bg-gray-50"
-                    : " hover:bg-white/10"
-                }`}
-              >
-                Support
-              </a>
-              <a
-                href="#"
-                className={`py-2 px-2 rounded-lg transition-colors ${
-                  scrolled
-                    ? "text-gray-700 hover:bg-gray-50"
-                    : " hover:bg-white/10"
-                }`}
-              >
-                Trips
-              </a>
-              <a
-                href="#"
-                className={`py-2 px-2 rounded-lg transition-colors ${
-                  scrolled
-                    ? "text-gray-700 hover:bg-gray-50"
-                    : " hover:bg-white/10"
-                }`}
-              >
-                Messages
-              </a>
-
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="lg:hidden overflow-hidden"
+            >
               <div
-                className={`py-3 px-2 flex items-center gap-2 text-sm ${
-                  scrolled ? "text-gray-700" : ""
-                }`}
-              >
-                <span>🇺🇸 United States</span>
-                <span>• USD</span>
-              </div>
-
-              <div
-                className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
+                className={`lg:hidden mt-4 pt-4 border-t ${
                   scrolled ? "border-gray-200" : "border-white/20"
                 }`}
               >
-                <Link to="/login" className="flex-1">
+                <nav className="flex flex-col gap-2 pb-4">
                   <button
-                    className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
+                    className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${
                       scrolled
-                        ? "border-gray-300 text-gray-700 hover:bg-gray-50"
-                        : "border-white/40 text-white hover:bg-white/10"
+                        ? "text-gray-800 hover:bg-gray-50"
+                        : "hover:bg-white/10"
                     }`}
                   >
-                    Sign In
+                    Shop travel
+                    <ChevronDown className="w-5 h-5" />
                   </button>
-                </Link>
-                <button className="flex-1 py-3 px-5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                  Sign Up
-                </button>
+
+                  <a
+                    href="#"
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-gray-700 hover:bg-gray-50"
+                        : " hover:bg-white/10"
+                    }`}
+                  >
+                    List your property
+                  </a>
+                  <a
+                    href="#"
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-gray-700 hover:bg-gray-50"
+                        : " hover:bg-white/10"
+                    }`}
+                  >
+                    Support
+                  </a>
+                  <a
+                    href="#"
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-gray-700 hover:bg-gray-50"
+                        : " hover:bg-white/10"
+                    }`}
+                  >
+                    Trips
+                  </a>
+                  <a
+                    href="#"
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-gray-700 hover:bg-gray-50"
+                        : " hover:bg-white/10"
+                    }`}
+                  >
+                    Messages
+                  </a>
+
+                  <div
+                    className={`py-3 px-2 flex items-center gap-2 text-sm ${
+                      scrolled ? "text-gray-700" : ""
+                    }`}
+                  >
+                    <span>🇺🇸 United States</span>
+                    <span>• USD</span>
+                  </div>
+
+                  <div
+                    className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
+                      scrolled ? "border-gray-200" : "border-white/20"
+                    }`}
+                  >
+                    <Link to="/login" className="flex-1">
+                      <button
+                        className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
+                          scrolled
+                            ? "border-gray-300 text-gray-700 hover:bg-gray-50"
+                            : "border-white/40 text-white hover:bg-white/10"
+                        }`}
+                      >
+                        Sign In
+                      </button>
+                    </Link>
+                    <button className="flex-1 py-3 px-5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                      Sign Up
+                    </button>
+                  </div>
+                </nav>
               </div>
-            </nav>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );
