@@ -1,9 +1,12 @@
 import React from "react";
 import { Logo, ProgressSteps } from "./paymentSuccess";
+import PageTransition from "../../components/pageTransition/pageTransition";
 
 
 export default function ConfirmReservation() {
   return (
+    <PageTransition>
+
     <div className="min-h-screen bg-white flex flex-col items-center pt-6 px-4">
       <Logo />
       <ProgressSteps currentStep={3} />
@@ -19,7 +22,7 @@ export default function ConfirmReservation() {
         src="Confirm-reservation.png"
         alt="Payment Illustration"
         className="w-[350px] mx-auto mb-6 select-none pointer-events-none"
-      />
+        />
       </div>
 
       <div className="text-center mb-10">
@@ -35,5 +38,6 @@ export default function ConfirmReservation() {
         Go to Dashboard
       </button>
     </div>
+        </PageTransition>
   );
 }

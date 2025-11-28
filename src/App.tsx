@@ -3,6 +3,7 @@ import { Outlet, useNavigation } from "react-router-dom";
 import Footer from "./components/footer/footer";
 import Header from "./components/header/header";
 import PageLoader from "./components/UI/PageLoader";
+import ScrollToTop from "./components/scrollToTop/scrollToTop";
 
 function App() {
   const navigation = useNavigation();
@@ -13,6 +14,7 @@ function App() {
       {isPageLoading && <PageLoader />}
       <Header />
       <main>
+        <ScrollToTop />
         <Outlet />
       </main>
       <Footer />

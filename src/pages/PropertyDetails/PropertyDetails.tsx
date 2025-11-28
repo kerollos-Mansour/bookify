@@ -10,6 +10,7 @@ import NavigationBar from "../../components/propertyDetails/navigationBar/naviga
 import Treatments from "../../components/propertyDetails/treatment/treatment";
 import PropertyInfo from "../../components/propertyDetails/propertyInfo/propertyInto";
 import { Room } from "../../Data/rooms";
+import PageTransition from "../../components/pageTransition/pageTransition";
 
 const API_BASE_URL = "http://localhost:3000/api";
 
@@ -125,6 +126,7 @@ export default function PropertyDetailsPage() {
 
   return (
     <>
+    <PageTransition>
       <div className="propertyDetailsWrapper px-4 sm:px-6 md:px-8 lg:px-12 xl:px-60">
         <SearchBar />
 
@@ -164,6 +166,7 @@ export default function PropertyDetailsPage() {
         {/* Choose your room */}
         <RoomsSection rooms={data.rooms} />
       </div>
+      </PageTransition>
     </>
   );
 }

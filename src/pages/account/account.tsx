@@ -13,6 +13,7 @@ import AccountIntro from "../../components/account/accountIntro/accountIntro";
 import AccountSidebar from "../../components/account/accountSidebar/accountSidebar";
 import ProfileTab from "../../components/account/profileTab/profileTab";
 import TabEmptyState from "../../components/account/tabEmptyState/tabEmptyState";
+import PageTransition from "../../components/pageTransition/pageTransition";
 
 type TabId =
   | "profile"
@@ -131,34 +132,35 @@ export default function Account() {
   const activeTabCopy = useMemo(() => emptyCopy[activeTab], [activeTab]);
 
   return (
-    <div className="bg-[#f7f7f9] min-h-screen py-10 px-4">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Account intro , to say hi and etc. */}
-        <AccountIntro
-          greeting="Hi, Anas"
-          headline="My Account"
-          subtext="Manage your personal details, preferences, and saved travelers."
-        />
-        {/* Account sidebar , that sshows the tabs , we're passing tabs and activeTab and onTabChange set Active */}
-        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-          <AccountSidebar
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
+    <PageTransition>
+      <div className="bg-[#f7f7f9] min-h-screen py-10 px-4">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Account intro , to say hi and etc. */}
+          <AccountIntro
+            greeting="Hi, Anas"
+            headline="My Account"
+            subtext="Manage your personal details, preferences, and saved travelers."
           />
-          {/* here we add more tabs  */}
-          <section>
-            {activeTab === "profile" ? (
-              <ProfileTab />
-            ) : (
-              <TabEmptyState
-                title={activeTabCopy.title}
-                message={activeTabCopy.message}
-              />
-            )}
-            {/* this is a new tab */}
+          {/* Account sidebar , that sshows the tabs , we're passing tabs and activeTab and onTabChange set Active */}
+          <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+            <AccountSidebar
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+            {/* here we add more tabs  */}
+            <section>
+              {activeTab === "profile" ? (
+                <ProfileTab />
+              ) : (
+                <TabEmptyState
+                  title={activeTabCopy.title}
+                  message={activeTabCopy.message}
+                />
+              )}
+              {/* this is a new tab */}
 
-            {/* {activeTab === "communications" ? (
+              {/* {activeTab === "communications" ? (
               <CommTab />
             ) : (
               <TabEmptyState
@@ -166,9 +168,10 @@ export default function Account() {
                 message={activeTabCopy.message}
               />
             )} */}
-          </section>
+            </section>
+          </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import PageTransition from "../../components/pageTransition/pageTransition";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ export default function SignUp() {
   };
 
   return (
+    <PageTransition>
+
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4 py-8">
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 lg:gap-1 items-center">
 
@@ -242,5 +245,7 @@ export default function SignUp() {
         </div>
       </div>
     </div>
+    </PageTransition>
+
   );
 }

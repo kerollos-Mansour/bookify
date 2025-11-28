@@ -6,6 +6,7 @@ import Map from "../../components/map/map";
 import Tabs from "../../components/tabs/tabs";
 import FilterProperties from "../../components/filterProperties/filterProperties";
 import { Link, useLocation } from "react-router-dom";
+import PageTransition from "../../components/pageTransition/pageTransition";
 
 export default function SearchResult() {
   const { search } = useLocation();
@@ -82,44 +83,46 @@ export default function SearchResult() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
-        <div className="xl:max-w-[1200px] lg:max-w-[992px] md:max-w-[720px] sm:max-w-[540px] mx-auto mt-5">
-          <SearchBar />
-          <div className="flex min-h-screen mt-5">
-            <div className="bg-white hidden p-6 md:block w-fit">
-              <Map />
+      <PageTransition>
+        <div className="min-h-screen bg-gray-50">
+          <div className="xl:max-w-[1200px] lg:max-w-[992px] md:max-w-[720px] sm:max-w-[540px] mx-auto mt-5">
+            <SearchBar />
+            <div className="flex min-h-screen mt-5">
+              <div className="bg-white hidden p-6 md:block w-fit">
+                <Map />
 
-              <div className="w-full my-5 py-5 border-gray-300 border-b border-t">
-                <div className="">
-                  <p className="font-medium text-xl mb-2">
-                    Search by property name
-                  </p>
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="e.g. Marriott"
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                <div className="w-full my-5 py-5 border-gray-300 border-b border-t">
+                  <div className="">
+                    <p className="font-medium text-xl mb-2">
+                      Search by property name
+                    </p>
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="e.g. Marriott"
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <FilterProperties />
-            </div>
-            <div className="bg-white p-6 mx-auto w-full">
-              <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-              {/* {cardData.data.map((card) => ( */}
-              {filteredHotels.map((card) => (
-                // <HotelCard key={card.id} cardData={card} />
-                <Link key={card.id} to={`/property/${card.id}`}>
-                  <HotelCard cardData={card} />
-                </Link>
-              ))}
+                <FilterProperties />
+              </div>
+              <div className="bg-white p-6 mx-auto w-full">
+                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                {/* {cardData.data.map((card) => ( */}
+                {filteredHotels.map((card) => (
+                  // <HotelCard key={card.id} cardData={card} />
+                  <Link key={card.id} to={`/property/${card.id}`}>
+                    <HotelCard cardData={card} />
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </PageTransition>
     </>
   );
 }
