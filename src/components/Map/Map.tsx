@@ -18,7 +18,7 @@ interface MapMarker {
 
 interface MapProps {
   location?: Location;
-  markers?: MapMarker[];
+  markers?: MapMarker[] | any;
   zoom?: number;
   height?: string;
   width?: string;

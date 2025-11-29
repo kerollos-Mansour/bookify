@@ -2,7 +2,7 @@ import { Building2, HomeIcon, Home } from "lucide-react";
 
 export default function Tabs({ activeTab, setActiveTab }) {
     return (
-        <div className="bg-gray-200 top-0 z-40 shadow-sm rounded-full mb-5">
+        <div className="bg-gray-200 top-0 z-10 shadow-sm rounded-full mb-5">
             <div className="">
                 <div className="flex items-center justify-evenly gap-1 py-3">
                     <button

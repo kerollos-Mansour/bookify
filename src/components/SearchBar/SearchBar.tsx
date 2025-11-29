@@ -115,7 +115,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
   };
 
   return (
-    <div className={`relative mb-6 ${hideOnMobile ? "hidden md:block" : ""}`}>
+    <div className={`relative  ${hideOnMobile ? "hidden md:block" : ""}`}>
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-white rounded-xl md:rounded-full shadow-lg p-2 md:p-2">
         {/* Where to? */}
         <div

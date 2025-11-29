@@ -1,128 +1,363 @@
+import axios from "axios";
 import { SearchBar } from "../../components/searchBar/searchBar";
 import HotelCard from "../../components/HotelCard/HotelCard";
-import { useEffect, useState } from "react";
-import { Building2, HomeIcon, Home, MapPin, Search, X } from "lucide-react";
-import Map from "../../components/map/map";
-import Tabs from "../../components/tabs/tabs";
-import FilterProperties from "../../components/filterProperties/filterProperties";
+import { useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
+import Map from "../../components/map/Map";
+import Tabs from "../../components/filterProperties/tabs/Tabs";
+import FilterProperties, {
+  PropertyFilters,
+} from "../../components/filterProperties/filterProperties/filterProperties";
 import { Link, useLocation } from "react-router-dom";
 import PageTransition from "../../components/pageTransition/pageTransition";
+import { Hotel } from "Data/hotel";
+import { HotelCardData } from "Data/hotelCard";
+
+const API_BASE_URL = "http://localhost:3000/api";
+
+type SearchFilters = PropertyFilters & {
+  propertyName: string;
+};
+
+const getNightlyRate = (hotel: Hotel) => hotel.lowRate ?? hotel.highRate ?? 0;
+
+const toCardData = (hotel: Hotel): HotelCardData => {
+  const nightly = getNightlyRate(hotel);
+  const total = hotel.highRate ?? nightly;
+  const detail = hotel.hotelDetails?.[0];
+
+  return {
+    id: hotel.id,
+    img: {
+      img:
+        hotel.images && hotel.images.length > 0
+          ? hotel.images
+          : [
+              "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+            ],
+      alt: hotel.name,
+    },
+    title: hotel.name,
+    location: [hotel.city, hotel.stateProvinceCode, hotel.countryCode]
+      .filter(Boolean)
+      .join(", "),
+    Amenities: detail?.amenities?.slice(0, 3) ?? [
+      "Free WiFi",
+      "Pool access",
+      "Breakfast",
+    ],
+    reviews: {
+      reviewsCount: detail?.reviewCount ?? 0,
+      avgReview: Number(hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0),
+    },
+    withFees: true,
+    prices: {
+      day: Number(total),
+      nightly: Number(nightly),
+      offer:
+        total && nightly
+          ? Math.max(
+              5,
+              Math.min(40, Math.round(((total - nightly) / total) * 100))
+            )
+          : 10,
+    },
+    vip: (hotel.confidenceRating ?? 0) > 50,
+  };
+};
 
 export default function SearchResult() {
+  // States
   const { search } = useLocation();
-  const params = new URLSearchParams(search);
-
-  const selectedLocation = params.get("location") || "";
-  const checkIn = params.get("checkIn") || "";
-  const checkOut = params.get("checkOut") || "";
-  const adults = Number(params.get("adults")) || 1;
-  const rooms = Number(params.get("rooms")) || 1;
-  const maxPrice = Number(params.get("maxPrice")) || Infinity;
-
-  const cardData = {
-    data: [
-      {
-        id: 1,
-        img: {
-          img: ["/7aa4d452.avif", "/4c20e37c.avif"],
-          alt: "this is img",
-        },
-        title: "Avenue Al Arab Residence",
-        location: "giza",
-        Amenities: ["Pool", "Hot tub", "Kitchen"],
-        reviews: { reviewsCount: 120, avgReview: 8.4 },
-        withFees: true,
-        prices: { day: 2500, nightly: 1000, offer: 12 },
-        vip: true,
-      },
-      {
-        id: 2,
-        img: {
-          img: ["/7aa4d452.avif", "/4c20e37c.avif"],
-          alt: "this is img",
-        },
-        title: "Avenue Al Arab Residence",
-        location: "giza",
-        Amenities: ["Pool", "Hot tub", "Kitchen"],
-        reviews: { reviewsCount: 120, avgReview: 8.4 },
-        withFees: true,
-        prices: { day: 2500, nightly: 1000, offer: 12 },
-        vip: true,
-      },
-      {
-        id: 3,
-        img: {
-          img: ["/7aa4d452.avif", "/4c20e37c.avif"],
-          alt: "this is img",
-        },
-        title: "Avenue Al Arab Residence",
-        location: "giza",
-        Amenities: ["Pool", "Hot tub", "Kitchen"],
-        reviews: { reviewsCount: 120, avgReview: 8.4 },
-        withFees: true,
-        prices: { day: 2500, nightly: 1000, offer: 12 },
-        vip: true,
-      },
-    ],
-    length: 3,
-    state: "success",
-  };
-  const [showCompare, setShowCompare] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [filters, setFilters] = useState<SearchFilters>({
+    propertyName: "",
+    selectedTypes: [],
+    maxPrice: 0,
+    minRating: 0,
+  });
+  const [priceBounds, setPriceBounds] = useState({ min: 0, max: 0 });
+  const [propertyTypeOptions, setPropertyTypeOptions] = useState<string[]>([]);
+  const [locationFilter, setLocationFilter] = useState("");
 
+  // Effects
+  // location from params effect
   useEffect(() => {
-    console.log(activeTab);
-  }, [activeTab]);
+    const params = new URLSearchParams(search);
+    const locationParam = params.get("location") ?? "";
+    setLocationFilter(locationParam);
+  }, [search]);
 
-  // Filter hotels based on the search query
-  const filteredHotels = cardData.data.filter(
-    (hotel) =>
-      hotel.location.toLowerCase().includes(selectedLocation.toLowerCase()) &&
-      hotel.prices.nightly <= maxPrice
+  // fetch data effect
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchHotels = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get<Hotel[]>(`${API_BASE_URL}/hotels`, {
+          params: {
+            _embed: "hotelDetails",
+          },
+          signal: controller.signal,
+        });
+
+        setHotels(response.data);
+
+        const nightlyRates = response.data
+          .map((hotel) => getNightlyRate(hotel))
+          .filter((rate) => rate > 0);
+
+        if (nightlyRates.length) {
+          const minRate = Math.min(...nightlyRates);
+          const maxRate = Math.max(...nightlyRates);
+          setPriceBounds({ min: minRate, max: maxRate });
+          setFilters((prev) => ({
+            ...prev,
+            maxPrice: maxRate,
+          }));
+        }
+
+        const types = Array.from(
+          new Set(
+            response.data.map((hotel) => (hotel.type ?? "hotel").toLowerCase())
+          )
+        ).sort();
+        setPropertyTypeOptions(types);
+        setError(null);
+      } catch (err) {
+        if (!axios.isCancel(err)) {
+          const message =
+            err instanceof Error ? err.message : "Failed to load data.";
+          setError(message);
+          console.error("Error loading hotels:", err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHotels();
+
+    return () => controller.abort();
+  }, []);
+
+  const filteredHotels = useMemo(() => {
+    const normalizedLocation = locationFilter.trim().toLowerCase();
+    const normalizedName = filters.propertyName.trim().toLowerCase();
+
+    return hotels.filter((hotel) => {
+      const nightlyRate = getNightlyRate(hotel);
+      const rating = hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0;
+      const type = (hotel.type ?? "hotel").toLowerCase();
+      const locationTokens = [
+        hotel.city ?? "",
+        hotel.stateProvinceCode ?? "",
+        hotel.countryCode ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      const name = hotel.name.toLowerCase();
+
+      const matchesLocation = normalizedLocation
+        ? locationTokens.includes(normalizedLocation) ||
+          name.includes(normalizedLocation)
+        : true;
+
+      const matchesName = normalizedName ? name.includes(normalizedName) : true;
+
+      const matchesTab =
+        activeTab === "all"
+          ? true
+          : activeTab === "hotels"
+          ? type === "hotel" || hotel.propertyCategory === 1
+          : type !== "hotel" && hotel.propertyCategory !== 1;
+
+      const matchesType =
+        filters.selectedTypes.length > 0
+          ? filters.selectedTypes.includes(type)
+          : true;
+
+      const maxPrice = filters.maxPrice || priceBounds.max || nightlyRate;
+      const matchesPrice = nightlyRate <= maxPrice;
+      const matchesRating = rating >= filters.minRating;
+
+      return (
+        matchesLocation &&
+        matchesName &&
+        matchesTab &&
+        matchesType &&
+        matchesPrice &&
+        matchesRating
+      );
+    });
+  }, [
+    hotels,
+    filters.selectedTypes,
+    filters.maxPrice,
+    filters.minRating,
+    filters.propertyName,
+    locationFilter,
+    activeTab,
+    priceBounds.max,
+  ]);
+
+  const hotelCards = useMemo(
+    () =>
+      filteredHotels.map((hotel) => ({
+        hotel,
+        card: toCardData(hotel),
+      })),
+    [filteredHotels]
   );
 
+  const mapMarkers = useMemo(
+    () =>
+      hotelCards
+        .filter(
+          ({ hotel }) =>
+            hotel.location &&
+            typeof hotel.location.latitude === "number" &&
+            typeof hotel.location.longitude === "number"
+        )
+        .map(({ hotel, card }) => ({
+          position: [hotel.location!.latitude, hotel.location!.longitude] as [
+            number,
+            number
+          ],
+          title: card.title,
+          description: `${card.location || "Unknown"} • $${
+            card.prices.nightly
+          }`,
+        })),
+    [hotelCards]
+  );
+
+  const mapCenter = mapMarkers.length
+    ? {
+        latitude: mapMarkers[0].position[0],
+        longitude: mapMarkers[0].position[1],
+      }
+    : undefined;
+
+  const handleFilterChange = (updates: Partial<PropertyFilters>) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...updates,
+    }));
+  };
+
+  const handleResetFilters = () => {
+    setFilters((prev) => ({
+      ...prev,
+      propertyName: "",
+      selectedTypes: [],
+      minRating: 0,
+      maxPrice: priceBounds.max || prev.maxPrice,
+    }));
+  };
+
   return (
-    <>
-      <PageTransition>
-        <div className="min-h-screen bg-gray-50">
-          <div className="xl:max-w-[1200px] lg:max-w-[992px] md:max-w-[720px] sm:max-w-[540px] mx-auto mt-5">
+    <PageTransition>
+      <div className="min-h-screen bg-gray-50">
+        <div className="xl:max-w-[1200px] lg:max-w-[992px] md:max-w-[720px] sm:max-w-[540px] mx-auto mt-5">
+          <div className="sticky top-0 z-12 bg-gray-50 py-2">
             <SearchBar />
-            <div className="flex min-h-screen mt-5">
-              <div className="bg-white hidden p-6 md:block w-fit">
-                <Map />
+          </div>
+          <div className="flex flex-col md:flex-row min-h-screen mt-5 gap-6">
+            <aside className=" bg-white p-6 z-2 rounded-3xl md:w-[320px] flex-shrink-0 border border-gray-100">
+              <Map
+                location={mapCenter}
+                markers={mapMarkers}
+                zoom={11}
+                height="260px"
+                width="100%"
+                scrollWheelZoom={false}
+                className="mb-6"
+              />
 
-                <div className="w-full my-5 py-5 border-gray-300 border-b border-t">
-                  <div className="">
-                    <p className="font-medium text-xl mb-2">
-                      Search by property name
-                    </p>
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="e.g. Marriott"
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
+              <div className="w-full my-5 py-5 border-gray-200 border-y">
+                <p className="font-medium text-xl mb-2">
+                  Search by property name
+                </p>
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="e.g. Marriott"
+                    value={filters.propertyName}
+                    onChange={(event) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        propertyName: event.target.value,
+                      }))
+                    }
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
-
-                <FilterProperties />
               </div>
-              <div className="bg-white p-6 mx-auto w-full">
+
+              <FilterProperties
+                filters={{
+                  selectedTypes: filters.selectedTypes,
+                  maxPrice: filters.maxPrice,
+                  minRating: filters.minRating,
+                }}
+                priceBounds={priceBounds}
+                propertyTypeOptions={propertyTypeOptions}
+                onChange={handleFilterChange}
+                onReset={handleResetFilters}
+              />
+            </aside>
+
+            <section className="bg-white p-6 rounded-3xl flex-1 border border-gray-100">
+              <div className="flex flex-col gap-4 mb-6">
                 <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-                {/* {cardData.data.map((card) => ( */}
-                {filteredHotels.map((card) => (
-                  // <HotelCard key={card.id} cardData={card} />
-                  <Link key={card.id} to={`/property/${card.id}`}>
+                <p className="text-sm text-gray-500">
+                  Showing {hotelCards.length}{" "}
+                  {hotelCards.length === 1 ? "property" : "properties"}
+                  {locationFilter ? ` in "${locationFilter}"` : ""}
+                </p>
+              </div>
+
+              {loading && (
+                <div className="flex justify-center items-center py-20">
+                  Loading properties...
+                </div>
+              )}
+
+              {error && !loading && (
+                <div className="flex justify-center items-center py-20 text-red-600">
+                  {error}
+                </div>
+              )}
+
+              {!loading && !error && hotelCards.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <p className="text-lg font-semibold text-gray-800 mb-2">
+                    No properties match these filters
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Try adjusting your filters or search in a different
+                    location.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {hotelCards.map(({ hotel, card }) => (
+                  <Link key={hotel.id} to={`/property/${hotel.id}`}>
                     <HotelCard cardData={card} />
                   </Link>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
         </div>
-      </PageTransition>
-    </>
+      </div>
+    </PageTransition>
   );
 }
