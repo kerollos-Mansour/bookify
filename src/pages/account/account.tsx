@@ -13,7 +13,9 @@ import AccountIntro from "../../components/account/accountIntro/accountIntro";
 import AccountSidebar from "../../components/account/accountSidebar/accountSidebar";
 import ProfileTab from "../../components/account/profileTab/profileTab";
 import TabEmptyState from "../../components/account/tabEmptyState/tabEmptyState";
+import SettingTap from "../../components/account/settingTap/settingTap";
 import PageTransition from "../../components/pageTransition/pageTransition";
+
 
 type TabId =
   | "profile"
@@ -132,6 +134,7 @@ export default function Account() {
   const activeTabCopy = useMemo(() => emptyCopy[activeTab], [activeTab]);
 
   return (
+
     <PageTransition>
       <div className="bg-[#f7f7f9] min-h-screen py-10 px-4">
         <div className="max-w-6xl mx-auto space-y-8">
@@ -168,10 +171,19 @@ export default function Account() {
                 message={activeTabCopy.message}
               />
             )} */}
-            </section>
-          </div>
+
+             {activeTab === "security" ? (
+              <SettingTap />
+            ) : (
+              <TabEmptyState
+                title={activeTabCopy.title}
+                message={activeTabCopy.message}
+              />
+            )}
+          </section>
         </div>
       </div>
+      </div>
     </PageTransition>
-  );
-}
+    
+  )}
