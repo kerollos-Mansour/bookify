@@ -10,7 +10,7 @@ const CONTENT = {
 
 export function HeroSearch() {
   return (
-    <div className="relative min-h-screen md:min-h-[85vh] flex flex-col justify-end">
+    <div className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] lg:min-h-[85vh] flex flex-col justify-end">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -20,26 +20,26 @@ export function HeroSearch() {
         role="img"
         aria-label="Hero background"
       >
-        {/* Dark Overlay Gradient */}
-        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/30 to-black/70" />
+        {/* Dark Overlay Gradient - Fixed gradient class */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70" />
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 pb-8 md:pb-12 lg:pb-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 pb-6 sm:pb-8 md:pb-12 lg:pb-16 pt-20 sm:pt-24 md:pt-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           {/* Hero Text */}
-          <header className="text-center mb-6 md:mb-8 lg:mb-10 text-white">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 drop-shadow-2xl">
+          <header className="text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-white">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 drop-shadow-2xl leading-tight px-2">
               {CONTENT.title}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto opacity-90 drop-shadow-lg px-4">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto opacity-90 drop-shadow-lg px-4 sm:px-6 mt-2 sm:mt-3">
               {CONTENT.description}
             </p>
           </header>
 
           {/* Search Card - Extends below hero section */}
-          <div className="max-w-5xl mx-auto">
-            <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 transform translate-y-8 md:translate-y-12 lg:translate-y-16">
+          <div className="max-w-5xl mx-auto px-2 sm:px-4">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 transform translate-y-4 sm:translate-y-6 md:translate-y-10 lg:translate-y-12 xl:translate-y-16">
               <SearchBar />
             </div>
           </div>

@@ -115,12 +115,12 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
   };
 
   return (
-    <div className={`relative  ${hideOnMobile ? "hidden md:block" : ""}`}>
-      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-white rounded-xl md:rounded-full shadow-lg p-2 md:p-2">
+    <div className={`relative ${hideOnMobile ? "hidden md:block" : ""}`}>
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-white rounded-xl md:rounded-full shadow-lg p-1.5 sm:p-2 md:p-2">
         {/* Where to? */}
         <div
           ref={locationRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-t-xl md:rounded-t-none md:rounded-l-full transition-colors"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-t-xl md:rounded-t-none md:rounded-l-full transition-colors"
           onClick={() => {
             setShowLocationDropdown(!showLocationDropdown);
             setShowDatesDropdown(false);
@@ -194,7 +194,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
         {/* Dates */}
         <div
           ref={datesRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
           onClick={() => {
             setShowDatesDropdown(!showDatesDropdown);
             setShowLocationDropdown(false);
@@ -259,7 +259,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
         {/* Travelers */}
         <div
           ref={travelersRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 flex-1 cursor-pointer hover:bg-gray-50 transition-colors rounded-b-xl md:rounded-b-none"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 cursor-pointer hover:bg-gray-50 transition-colors rounded-b-xl md:rounded-b-none"
           onClick={() => {
             setShowTravelersDropdown(!showTravelersDropdown);
             setShowLocationDropdown(false);
@@ -351,7 +351,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl md:rounded-full font-semibold transition-colors flex-shrink-0 mt-2 md:mt-0 md:ml-2 shadow-md text-sm sm:text-base w-full md:w-auto"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-3.5 rounded-xl md:rounded-full font-semibold transition-colors flex-shrink-0 mt-2 md:mt-0 md:ml-2 shadow-md text-sm sm:text-base w-full md:w-auto"
         >
           Search
         </button>

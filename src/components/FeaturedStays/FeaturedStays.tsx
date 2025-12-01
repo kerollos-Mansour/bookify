@@ -13,13 +13,13 @@ function DestinationCard({ item }: { item: DestinationType }) {
   const toggleFavorite = () => setIsFavorite((prev) => !prev);
 
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden h-full flex flex-col">
       <div className="relative">
         <Link to={`/property/${item.id}`}>
           <img
             src={item.image}
             alt={item.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-40 sm:h-44 md:h-48 object-cover"
           />
         </Link>
         {item.bestSeller && (
@@ -40,30 +40,32 @@ function DestinationCard({ item }: { item: DestinationType }) {
         </button>
       </div>
 
-      <div className="p-5">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{item.title}</h3>
-          <div className="flex items-center gap-1">
+      <div className="p-4 sm:p-5 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 flex-1">{item.title}</h3>
+          <div className="flex items-center gap-1 flex-shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
+              width="14"
+              height="14"
+              className="sm:w-4 sm:h-4"
               fill="#f97316"
               viewBox="0 0 24 24"
             >
               <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596l-6-5.848 8.332-1.593z" />
             </svg>
-            <span className="text-sm font-medium text-gray-500">
+            <span className="text-xs sm:text-sm font-medium text-gray-500">
               {item.rating}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-gray-500 text-sm mt-1">
+        <div className="flex items-start gap-2 text-gray-500 text-xs sm:text-sm mt-1 mb-3 sm:mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
+            width="14"
+            height="14"
+            className="sm:w-4 sm:h-4 flex-shrink-0 mt-0.5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -80,15 +82,15 @@ function DestinationCard({ item }: { item: DestinationType }) {
               d="M19.5 10.5c0 7-7.5 11-7.5 11S4.5 17.5 4.5 10.5a7.5 7.5 0 1115 0z"
             />
           </svg>
-          {item.address}
+          <span className="line-clamp-2">{item.address}</span>
         </div>
 
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-xl font-semibold">
-            ${item.price} <span className="text-sm text-gray-400">/night</span>
+        <div className="flex items-center justify-between mt-auto gap-2 sm:gap-3">
+          <p className="text-lg sm:text-xl font-semibold text-gray-900">
+            ${item.price} <span className="text-xs sm:text-sm text-gray-400">/night</span>
           </p>
-          <Link to={`/property/${item.id}`}>
-            <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
+          <Link to={`/property/${item.id}`} className="flex-shrink-0">
+            <button className="px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs sm:text-sm text-gray-700 font-medium hover:bg-gray-100 transition whitespace-nowrap">
               Book Now
             </button>
           </Link>
@@ -170,16 +172,17 @@ export default function FeaturedStays({}: {}) {
   };
 
   return (
-    <section className="py-16 bg-[#f8f9fb]">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-semibold text-gray-900">
-          Featured Destination
-        </h2>
-        <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
-          Discover our handpicked selection of exceptional properties around the
-          world, offering unparalleled luxury and unforgettable experiences.
-        </p>
-      </div>
+    <section className="py-8 sm:py-12 md:py-16 bg-[#f8f9fb]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-10 md:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900">
+            Featured Destination
+          </h2>
+          <p className="text-sm sm:text-base text-gray-500 mt-2 sm:mt-3 max-w-2xl mx-auto px-4">
+            Discover our handpicked selection of exceptional properties around the
+            world, offering unparalleled luxury and unforgettable experiences.
+          </p>
+        </div>
 
       {/* <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
         {destinations.map((item, index) => (
@@ -195,51 +198,54 @@ export default function FeaturedStays({}: {}) {
             ))}
       </div> */}
 
-      <div className="relative w-full max-w-7xl mx-auto mt-10">
-        <button
-          onClick={scrollLeft}
-          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 
-             bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
-        >
-          <FiChevronLeft size={22} />
-        </button>
-
-        <button
-          onClick={scrollRight}
-          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20
-             bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
-        >
-          <FiChevronRight size={22} />
-        </button>
-
-        <div
-          id="destinations-row"
-          className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar p-4"
-        >
-          {loading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="min-w-[280px]">
-                  <DestinationCardSkeleton />
-                </div>
-              ))
-            : destinations.map((item, i) => (
-                <div key={i} className="min-w-[280px]">
-                  <DestinationCard item={item} />
-                </div>
-              ))}
-        </div>
-      </div>
-
-      {!loading && (
-        <div className="text-center mt-12">
-          <Link
-            to={"/search"}
-            className="px-6 py-3 border border-gray-400 rounded-full font-medium hover:bg-gray-100 transition"
+        <div className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10">
+          <button
+            onClick={scrollLeft}
+            className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 
+               bg-white shadow-lg rounded-full p-2 md:p-3 hover:bg-gray-100 transition-colors"
+            aria-label="Scroll left"
           >
-            View All Destinations
-          </Link>
+            <FiChevronLeft size={20} className="md:w-6 md:h-6" />
+          </button>
+
+          <button
+            onClick={scrollRight}
+            className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20
+               bg-white shadow-lg rounded-full p-2 md:p-3 hover:bg-gray-100 transition-colors"
+            aria-label="Scroll right"
+          >
+            <FiChevronRight size={20} className="md:w-6 md:h-6" />
+          </button>
+
+          <div
+            id="destinations-row"
+            className="flex gap-4 sm:gap-5 md:gap-6 overflow-x-auto scroll-smooth scrollbar-hide px-2 sm:px-4 pb-4"
+          >
+            {loading
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0">
+                    <DestinationCardSkeleton />
+                  </div>
+                ))
+              : destinations.map((item, i) => (
+                  <div key={i} className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0">
+                    <DestinationCard item={item} />
+                  </div>
+                ))}
+          </div>
         </div>
-      )}
+
+        {!loading && (
+          <div className="text-center mt-8 sm:mt-10 md:mt-12">
+            <Link
+              to={"/search"}
+              className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-400 rounded-full text-sm sm:text-base font-medium hover:bg-gray-100 transition-colors"
+            >
+              View All Destinations
+            </Link>
+          </div>
+        )}
+      </div>
     </section>
   );
 }
