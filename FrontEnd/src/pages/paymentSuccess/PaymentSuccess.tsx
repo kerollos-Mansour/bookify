@@ -9,8 +9,8 @@ export function Logo() {
   return (
     <>
       <h1 className="text-2xl font-semibold mb-5 text-center">
-        <span className="text-teal-500">Ex</span>
-        <span className="text-gray-800">pedia.</span>
+        <span className="text-teal-500">Book</span>
+        <span className="text-gray-800">ify.</span>
       </h1>
       <div className="w-full h-[1px] bg-gray-300 mb-8"></div>
     </>
@@ -77,7 +77,7 @@ export default function PaymentSuccess() {
       <div className="w-full max-w-4xl flex p-6 md:p-10 flex-col md:flex-row gap-20 mt-4 ">
         <div className="w-full md:w-1/2 pl-30 flex flex-col justify-start gap-8">
           <p className="text-[18px]  text-[#4B5563]  font-medium">
-            Transfer Expedia:
+            Transfer Bookify:
           </p>
           <p className="text-[16px] leading-[1.85] text-[#4B5563]  font-medium">
             2 Days at Blue Origin Fams,
@@ -142,7 +142,10 @@ export default function PaymentSuccess() {
       </div>
 
       <div className="flex flex-col items-center gap-4 mt-12 mb-10">
-        <button onClick={()=>navigate("/confirm-reservation")} className="w-64 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
+        <button
+          onClick={() => navigate("/confirm-reservation")}
+          className="w-64 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
+        >
           Pay Now
         </button>
         <button className="w-64 bg-gray-100 text-gray-600 py-3 rounded-lg font-medium">

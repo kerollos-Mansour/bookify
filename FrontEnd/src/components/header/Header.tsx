@@ -46,7 +46,7 @@ export default function Header() {
             {/* Logo */}
             <div className="flex items-center gap-2 w-24 sm:w-32 lg:w-40 font-bold text-lg sm:text-xl">
               <img
-                src="full-logo.png"
+                src="/full-logo.png"
                 alt="Logo"
                 className="logo cursor-pointer w-full h-auto"
                 onClick={() => navigate("/")}
