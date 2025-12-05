@@ -4,6 +4,7 @@ const { connectToMongoDB } = require('./config/database.config');
 
 const AppError = require('./utils/appError.utils');
 const globalErrorHandler = require('./middlewares/ErrorHandeler.middleware');
+const hotelRoutes = require('./routes/hotel.routes');
 
 
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.use(express.json())
 // Routes
 const destinationRoutes = require('./routes/destinations.route');
 app.use('/destinations', destinationRoutes);
+app.use('/hotels', hotelRoutes);
 
 // 404 handler
 app.use((req,res,next)=>{
