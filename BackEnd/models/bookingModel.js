@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bookingSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId },
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
   hotelId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,8 +32,11 @@ const bookingSchema = new mongoose.Schema({
       message: "Check-out must be after check-in",
     },
   },
-  guests: { type: Number, default: 1, max: 10, required: true },
+  nights: { type: Number, required: true },
+  subtotal: { type: Number, required: true },
+  pricePerNight: { type: Number, required: true },
   totalPrice: { type: Number, required: true, min: 0 },
+  guests: { type: Number, default: 1, max: 10, required: true },
   currency: { type: String, required: true },
   status: {
     type: String,
@@ -41,13 +44,9 @@ const bookingSchema = new mongoose.Schema({
     default: "pending",
     enum: ["pending", "confirmed", "cancelled", "completed", "no-show"],
   },
-  paymentInfo: {
-    type: mongoose.Schema.ObjectId,
-    enum: ["credit_card", "debit_card", "paypal", "cash", "bank_transfer"],
-    required: true,
-  },
-  paymentMethod: { type: String,  unique: true },
-  transactionId: { type: String },
+  bookingNumber: { type: Number, required: true },
+  createdAt: { type: Date, required: true },
+  updatedAt: { type: Date },
 });
 
-const Booking = mongoose.model("Booking", bookingSchema);
+module.exports = mongoose.model("Booking", bookingSchema);

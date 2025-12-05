@@ -1,17 +1,15 @@
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 
 const uri = process.env.MONGODB_URI;
 
-const client = new MongoClient(uri);
-
-async function run() {
+async function connectToMongoDB() {
     try {
-        await client.connect();
+        await mongoose.connect(uri, {
+            dbName: 'Bookify', 
+        });
 
-        const database = client.db('Bookify');
-        // const collection = database.collection('Bookify');
+        console.log('Connected to MongoDB with Mongoose');
 
-        console.log('Connected to MongoDB');
 
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
@@ -20,5 +18,5 @@ async function run() {
 }
 
 module.exports = {
-    connectToMongoDB: run,
-}
+    connectToMongoDB,
+};
