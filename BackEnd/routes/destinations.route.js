@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createDestination, getAllDestinations, getDestinationById, deleteDestination } = require('../controller/destinations.controller');
+const { createDestination, getAllDestinations, getDestinationById, deleteDestination } = require('../controllers/destinations.controller');
 
 // post new destination
 router.post('/', createDestination);
