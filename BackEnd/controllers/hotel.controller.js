@@ -5,7 +5,11 @@ const AppError = require('../utils/appError');
 
 const createHotel = async (req, res, next) => {
     try {
+        //  Create with only allowed fields
         const payload = req.body;
+        //  set Validation or if conditions on the payload
+
+        // Create with only allowed fields
         const hotel = new Hotel(payload);
         await hotel.save();
         res.status(201).json({ status: httpStatusText.SUCCESS, data: { hotel: hotel } });
@@ -41,7 +45,7 @@ const getHotels = async (req, res, next) => {
             filters.propertyCategory = req.query.propertyCategory;
         }
 
-
+        
         // Search by name
         if (req.query.search) {
             filters.name = { $regex: req.query.search, $options: 'i' };
@@ -78,7 +82,7 @@ const getHotelById = async (req, res, next) => {
     try {
         const hotelId = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(hotelId)) {
-             return next(AppError.create("Invalid hotel ID", 400, httpStatusText.FAIL));
+            return next(AppError.create("Invalid hotel ID", 400, httpStatusText.FAIL));
         }
 
         const hotel = await Hotel.findById(hotelId);
@@ -94,11 +98,12 @@ const getHotelById = async (req, res, next) => {
 
 const updateHotel = async (req, res, next) => {
     try {
+
         const hotelId = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(hotelId)) {
             return res.status(400).json({ status: httpStatusText.FAIL, message: "Invalid hotel ID" });
         }
-
+        // FIX: Anyone can update ANY field including ratings! 
         const updatedHotel = await Hotel.findByIdAndUpdate(hotelId, req.body, { new: true });
         if (!updatedHotel) {
             return res.status(404).json({ status: httpStatusText.FAIL, message: "Hotel not found" });
@@ -118,7 +123,7 @@ const deleteHotel = async (req, res, next) => {
         const deletedHotel = await Hotel.findByIdAndDelete(hotelId);
         if (!deletedHotel) {
             return res.status(404).json({ status: httpStatusText.FAIL, message: "Hotel not found" });
-        }   
+        }
         res.status(200).json({ status: httpStatusText.SUCCESS, message: "Hotel deleted successfully" });
     } catch (err) {
         next(err);
