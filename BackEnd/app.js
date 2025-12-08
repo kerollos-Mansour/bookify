@@ -1,9 +1,10 @@
 const express = require('express');
 require('dotenv').config();
-const { connectToMongoDB } = require('./config/database.config');
+const { connectToMongoDB } = require('./shared/config/database.config');
+const v1Routes = require('./api/v1');
 
-const AppError = require('./utils/appError.utils');
-const globalErrorHandler = require('./middlewares/ErrorHandeler.middleware');
+const AppError = require('./shared/utils/appError.utils');
+const globalErrorHandler = require('./shared/middlewares/ErrorHandeler.middleware');
 
 
 const PORT = process.env.PORT || 3000;
@@ -11,12 +12,11 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json())
 
-// Routes
-const destinationRoutes = require('./routes/destinations.route');
-app.use('/destinations', destinationRoutes);
+app.use('/api/v1', v1Routes);
+
 
 // 404 handler
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`))
 })
 

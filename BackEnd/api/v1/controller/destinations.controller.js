@@ -1,6 +1,6 @@
-const Destination = require("../models/destinations.model");
-const catchAsync = require("../utils/catchError.utils");
-const AppError = require("../utils/appError.utils");
+const Destination = require("../../../shared/models/destinations.model");
+const catchAsync = require("../../../shared/utils/catchError.utils");
+const AppError = require("../../../shared/utils/appError.utils");
 
 // post new destination
 exports.createDestination = catchAsync(async (req, res) => {
