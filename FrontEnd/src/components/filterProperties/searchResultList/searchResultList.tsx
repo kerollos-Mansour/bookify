@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import HotelCard from "../../hotelCard/HotelCard.jsx";
-import { SearchResultsListProps } from "Data/searchResultListProps.js";
+import { SearchResultsListProps } from "../../../types/searchResultListProps";
 
 export default function SearchResultsList({
   hotelCards,

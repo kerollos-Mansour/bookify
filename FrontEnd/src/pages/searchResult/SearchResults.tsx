@@ -3,15 +3,15 @@ import { SearchBar } from "../../components/searchBar/searchBar";
 import HotelCard from "../../components/HotelCard/HotelCard";
 import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import Map from "../../components/map/Map";
+import Map from "../../components/map/map";
 import Tabs from "../../components/filterProperties/tabs/Tabs";
 import FilterProperties, {
   PropertyFilters,
 } from "../../components/filterProperties/filterProperties/filterProperties";
 import { Link, useLocation } from "react-router-dom";
 import PageTransition from "../../components/pageTransition/pageTransition";
-import { Hotel } from "Data/hotel";
-import { HotelCardData } from "Data/hotelCard";
+import { Hotel } from "../../types/hotel";
+import { HotelCardData } from "../../types/hotelCard";
 
 const API_BASE_URL = "http://localhost:3000/api";
 

@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import Map from "../../map/Map";
+import Map from "../../map/map";
 import FilterProperties, {
   PropertyFilters,
 } from "../filterProperties/filterProperties";

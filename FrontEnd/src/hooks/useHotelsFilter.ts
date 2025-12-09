@@ -1,5 +1,5 @@
-import { Hotel } from "../../../types/hotel";
-import { PropertyFilters } from "../filterProperties/filterProperties";
+import { Hotel } from "../types/hotel";
+import { PropertyFilters } from "../components/filterProperties/filterProperties/filterProperties";
 import { useMemo } from "react";
 
 type SearchFilters = PropertyFilters & {

@@ -1,5 +1,5 @@
-import { Hotel } from "../../../types/hotel";
-import { HotelCardData } from "../../../types/hotelCard";
+import { Hotel } from "../types/hotel";
+import { HotelCardData } from "../types/hotelCard";
 
 export const getNightRate = (hotel: Hotel) => {
   hotel.lowRate ?? hotel.highRate ?? 0;
