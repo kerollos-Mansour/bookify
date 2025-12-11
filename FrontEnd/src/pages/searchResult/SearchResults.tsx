@@ -263,60 +263,69 @@ export default function SearchResult() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-gray-50">
-        <div className="xl:max-w-[1200px] lg:max-w-[992px] md:max-w-[720px] sm:max-w-[540px] mx-auto mt-5">
-          <div className="sticky top-0 z-12 bg-gray-50 py-2">
+        {/* Sticky Search Bar - Fixed for Mobile */}
+        <div className="sticky top-0 z-50 bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <SearchBar />
           </div>
-          <div className="flex flex-col md:flex-row min-h-screen mt-5 gap-6">
-            <aside className=" bg-white p-6 z-2 rounded-3xl md:w-[320px] flex-shrink-0 border border-gray-100">
-              <Map
-                location={mapCenter}
-                markers={mapMarkers}
-                zoom={11}
-                height="260px"
-                width="100%"
-                scrollWheelZoom={false}
-                className="mb-6"
-              />
+        </div>
 
-              <div className="w-full my-5 py-5 border-gray-200 border-y">
-                <p className="font-medium text-xl mb-2">
-                  Search by property name
-                </p>
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="e.g. Marriott"
-                    value={filters.propertyName}
-                    onChange={(event) =>
-                      setFilters((prev) => ({
-                        ...prev,
-                        propertyName: event.target.value,
-                      }))
-                    }
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Sidebar - Hidden on Mobile, Visible on Desktop */}
+            <aside className="hidden lg:block lg:w-80 flex-shrink-0">
+              <div className="bg-white p-6 rounded-2xl border border-gray-200 sticky top-24">
+                <Map
+                  location={mapCenter}
+                  markers={mapMarkers}
+                  zoom={11}
+                  height="240px"
+                  width="100%"
+                  scrollWheelZoom={false}
+                  className="mb-6 rounded-xl overflow-hidden"
+                />
+
+                <div className="w-full my-5 py-5 border-gray-200 border-y">
+                  <p className="font-semibold text-lg mb-3">
+                    Search by property name
+                  </p>
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="e.g. Marriott"
+                      value={filters.propertyName}
+                      onChange={(event) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          propertyName: event.target.value,
+                        }))
+                      }
+                      className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <FilterProperties
-                filters={{
-                  selectedTypes: filters.selectedTypes,
-                  maxPrice: filters.maxPrice,
-                  minRating: filters.minRating,
-                }}
-                priceBounds={priceBounds}
-                propertyTypeOptions={propertyTypeOptions}
-                onChange={handleFilterChange}
-                onReset={handleResetFilters}
-              />
+                <FilterProperties
+                  filters={{
+                    selectedTypes: filters.selectedTypes,
+                    maxPrice: filters.maxPrice,
+                    minRating: filters.minRating,
+                  }}
+                  priceBounds={priceBounds}
+                  propertyTypeOptions={propertyTypeOptions}
+                  onChange={handleFilterChange}
+                  onReset={handleResetFilters}
+                />
+              </div>
             </aside>
 
-            <section className="bg-white p-6 rounded-3xl flex-1 border border-gray-100">
+            {/* Main Content Section */}
+            <section className="flex-1 bg-white p-4 sm:p-6 rounded-2xl border border-gray-200">
               <div className="flex flex-col gap-4 mb-6">
                 <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-600">
                   Showing {hotelCards.length}{" "}
                   {hotelCards.length === 1 ? "property" : "properties"}
                   {locationFilter ? ` in "${locationFilter}"` : ""}
@@ -325,7 +334,7 @@ export default function SearchResult() {
 
               {loading && (
                 <div className="flex justify-center items-center py-20">
-                  Loading properties...
+                  <div className="text-gray-600">Loading properties...</div>
                 </div>
               )}
 
@@ -348,6 +357,11 @@ export default function SearchResult() {
               )}
 
               <div className="space-y-4">
+                {hotelCards.map(({ hotel, card }) => (
+                  <Link key={hotel.id} to={`/property/${hotel.id}`}>
+                    <HotelCard cardData={card} />
+                  </Link>
+                ))}
                 {hotelCards.map(({ hotel, card }) => (
                   <Link key={hotel.id} to={`/property/${hotel.id}`}>
                     <HotelCard cardData={card} />

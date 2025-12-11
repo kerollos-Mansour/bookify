@@ -1,7 +1,7 @@
 // components/rooms/RoomsSection.tsx
 import { useMemo, useState } from "react";
 import RoomCard from "./roomCard/roomCard";
-import { FILTERS, Room } from "../../../Data/rooms";
+import { FILTERS, Room } from "../../../types/rooms";
 
 interface RoomsSectionProps {
   rooms?: Room[];
@@ -26,7 +26,7 @@ export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
   }, [rooms, activeFilter]);
 
   return (
-    <div className="mt-12 mb-12">
+    <div className="mt-12 mb-9">
       {/* Header with Filters */}
       <div className="flex justify-between items-center mb-6">
         {/* Filter Pills */}
@@ -56,6 +56,9 @@ export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
         <p className="text-gray-500">No rooms are available for the selected property.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredRooms.map((room) => (
+            <RoomCard key={room.id} room={room} />
+          ))}
           {filteredRooms.map((room) => (
             <RoomCard key={room.id} room={room} />
           ))}

@@ -4,8 +4,8 @@ import {
   CATEGORIES,
   DESTINATIONS,
   type CategoryId,
-} from "../../Data/destinations";
-import { DestinationType } from "../../Data/DestinationType";
+} from "../../constants/destinations";
+import { DestinationType } from "../../types/destinationType";
 import { useNavigate } from "react-router-dom";
 import DestinationCardSkeleton from "../UI/PopularDestinationSkeleton";
 import axios from "axios";
@@ -27,7 +27,7 @@ function DestinationCard({ destination }: { destination: DestinationType }) {
   return (
     <article
       onClick={handleClick}
-      className="shrink-0 w-72 sm:w-80 md:w-96 bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 cursor-pointer group snap-start"
+      className="shrink-0 w-72 sm:w-80 md:w-96 bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group snap-start"
     >
       <div className="relative aspect-video bg-gray-100 overflow-hidden">
         {!imageError ? (
@@ -46,7 +46,7 @@ function DestinationCard({ destination }: { destination: DestinationType }) {
       </div>
 
       <div className="p-4 md:p-6">
-        <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-1 truncate">
+        <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 truncate">
           {destination.name}
         </h3>
         <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4 truncate">
@@ -80,34 +80,33 @@ export function PopularDestinations() {
   //   }, 1500);
   // }, [activeCategory]);
 
-useEffect(() => {
-  const controller = new AbortController();
-  setLoading(true);
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
 
-  const fetchDestinations = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/destinations?category=${activeCategory}`,
-        { signal: controller.signal }
-      );
-      console.log("API response data:", response.data);
-      
-      const categoryData = response.data[activeCategory];
-      setDestinations(Array.isArray(categoryData) ? categoryData : []);
-    } catch (err) {
-      if (!axios.isCancel(err)) {
-        setError("Failed to load destinations");
-        console.error(err);
+    const fetchDestinations = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/destinations?category=${activeCategory}`,
+          { signal: controller.signal }
+        );
+        console.log("API response data:", response.data);
+
+        const categoryData = response.data[activeCategory];
+        setDestinations(Array.isArray(categoryData) ? categoryData : []);
+      } catch (err) {
+        if (!axios.isCancel(err)) {
+          setError("Failed to load destinations");
+          console.error(err);
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchDestinations();
-  return () => controller.abort();
-}, [activeCategory]);
-
+    fetchDestinations();
+    return () => controller.abort();
+  }, [activeCategory]);
 
   // const currentDestinations = DESTINATIONS[activeCategory];
 
@@ -135,7 +134,7 @@ useEffect(() => {
 
         {/* Category Tabs */}
         <div
-          className="flex gap-4 md:gap-8 mb-8 md:mb-10 border-b border-gray-200 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="flex gap-6 md:gap-8 mb-8 md:mb-10 border-b border-gray-200 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
           role="tablist"
           aria-label="Destination categories"
         >
@@ -146,7 +145,7 @@ useEffect(() => {
               role="tab"
               aria-selected={activeCategory === cat}
               aria-controls={`destinations-${cat}`}
-              className={`relative pb-3 md:pb-4 text-sm md:text-lg font-medium transition-colors whitespace-nowrap focus:ring-offset-2 rounded-t ${
+              className={`relative pb-3 md:pb-4 text-sm md:text-lg font-semibold transition-all duration-200 whitespace-nowrap capitalize focus:ring-offset-2 rounded-t ${
                 activeCategory === cat
                   ? "text-blue-600"
                   : "text-gray-600 hover:text-gray-900"
@@ -155,7 +154,7 @@ useEffect(() => {
               {cat}
               {activeCategory === cat && (
                 <span
-                  className="absolute bottom-0 left-0 right-0 h-0.5 md:h-1 bg-blue-600 rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-full"
                   aria-hidden="true"
                 />
               )}

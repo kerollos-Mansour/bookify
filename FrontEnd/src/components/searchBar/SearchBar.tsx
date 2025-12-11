@@ -1,4 +1,4 @@
-import { LOCATIONS } from "../../Data/locations";
+import { LOCATIONS } from "../../constants/locations";
 import { useState, useRef, useEffect } from "react";
 import {
   MdLocationOn,
