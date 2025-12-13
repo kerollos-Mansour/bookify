@@ -9,15 +9,24 @@ function App() {
   const navigation = useNavigation();
   const isPageLoading =
     navigation.state === "loading" || navigation.state === "submitting";
+
+  const hideLayoutPages = [
+    "/booking-info",
+    "/confirm-reservation",
+    "/payment-success",
+  ];
+  const hideLayout = hideLayoutPages.includes(location.pathname);
+
+
   return (
     <>
       {isPageLoading && <PageLoader />}
-      <Header />
+      {!hideLayout && <Header />}
       <main>
         <ScrollToTop />
         <Outlet />
       </main>
-      <Footer />
+      {!hideLayout && <Footer />}
     </>
   );
 }

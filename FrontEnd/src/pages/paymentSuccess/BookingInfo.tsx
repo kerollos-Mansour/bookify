@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Minus, Plus } from "lucide-react";
-import { Logo, ProgressSteps } from "./paymentSuccess";
+import { Logo, ProgressSteps } from "./PaymentSuccess";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "../../components/pageTransition/pageTransition";
 
@@ -116,7 +116,7 @@ export default function BookingInfo() {
                   </span>
                   <button
                     onClick={() => handleNightsChange(nights + 1)}
-                    className="w-10 h-10 bg-teal-500 hover:bg-teal-600 text-white rounded-lg flex items-center justify-center transition"
+                    className="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg flex items-center justify-center transition"
                   >
                     <Plus className="w-5 h-5" />
                   </button>

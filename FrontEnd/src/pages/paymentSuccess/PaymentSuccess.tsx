@@ -9,8 +9,7 @@ export function Logo() {
   return (
     <>
       <h1 className="text-2xl font-semibold mb-5 text-center">
-        <span className="text-teal-500">Book</span>
-        <span className="text-gray-800">ify.</span>
+        <img src="/full-logo.png" alt="" className="w-40 mx-auto"/>
       </h1>
       <div className="w-full h-[1px] bg-gray-300 mb-8"></div>
     </>
@@ -27,9 +26,9 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
           <div
             className={`${
               currentStep > step
-                ? "bg-teal-400 text-white"
+                ? "bg-blue-400 text-white"
                 : currentStep === step
-                ? "bg-teal-500 text-white"
+                ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-600"
             } w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-lg font-semibold`}
           >

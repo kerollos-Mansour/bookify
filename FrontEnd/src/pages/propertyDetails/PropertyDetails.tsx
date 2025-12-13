@@ -126,12 +126,12 @@ export default function PropertyDetailsPage() {
 
   return (
     <>
-    <PageTransition>
-      <div className="propertyDetailsWrapper px-4 sm:px-6 md:px-8 lg:px-12 xl:px-60">
-        <SearchBar hideOnMobile={true} />
+      <PageTransition>
+        <div className="propertyDetailsWrapper px-4 sm:px-6 md:px-8 lg:px-12 xl:px-60">
+          <SearchBar hideOnMobile={true} />
 
-        {/* Back link and action buttons */}
-        {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
+          {/* Back link and action buttons */}
+          {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center my-4 gap-3">
           <button
             className="flex items-center gap-2 text-blue-600 hover:underline text-sm md:text-base"
             onClick={() => navigate("/search")}
@@ -151,21 +151,21 @@ export default function PropertyDetailsPage() {
           </div>
         </div> */}
 
-        {/* Image Gallery */}
-        <Gallery images={data.images ?? []} />
+          {/* Image Gallery */}
+          <Gallery images={data.images ?? []} />
 
-        {/* Navigation Tabs and Select Room Button */}
-        <NavigationBar />
+          {/* Navigation Tabs and Select Room Button */}
+          <NavigationBar />
 
-        {/* Property Info and Map */}
-        <PropertyInfo hotel={data} detail={data.detail ?? undefined} />
+          {/* Property Info and Map */}
+          <PropertyInfo hotel={data} detail={data.detail ?? undefined} />
 
-        {/* Treatments Section */}
-        <Treatments experience={data.detail?.experience} />
+          {/* Treatments Section */}
+          <Treatments experience={data.detail?.experience} />
 
-        {/* Choose your room */}
-        <RoomsSection rooms={data.rooms} />
-      </div>
+          {/* Choose your room */}
+          <RoomsSection rooms={data.rooms} />
+        </div>
       </PageTransition>
     </>
   );

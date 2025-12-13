@@ -1,5 +1,5 @@
 import React from "react";
-import { Logo, ProgressSteps } from "./paymentSuccess";
+import { Logo, ProgressSteps } from "./PaymentSuccess";
 import PageTransition from "../../components/pageTransition/pageTransition";
 
 
