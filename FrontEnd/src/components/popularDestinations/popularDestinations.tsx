@@ -90,7 +90,7 @@ export function PopularDestinations() {
           `${API_BASE_URL}/destinations?category=${activeCategory}`,
           { signal: controller.signal }
         );
-        console.log("API response data:", response.data);
+        // console.log("API response data:", response.data);
 
         const categoryData = response.data[activeCategory];
         setDestinations(Array.isArray(categoryData) ? categoryData : []);

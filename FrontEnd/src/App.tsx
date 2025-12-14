@@ -4,6 +4,8 @@ import Footer from "./components/footer/footer";
 import Header from "./components/header/header";
 import PageLoader from "./components/UI/PageLoader";
 import ScrollToTop from "./components/scrollToTop/scrollToTop";
+import FavBarSection from "./components/favBar/favBar";
+import { FavoritesProvider } from "./context/favoritesContext";
 
 function App() {
   const navigation = useNavigation();
@@ -20,13 +22,16 @@ function App() {
 
   return (
     <>
+    <FavoritesProvider>
       {isPageLoading && <PageLoader />}
       {!hideLayout && <Header />}
+      <FavBarSection items={[]}/>
       <main>
         <ScrollToTop />
         <Outlet />
       </main>
       {!hideLayout && <Footer />}
+      </FavoritesProvider>
     </>
   );
 }
