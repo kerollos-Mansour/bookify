@@ -10,7 +10,7 @@ import {
   IoWifiOutline,
 } from "react-icons/io5";
 import { MdCameraAlt, MdChevronLeft, MdChevronRight } from "react-icons/md";
-import { Room } from "../../../../types/rooms";
+import { Room } from "../../../../types/rooms.type";
 import { useNavigate } from "react-router-dom";
 
 interface RoomCardProps {
@@ -52,7 +52,7 @@ export default function RoomCard({ room }: RoomCardProps) {
 
   return (
     <>
-    {/* i need to make all cards has the same height */}
+      {/* i need to make all cards has the same height */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
         <div className="relative h-64 bg-gray-200 ">
           <img

@@ -5,7 +5,7 @@ import {
   DESTINATIONS,
   type CategoryId,
 } from "../../constants/destinations";
-import { DestinationType } from "../../types/destinationType";
+import { DestinationType } from "../../types/destination.type";
 import { useNavigate } from "react-router-dom";
 import DestinationCardSkeleton from "../UI/PopularDestinationSkeleton";
 import axios from "axios";

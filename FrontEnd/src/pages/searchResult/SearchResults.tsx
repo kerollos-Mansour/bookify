@@ -9,9 +9,9 @@ import FilterProperties, {
 } from "../../components/filterProperties/filterProperties/filterProperties";
 import { Link, useLocation } from "react-router-dom";
 import PageTransition from "../../components/pageTransition/pageTransition";
-import { Hotel } from "../../types/hotel";
-import { HotelCardData } from "../../types/hotelCard";
-import { useSearchHotelsQuery } from "../../store/api/hotelsApi";
+import { Hotel } from "../../types/hotel.type";
+import { HotelCardData } from "../../types/hotelCard.type";
+import { useSearchHotelsQuery } from "../../store/api/hotels.api";
 
 type SearchFilters = PropertyFilters & {
   propertyName: string;

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { DestinationType } from "../../src/types/destinationType"
+import { DestinationType } from "../types/destination.type";
 
 type FavoritesContextType = {
   favorites: DestinationType[];

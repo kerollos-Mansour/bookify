@@ -1,4 +1,4 @@
-import { HotelCardData } from "./hotelCard";
+import { HotelCardData } from "./hotelCard.type";
 
 export type SearchResultsListProps = {
   hotelCards: Array<{

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Hotel } from "../types/hotel";
+import { Hotel } from "../types/hotel.type";
 import { useEffect, useState } from "react";
 
 const API_BASE_URL = "http://localhost:3000/api";

@@ -1,7 +1,7 @@
 import { IoRestaurantOutline, IoWifiSharp } from "react-icons/io5";
 import { MdPets, MdPool, MdRestaurant, MdSpa } from "react-icons/md";
 import Map from "../../map/map";
-import { Hotel } from "../../../types/hotel";
+import { Hotel } from "../../../types/hotel.type";
 
 type HotelSummary = {
   name?: string;
@@ -49,7 +49,7 @@ const amenityIcons = [
 ];
 
 export default function PropertyInfo({ hotel }: PropertyInfoProps) {
-  console.log(hotel)
+  console.log(hotel);
   const detail = hotel.hotelDetails?.[0]; // Access embedded details
   const amenities = (detail?.amenities ?? defaultAmenities).slice(0, 6);
   const ratingValue = hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0;

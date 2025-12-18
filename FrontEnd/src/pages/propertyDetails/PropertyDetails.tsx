@@ -5,8 +5,8 @@ import Gallery from "../../components/propertyDetails/gallery/gallery";
 import NavigationBar from "../../components/propertyDetails/navigationBar/navigationBar";
 import PropertyInfo from "../../components/propertyDetails/propertyInfo/propertyInfo";
 import PageTransition from "../../components/pageTransition/pageTransition";
-import { useGetHotelByIdQuery } from "../../store/api/hotelsApi";
-import { useGetRoomsByHotelIdQuery } from "../../store/api/roomApi";
+import { useGetHotelByIdQuery } from "../../store/api/hotels.api";
+import { useGetRoomsByHotelIdQuery } from "../../store/api/room.api";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();

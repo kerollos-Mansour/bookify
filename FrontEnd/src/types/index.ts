@@ -1,6 +1,8 @@
-export * from "./hotel";
-export * from "./hotelCard";
-export * from "./hotelDetail";
-export * from "./destinationType";
-export * from "./rooms";
-export * from "./searchResultListProps";
+export * from "./hotel.type";
+export * from "./hotelCard.type";
+// export * from "./destination.type";
+export * from "./rooms.type";
+export * from "./searchResultListProps.type";
+export * from "./booking.type";
+export * from "./coupon.type";
+export * from "./payment.type";

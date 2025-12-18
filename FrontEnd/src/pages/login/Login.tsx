@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import PageTransition from "../../components/pageTransition/pageTransition";
+import { useDispatch } from "react-redux";
+import { LoginRequest } from "types/auth.type";
+import { setCredentials } from "../../store/slices/authSlice";
+import { useLoginMutation } from "../../store/api/auth.api";
 
 type Inputs = {
   userName: string;
@@ -11,16 +15,33 @@ type Inputs = {
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+
+  const [login, { isLoading }] = useLoginMutation();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<LoginRequest>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
-    // Add your login logic here
+  const onSubmit: SubmitHandler<LoginRequest> = async (data) => {
+    try {
+      // call API
+      const result = await login(data).unwrap();
+      // 2. Update Redux Store & LocalStorage (handled by slice)
+      // Note: result.data contains user and accessToken based on your interface
+      dispatch(
+        setCredentials({
+          user: result.data.user,
+          accessToken: result.data.accessToken,
+        })
+      );
+      navigate("/");
+    } catch (err: any) {
+      console.log("Login Fauled:", err);
+    }
   };
 
   return (
@@ -63,17 +84,17 @@ export default function Login() {
                 {/* Username Field */}
                 <div>
                   <label
-                    htmlFor="username"
+                    htmlFor="email"
                     className="block text-sm font-semibold text-gray-700 mb-2"
                   >
-                    Username
+                    Email
                   </label>
                   <input
-                    {...register("userName", {
-                      required: "Username is required",
+                    {...register("email", {
+                      required: "Email is required",
                       minLength: {
                         value: 3,
-                        message: "Username must be at least 3 characters",
+                        message: "Email must be at least 3 characters",
                       },
                     })}
                     id="username"
@@ -81,9 +102,9 @@ export default function Login() {
                     placeholder="Enter your username"
                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
                   />
-                  {errors.userName && (
+                  {errors.username && (
                     <p className="mt-1 text-sm text-red-500">
-                      {errors.userName.message}
+                      {errors.username.message}
                     </p>
                   )}
                 </div>

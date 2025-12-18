@@ -1,5 +1,5 @@
-import { Hotel } from "../types/hotel";
-import { HotelCardData } from "../types/hotelCard";
+import { Hotel } from "../types/hotel.type";
+import { HotelCardData } from "../types/hotelCard.type";
 
 export const getNightRate = (hotel: Hotel) => {
   hotel.lowRate ?? hotel.highRate ?? 0;
@@ -35,7 +35,15 @@ export const toCardDate = (hotel: Hotel): HotelCardData => {
       nightly: Number(nightlyRate),
       offer:
         total !== undefined && nightlyRate !== undefined
-          ? Math.max(5, Math.min(40, Math.round(((Number(total) - Number(nightlyRate)) / Number(total)) * 100)))
+          ? Math.max(
+              5,
+              Math.min(
+                40,
+                Math.round(
+                  ((Number(total) - Number(nightlyRate)) / Number(total)) * 100
+                )
+              )
+            )
           : 10,
     },
     vip: (hotel.confidenceRating ?? 0) > 50,

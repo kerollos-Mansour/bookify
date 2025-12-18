@@ -1,4 +1,4 @@
-import { DestinationType } from "../../types/destinationType";
+import { DestinationType } from "../../types/destination.type";
 import { Link } from "react-router-dom";
 import DestinationCardSkeleton from "../UI/FeaturedDestinationSkeleton";
 import { useEffect, useState } from "react";

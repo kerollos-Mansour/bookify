@@ -1,7 +1,7 @@
 // components/rooms/RoomsSection.tsx
 import { useMemo, useState } from "react";
 import RoomCard from "./roomCard/roomCard";
-import { FILTERS, Room } from "../../../types/rooms";
+import { FILTERS, Room } from "../../../types/rooms.type";
 
 interface RoomsSectionProps {
   rooms?: Room[];
@@ -53,7 +53,9 @@ export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
       </div>
 
       {rooms.length === 0 ? (
-        <p className="text-gray-500">No rooms are available for the selected property.</p>
+        <p className="text-gray-500">
+          No rooms are available for the selected property.
+        </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredRooms.map((room) => (
