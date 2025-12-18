@@ -1,4 +1,3 @@
-import axios from "axios";
 import { SearchBar } from "../../components/searchBar/searchBar";
 import HotelCard from "../../components/HotelCard/HotelCard";
 import { useEffect, useMemo, useState } from "react";
@@ -12,8 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 import PageTransition from "../../components/pageTransition/pageTransition";
 import { Hotel } from "../../types/hotel";
 import { HotelCardData } from "../../types/hotelCard";
-
-const API_BASE_URL = "http://localhost:3000/api";
+import { useSearchHotelsQuery } from "../../store/api/hotelsApi";
 
 type SearchFilters = PropertyFilters & {
   propertyName: string;
@@ -69,9 +67,35 @@ const toCardData = (hotel: Hotel): HotelCardData => {
 export default function SearchResult() {
   // States
   const { search } = useLocation();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const searchParams = useMemo(() => {
+    const params = new URLSearchParams(search);
+
+    return {
+      location: params.get("location") || undefined,
+      city: params.get("city") || undefined,
+      country: params.get("country") || undefined,
+      checkIn: params.get("checkIn") || undefined,
+      checkOut: params.get("checkOut") || undefined,
+      adults: params.get("adults") ? Number(params.get("adults")) : undefined,
+      rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
+      minRate: params.get("minRate")
+        ? Number(params.get("minRate"))
+        : undefined,
+      maxRate: params.get("maxRate")
+        ? Number(params.get("maxRate"))
+        : undefined,
+      sort: params.get("sort") || undefined,
+      page: params.get("page") ? Number(params.get("page")) : 1,
+      limit: params.get("limit") ? Number(params.get("limit")) : 20,
+    };
+  }, [search]);
+
+  const {
+    data: hotels = [],
+    isLoading,
+    error,
+  } = useSearchHotelsQuery(searchParams);
+
   const [activeTab, setActiveTab] = useState("all");
   const [filters, setFilters] = useState<SearchFilters>({
     propertyName: "",
@@ -91,59 +115,29 @@ export default function SearchResult() {
     setLocationFilter(locationParam);
   }, [search]);
 
-  // fetch data effect
+  // Calculate price bounds and property types when hotels data changes
   useEffect(() => {
-    const controller = new AbortController();
+    if (hotels.length > 0) {
+      const nightlyRates = hotels
+        .map((hotel) => getNightlyRate(hotel))
+        .filter((rate) => rate > 0);
 
-    const fetchHotels = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get<Hotel[]>(`${API_BASE_URL}/hotels`, {
-          params: {
-            _embed: "hotelDetails",
-          },
-          signal: controller.signal,
-        });
-
-        setHotels(response.data);
-
-        const nightlyRates = response.data
-          .map((hotel) => getNightlyRate(hotel))
-          .filter((rate) => rate > 0);
-
-        if (nightlyRates.length) {
-          const minRate = Math.min(...nightlyRates);
-          const maxRate = Math.max(...nightlyRates);
-          setPriceBounds({ min: minRate, max: maxRate });
-          setFilters((prev) => ({
-            ...prev,
-            maxPrice: maxRate,
-          }));
-        }
-
-        const types = Array.from(
-          new Set(
-            response.data.map((hotel) => (hotel.type ?? "hotel").toLowerCase())
-          )
-        ).sort();
-        setPropertyTypeOptions(types);
-        setError(null);
-      } catch (err) {
-        if (!axios.isCancel(err)) {
-          const message =
-            err instanceof Error ? err.message : "Failed to load data.";
-          setError(message);
-          console.error("Error loading hotels:", err);
-        }
-      } finally {
-        setLoading(false);
+      if (nightlyRates.length) {
+        const minRate = Math.min(...nightlyRates);
+        const maxRate = Math.max(...nightlyRates);
+        setPriceBounds({ min: minRate, max: maxRate });
+        setFilters((prev) => ({
+          ...prev,
+          maxPrice: maxRate,
+        }));
       }
-    };
 
-    fetchHotels();
-
-    return () => controller.abort();
-  }, []);
+      const types = Array.from(
+        new Set(hotels.map((hotel) => (hotel.type ?? "hotel").toLowerCase()))
+      ).sort();
+      setPropertyTypeOptions(types);
+    }
+  }, [hotels]);
 
   const filteredHotels = useMemo(() => {
     const normalizedLocation = locationFilter.trim().toLowerCase();
@@ -162,10 +156,7 @@ export default function SearchResult() {
         .toLowerCase();
       const name = hotel.name.toLowerCase();
 
-      const matchesLocation = normalizedLocation
-        ? locationTokens.includes(normalizedLocation) ||
-          name.includes(normalizedLocation)
-        : true;
+      const matchesLocation = true;
 
       const matchesName = normalizedName ? name.includes(normalizedName) : true;
 
@@ -235,7 +226,7 @@ export default function SearchResult() {
         })),
     [hotelCards]
   );
-
+  console.log(filters);
   const mapCenter = mapMarkers.length
     ? {
         latitude: mapMarkers[0].position[0],
@@ -332,19 +323,19 @@ export default function SearchResult() {
                 </p>
               </div>
 
-              {loading && (
+              {isLoading && (
                 <div className="flex justify-center items-center py-20">
                   <div className="text-gray-600">Loading properties...</div>
                 </div>
               )}
 
-              {error && !loading && (
+              {error && !isLoading && (
                 <div className="flex justify-center items-center py-20 text-red-600">
-                  {error}
+                  {(error as any)?.message || "Failed to load hotels"}
                 </div>
               )}
 
-              {!loading && !error && hotelCards.length === 0 && (
+              {!isLoading && !error && hotelCards.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <p className="text-lg font-semibold text-gray-800 mb-2">
                     No properties match these filters
@@ -358,12 +349,7 @@ export default function SearchResult() {
 
               <div className="space-y-4">
                 {hotelCards.map(({ hotel, card }) => (
-                  <Link key={hotel.id} to={`/property/${hotel.id}`}>
-                    <HotelCard cardData={card} />
-                  </Link>
-                ))}
-                {hotelCards.map(({ hotel, card }) => (
-                  <Link key={hotel.id} to={`/property/${hotel.id}`}>
+                  <Link key={hotel._id} to={`/property/${hotel._id}`}>
                     <HotelCard cardData={card} />
                   </Link>
                 ))}

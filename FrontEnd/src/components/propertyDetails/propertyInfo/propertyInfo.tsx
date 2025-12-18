@@ -1,6 +1,7 @@
 import { IoRestaurantOutline, IoWifiSharp } from "react-icons/io5";
 import { MdPets, MdPool, MdRestaurant, MdSpa } from "react-icons/md";
 import Map from "../../map/map";
+import { Hotel } from "../../../types/hotel";
 
 type HotelSummary = {
   name?: string;
@@ -26,8 +27,7 @@ type HotelDetail = {
 };
 
 type PropertyInfoProps = {
-  hotel: HotelSummary;
-  detail?: HotelDetail;
+  hotel: Hotel;
 };
 
 const defaultAmenities = [
@@ -48,24 +48,27 @@ const amenityIcons = [
   <IoWifiSharp />,
 ];
 
-export default function PropertyInfo({ hotel, detail }: PropertyInfoProps) {
+export default function PropertyInfo({ hotel }: PropertyInfoProps) {
+  console.log(hotel)
+  const detail = hotel.hotelDetails?.[0]; // Access embedded details
   const amenities = (detail?.amenities ?? defaultAmenities).slice(0, 6);
   const ratingValue = hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0;
   const rating = Number.isFinite(ratingValue) ? Number(ratingValue) : 0;
   const reviews = detail?.reviewCount ?? hotel.confidenceRating ?? 0;
   const description =
     detail?.tagline ??
-    hotel.shortDescription ??
+    hotel.hotelDetails?.[0]?.tagline ??
     "Details about this property will be available soon.";
-  const address = [
-    hotel.address1,
-    hotel.city,
-    hotel.stateProvinceCode,
-    hotel.countryCode,
-  ]
+
+  const address = [hotel.city, hotel.stateProvinceCode, hotel.countryCode]
     .filter(Boolean)
     .join(", ");
+
   const highlights = detail?.highlights ?? [];
+
+  // Default coords if missing (e.g., center of map or 0,0)
+  const latitude = hotel.location?.latitude ?? 0;
+  const longitude = hotel.location?.longitude ?? 0;
 
   return (
     <>
@@ -141,8 +144,8 @@ export default function PropertyInfo({ hotel, detail }: PropertyInfoProps) {
         {/* Right column - Map */}
         <Map
           location={{
-            latitude: hotel.location.latitude,
-            longitude: hotel.location.longitude,
+            latitude,
+            longitude,
           }}
         />
       </div>

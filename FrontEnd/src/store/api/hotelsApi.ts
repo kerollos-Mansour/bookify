@@ -1,27 +1,52 @@
 import { Hotel } from "types";
 import { apiSlice } from "./apiSlice";
 
+interface HotelsApiResponse {
+  data: {
+    hotels: Hotel[];
+    page: number;
+    totalPages: number;
+    totalHotels: number;
+  };
+}
+
+type SearchHotelsParams = {
+  location?: string;
+  city?: string;
+  country?: string;
+  search?: string;
+  checkIn?: string;
+  checkOut?: string;
+  adults?: number;
+  rooms?: number;
+  minRate?: number;
+  maxRate?: number;
+  sort?: string;
+  page?: number;
+  limit?: number;
+};
+
 export const hotelsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getHotels: builder.query<Hotel[], void>({
-      query: () => `/hotels?_embed=hotelDetails`,
+    searchHotels: builder.query<Hotel[], SearchHotelsParams>({
+      query: (params) => ({
+        url: `/hotels`,
+        params,
+      }),
+      transformResponse: (response: HotelsApiResponse) => {
+        return response.data.hotels;
+      },
       providesTags: ["Hotel"],
     }),
 
-    getHotelById: builder.query<Hotel[], string>({
-      query: (id) => `/hotels/${id}?_embed=hotelDetails`,
+    getHotelById: builder.query<Hotel, string>({
+      query: (id) => `/hotels/${id}`,
+      transformResponse: (response: any) => {
+        return response.data.hotel;
+      },
       providesTags: (result, error, id) => [{ type: "Hotel", id }],
-    }),
-
-    searchHotels: builder.query<Hotel[], string>({
-      query: (searchTerm) => `/hotels?q=${searchTerm}&_embed=hotelDetails`,
-      providesTags: ["Hotel"],
     }),
   }),
 });
 
-export const { 
-  useGetHotelsQuery, 
-  useGetHotelByIdQuery, 
-  useSearchHotelsQuery 
-} = hotelsApi;
+export const { useSearchHotelsQuery, useGetHotelByIdQuery } = hotelsApi;

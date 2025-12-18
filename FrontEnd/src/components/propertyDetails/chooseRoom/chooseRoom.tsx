@@ -59,9 +59,6 @@ export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
           {filteredRooms.map((room) => (
             <RoomCard key={room.id} room={room} />
           ))}
-          {filteredRooms.map((room) => (
-            <RoomCard key={room.id} room={room} />
-          ))}
         </div>
       )}
     </div>
