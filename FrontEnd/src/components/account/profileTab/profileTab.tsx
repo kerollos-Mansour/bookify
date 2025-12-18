@@ -1,39 +1,48 @@
 import { Edit2 } from "lucide-react";
-
-const profileSections = [
-  {
-    title: "Basic information",
-    description:
-      "Make sure this information matches your travel ID, like your passport or license.",
-    fields: [
-      { label: "Name", value: "Mohamed Sabry" },
-      { label: "Bio", value: "Not provided" },
-      { label: "Date of birth", value: "Not provided" },
-      { label: "Gender", value: "Not provided" },
-      { label: "Accessibility needs", value: "Not provided" },
-    ],
-  },
-  {
-    title: "Contact",
-    description:
-      "You can sign in, receive account activity alerts, and get trip updates by sharing this information.",
-    fields: [
-      { label: "Mobile number", value: "Not provided" },
-      { label: "Emergency contact", value: "Not provided" },
-      { label: "Email", value: "emailll@gmail.com" },
-      { label: "Address", value: "Not provided" },
-    ],
-  },
-];
-
-const quickLinks = [
-  "Airport security",
-  "Travel documents",
-  "Flight preferences",
-  "Reward programs",
-];
+import { useMemo } from "react";
+import { useGetUserByIdQuery } from "../../../store/api/user.api";
+import { storage } from "../../../utils/storage";
 
 export default function ProfileTab() {
+
+  const userId = storage.getUser()?.id; // get ID from localStorage
+  const { data: profile, isLoading, isError } = useGetUserByIdQuery(userId!);
+  const profileSections = useMemo(() => {
+    if (!profile) return [];
+    return [
+      {
+        title: "Basic information",
+        description:
+          "Make sure this information matches your travel ID, like your passport or license.",
+        fields: [
+          { label: "Name", value: profile.name },
+          { label: "Bio", value: profile.bio || "Not provided" },
+          { label: "Date of birth", value: profile.dateOfBirth || "Not provided" },
+          { label: "Gender", value: profile.gender || "Not provided" },
+          { label: "Accessibility needs", value: profile.accessibilityNeeds || "Not provided" },
+        ],
+      },
+      {
+        title: "Contact",
+        description:
+          "You can sign in, receive account activity alerts, and get trip updates by sharing this information.",
+        fields: [
+          { label: "Mobile number", value: profile.phoneNo || profile.phone || "Not provided" }, {
+            label: "Emergency contact",
+            value: profile.emergencyContact || "Not provided",
+          },
+          { label: "Email", value: profile.email },
+          { label: "Address", value: profile.address || "Not provided" },
+        ],
+      },
+    ];
+  }, [profile]);
+
+
+
+  if (isLoading) return <p>Loading profile...</p>;
+  if (isError) return <p>Failed to load profile</p>;
+
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
       {profileSections.map((section) => (
