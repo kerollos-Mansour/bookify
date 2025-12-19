@@ -1,62 +1,119 @@
-import { Shield, Trash2, Mail, Smartphone, Lock, Monitor, Users } from "lucide-react";
-
-const settingSections = [
-  {
-    title: "Sign-in and security",
-    description: "Keep your account safe with a secure password and by signing out of devices you're not actively using.",
-    fields: [
-      { 
-        label: "Email", 
-        value: "keromorcos343@gmail.com",
-        icon: <Mail className="w-4 h-4" />
-      },
-      { 
-        label: "Mobile number", 
-        value: "",
-        icon: <Smartphone className="w-4 h-4" />
-      },
-      { 
-        label: "Change password", 
-        value: "",
-        icon: <Lock className="w-4 h-4" />
-      },
-      { 
-        label: "Connected devices", 
-        value: "",
-        icon: <Monitor className="w-4 h-4" />
-      },
-    ],
-  },
-  {
-    title: "Account management",
-    description: "Control other options to manage your data, like deleting your account.",
-    fields: [
-      { 
-        label: "Traveler arranger", 
-        value: "",
-        icon: <Users className="w-4 h-4" />
-      },
-      { 
-        label: "Delete account", 
-        value: "Permanently delete your Expedia account and data",
-        icon: <Trash2 className="w-4 h-4" />,
-        destructive: true
-      },
-    ],
-  },
-];
+import { Trash2, Mail, Smartphone, Lock } from "lucide-react";
+import { useMemo, useState } from "react";
+import { 
+  useGetUserByIdQuery, 
+  useChangePasswordMutation, 
+  useAddMobileNumberMutation, 
+  useDeleteAccountMutation 
+} from "../../../store/api/user.api";
+import { storage } from "../../../utils/storage";
+console.log("STORED USER:", storage.getUser());
 
 export default function SettingTap() {
+  const userId = storage.getUser()?.id;  
+  const { data: profile, isLoading, isError } = useGetUserByIdQuery(userId!);
+  
+  // Mutations
+  const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+  const [addMobileNumber, { isLoading: isAddingPhone }] = useAddMobileNumberMutation();
+  const [deleteAccount, { isLoading: isDeletingAccount }] = useDeleteAccountMutation();
+
+  // Modal states
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const settingSections = useMemo(() => {
+    if (!profile) return [];
+    
+    return [
+      {
+        title: "Sign-in and security",
+        description: "Keep your account safe with a secure password and by signing out of devices you're not actively using.",
+        fields: [
+          { 
+            label: "Email", 
+            value: profile.email || "Not provided",
+            icon: <Mail className="w-4 h-4" />,
+            action: "view" // Read-only
+          },
+          { 
+            label: "Mobile number", 
+            value: profile.phoneNo || profile.phone || "Not added",
+            icon: <Smartphone className="w-4 h-4" />,
+            action: profile.phoneNo || profile.phone ? "manage" : "add",
+            onClick: () => setShowPhoneModal(true)
+          },
+          { 
+            label: "Change password", 
+            value: "",
+            icon: <Lock className="w-4 h-4" />,
+            action: "change",
+            onClick: () => setShowPasswordModal(true)
+          },
+        ],
+      },
+      {
+        title: "Account management",
+        description: "Control other options to manage your data, like deleting your account.",
+        fields: [
+          { 
+            label: "Delete account", 
+            value: "Permanently delete your Expedia account and data",
+            icon: <Trash2 className="w-4 h-4" />,
+            destructive: true,
+            action: "delete",
+            onClick: () => setShowDeleteModal(true)
+          },
+        ],
+      },
+    ];
+  }, [profile]);
+
+  // Handler functions
+  const handleChangePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      await changePassword({ currentPassword, newPassword }).unwrap();
+      setShowPasswordModal(false);
+      // Show success message (you can use toast or alert)
+      alert("Password changed successfully!");
+    } catch (error) {
+      // Show error message
+      console.error("Failed to change password:", error);
+      alert("Failed to change password. Please try again.");
+    }
+  };
+
+  const handleAddPhone = async (phoneNumber: string, countryCode?: string) => {
+    try {
+      await addMobileNumber({ phoneNumber, countryCode }).unwrap();
+      setShowPhoneModal(false);
+      // Show success message
+      alert("Phone number added successfully!");
+    } catch (error) {
+      console.error("Failed to add phone number:", error);
+      alert("Failed to add phone number. Please try again.");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount(userId!).unwrap();
+      setShowDeleteModal(false);
+      // Logout and redirect
+      storage.removeUser(); // Assuming you have this method
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      alert("Failed to delete account. Please try again.");
+    }
+  };
+
+  if (isLoading) return <p>Loading settings...</p>;
+  if (isError) return <p>Failed to load settings</p>;
+
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm">
-      {/* Main Header */}
-      {/* <header className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Shield className="w-6 h-6 text-gray-700" />
-          <h1 className="text-2xl font-bold text-gray-900">Security and settings</h1>
-        </div>
-      </header> */}
-
       {/* Settings Sections */}
       <div className="space-y-8">
         {settingSections.map((section) => (
@@ -100,22 +157,21 @@ export default function SettingTap() {
                     </div>
                     
                     {/* Action Button */}
-                    <button className={`text-sm font-medium px-4 py-2 rounded-lg border transition-colors ${
-                      field.destructive 
-                        ? 'text-red-600 border-red-300 hover:bg-red-50' 
-                        : field.label === "Mobile number"
-                        ? 'text-blue-600 border-blue-300 hover:bg-blue-50'
-                        : 'text-blue-600 border-blue-300 hover:bg-blue-50'
-                    }`}>
-                      {field.destructive 
-                        ? 'Delete' 
-                        : field.label === "Mobile number"
-                        ? 'Add'
-                        : field.label.includes('password') 
-                        ? 'Change'
-                        : 'Manage'
-                      }
-                    </button>
+                    {field.action !== "view" && (
+                      <button 
+                        onClick={field.onClick}
+                        disabled={isChangingPassword || isAddingPhone || isDeletingAccount}
+                        className={`text-sm font-medium px-4 py-2 rounded-lg border transition-colors ${
+                          field.destructive 
+                            ? 'text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50' 
+                            : 'text-blue-600 border-blue-300 hover:bg-blue-50 disabled:opacity-50'
+                        }`}
+                      >
+                        {field.action === "add" ? "Add" :
+                         field.action === "change" ? "Change" :
+                         field.action === "delete" ? "Delete" : "Manage"}
+                      </button>
+                    )}
                   </div>
                   
                   {/* Divider between fields */}
@@ -126,6 +182,38 @@ export default function SettingTap() {
           </section>
         ))}
       </div>
+      {showDeleteModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="bg-white p-6 rounded-xl w-full max-w-sm space-y-4">
+      <h3 className="text-lg font-semibold text-gray-900">
+        Delete account
+      </h3>
+
+      <p className="text-sm text-gray-600">
+        This action is permanent and cannot be undone.
+      </p>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          className="px-4 py-2 border rounded-lg"
+        >
+          Cancel
+        </button>
+
+        {/* ✅ THIS BUTTON WAS MISSING */}
+        <button
+          onClick={handleDeleteAccount}
+          disabled={isDeletingAccount}
+          className="px-4 py-2 bg-red-600 text-white rounded-lg disabled:opacity-50"
+        >
+          {isDeletingAccount ? "Deleting..." : "Delete"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

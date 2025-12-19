@@ -20,6 +20,25 @@ interface ProfileResponse {
   message: string;
   user: UserProfile;
 }
+interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+interface ChangePasswordResponse {
+  message: string;
+}
+interface AddPhoneRequest {
+  phoneNumber: string;
+  countryCode?: string;
+}
+interface AddPhoneResponse {
+  message: string;
+  user: UserProfile;
+}
+interface DeleteAccountResponse {
+  message: string;
+}
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch user by ID
@@ -38,10 +57,36 @@ transformResponse: (response: ProfileResponse) => response.user,
       }),
       invalidatesTags: ["User"],
     }),
+     // New endpoints for settings
+    changePassword: builder.mutation<ChangePasswordResponse, ChangePasswordRequest>({
+      query: (body) => ({
+        url: '/users/password/change',
+        method: 'POST',
+        body,
+      }),
+    }),
+     addMobileNumber: builder.mutation<AddPhoneResponse, AddPhoneRequest>({
+      query: (body) => ({
+        url: '/users/phone',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    deleteAccount: builder.mutation<DeleteAccountResponse, string>({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
 export const {
   useGetUserByIdQuery,
   useUpdateUserByIdMutation,
+  useChangePasswordMutation,
+  useAddMobileNumberMutation,
+  useDeleteAccountMutation,
 } = userApi;
