@@ -2,46 +2,7 @@ import { Heart, MapPin, Calendar, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { visitedStorage, VisitedHotel } from "../../utils/visitedStorage";
-
-// Mock data for recently viewed properties
-const RECENTLY_VIEWED = [
-  {
-    id: 1,
-    name: "Crowne pyramids palace",
-    image: "https://images.trvl-media.com/lodging/118000000/117380000/117376100/117376035/9be7fea7.jpg?impolicy=resizecrop&rw=1200&ra=fit",
-    rating: 8.4,
-    reviewCount: 67,
-  },
-  {
-    id: 2,
-    name: "The Palace Pyramids Inn",
-    image: "https://images.trvl-media.com/lodging/118000000/117380000/117376100/117376035/2d1a2ad5.jpg?impolicy=resizecrop&rw=1200&ra=fit",
-    rating: 8.6,
-    reviewCount: 42,
-  },
-  {
-    id: 3,
-    name: "Downtown Antique Hotel",
-    image: "https://images.trvl-media.com/lodging/118000000/117380000/117376100/117376035/c92848b6.jpg?impolicy=resizecrop&rw=1200&ra=fit",
-    rating: 8.0,
-    reviewCount: 19,
-  },
-  {
-    id: 4,
-    name: "Downtown Antique Hotel",
-    image: "https://images.trvl-media.com/lodging/118000000/117380000/117376100/117376035/1688e98a.jpg?impolicy=resizecrop&rw=1200&ra=fit",
-    rating: 8.0,
-    reviewCount: 19,
-  },
-  
-  {
-    id:6,
-    name: "Downtown Antique Hotel",
-    image: "https://images.trvl-media.com/lodging/118000000/117380000/117376100/117376035/1688e98a.jpg?impolicy=resizecrop&rw=1200&ra=fit",
-    rating: 8.0,
-    reviewCount: 19,
-  },
-];
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 // Mock data for recent searches
 const RECENT_SEARCHES = [
@@ -72,45 +33,44 @@ const RECENT_SEARCHES = [
 ];
 
 // Property Card Component
-function PropertyCard({ property }: { property: (typeof RECENTLY_VIEWED)[0] }) {
+function PropertyCard({ property }: { property: VisitedHotel }) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (
     <Link
       to={`/property/${property.id}`}
-      className="group flex-shrink-0 w-64 sm:w-72 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="group flex-shrink-0 w-64 sm:w-72 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden relative"
     >
-      <div className="relative">
-        <img
-          src={property.image}
-          alt={property.name}
-          className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+      <img
+        src={property.image}
+        alt={property.title}
+        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+      />
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setIsFavorite(!isFavorite);
+        }}
+        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-all duration-200 z-10"
+        aria-label="Add to favorites"
+      >
+        <Heart
+          className={`w-5 h-5 transition-colors ${
+            isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
+          }`}
         />
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setIsFavorite(!isFavorite);
-          }}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-all duration-200"
-          aria-label="Add to favorites"
-        >
-          <Heart
-            className={`w-5 h-5 transition-colors ${
-              isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
-            }`}
-          />
-        </button>
-      </div>
+      </button>
+
       <div className="p-4">
         <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-1">
-          {property.name}
+          {property.title}
         </h3>
         <div className="flex items-center gap-1.5">
           <div className="bg-blue-600 text-white text-sm font-semibold px-2 py-0.5 rounded">
             {property.rating}
           </div>
           <span className="text-sm text-gray-600">
-            ({property.reviewCount})
+            ({property.reviewCount ?? 0})
           </span>
         </div>
       </div>
@@ -119,14 +79,11 @@ function PropertyCard({ property }: { property: (typeof RECENTLY_VIEWED)[0] }) {
 }
 
 // Search Card Component
-function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
+function SearchCard({ search }: { search: typeof RECENT_SEARCHES[0] }) {
   const navigate = useNavigate();
-
   const handleClick = () => {
     navigate(
-      `/search?location=${encodeURIComponent(search.location)}&checkIn=${
-        search.checkIn
-      }&checkOut=${search.checkOut}`
+      `/search?location=${encodeURIComponent(search.location)}&checkIn=${search.checkIn}&checkOut=${search.checkOut}`
     );
   };
 
@@ -169,85 +126,79 @@ function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
 // Main Component
 export function WhereYouLeftOff() {
   const [visited, setVisited] = useState<VisitedHotel[]>([]);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
     setVisited(visitedStorage.get());
   }, []);
+
+  const handleScroll = () => {
+    const container = document.getElementById("visited-row");
+    if (!container) return;
+    const atStart = container.scrollLeft === 0;
+    const atEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
+    setShowLeftArrow(!atStart);
+    setShowRightArrow(!atEnd);
+  };
+
+  useEffect(() => {
+    const container = document.getElementById("visited-row");
+    if (!container) return;
+    handleScroll();
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [visited]);
+
+  const scrollLeft = () => {
+    document.getElementById("visited-row")?.scrollBy({ left: -300, behavior: "smooth" });
+  };
+  const scrollRight = () => {
+    document.getElementById("visited-row")?.scrollBy({ left: 300, behavior: "smooth" });
+  };
 
   if (!visited.length) return null;
 
   return (
-    <section className="py-12 md:py-10 bg-[#EFF3F7] from-gray-50 to-white">
+    <section className="py-12 md:py-10 bg-[#EFF3F7]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Section Header */}
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 md:mb-10">
           Here's where you left off
         </h2>
 
-        {/* Recently Viewed Properties */}
-        {/* <div className="mb-10 md:mb-12">
+        {/* Recently Viewed */}
+        <div className="relative mb-10 md:mb-12">
           <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-5">
             Your recently viewed properties
           </h3>
-          <div className="relative">
-            <div
-              className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
-              style={{
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              {RECENTLY_VIEWED.map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-            </div>
-          </div>
-        </div> */}
 
-        {/* Recently Viewed Properties */}
-<div className="mb-10 md:mb-12">
-  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-5">
-    Your recently viewed properties
-  </h3>
-  <div className="relative">
-    <div
-      className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
-      style={{
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-      }}
-    >
-      {visited.map((hotel) => (
-        <div
-          key={hotel.id}
-          className="group flex-shrink-0 w-64 sm:w-72 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-        >
-          <Link to={`/property/${hotel.id}`}>
-            <img
-              src={hotel.image}
-              alt={hotel.title}
-              className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          </Link>
-          <div className="p-4">
-            <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-1">
-              {hotel.title}
-            </h3>
-            <div className="flex items-center gap-1.5">
-              <div className="bg-blue-600 text-white text-sm font-semibold px-2 py-0.5 rounded">
-                {hotel.rating}
-              </div>
-              <span className="text-sm text-gray-600">
-                ({hotel.reviewCount ?? 0})
-              </span>
-            </div>
+          {showLeftArrow && (
+            <button
+              onClick={scrollLeft}
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
+            >
+              <FiChevronLeft size={22} />
+            </button>
+          )}
+
+          {showRightArrow && (
+            <button
+              onClick={scrollRight}
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
+            >
+              <FiChevronRight size={22} />
+            </button>
+          )}
+
+          <div
+            id="visited-row"
+            className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
+          >
+            {visited.map((hotel) => (
+              <PropertyCard key={hotel.id} property={hotel} />
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
-
 
         {/* Recent Searches */}
         <div>
