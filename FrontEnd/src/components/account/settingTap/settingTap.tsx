@@ -1,51 +1,54 @@
 import { Trash2, Mail, Smartphone, Lock } from "lucide-react";
 import { useMemo, useState } from "react";
-import { 
-  useGetUserByIdQuery, 
-  useChangePasswordMutation, 
-  useAddMobileNumberMutation, 
-  useDeleteAccountMutation 
+import {
+  useGetUserByIdQuery,
+  useChangePasswordMutation,
+  useAddMobileNumberMutation,
+  useDeleteAccountMutation, useUpdateUserByIdMutation
 } from "../../../store/api/user.api";
 import { storage } from "../../../utils/storage";
 console.log("STORED USER:", storage.getUser());
 
 export default function SettingTap() {
-  const userId = storage.getUser()?.id;  
+  const userId = storage.getUser()?.id;
   const { data: profile, isLoading, isError } = useGetUserByIdQuery(userId!);
-  
+
   // Mutations
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
   const [addMobileNumber, { isLoading: isAddingPhone }] = useAddMobileNumberMutation();
   const [deleteAccount, { isLoading: isDeletingAccount }] = useDeleteAccountMutation();
+  const [updateUser, { isLoading: isUpdatingUser }] = useUpdateUserByIdMutation();
 
   // Modal states
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [phoneInput, setPhoneInput] = useState(profile?.phoneNo || "");
+
 
   const settingSections = useMemo(() => {
     if (!profile) return [];
-    
+
     return [
       {
         title: "Sign-in and security",
         description: "Keep your account safe with a secure password and by signing out of devices you're not actively using.",
         fields: [
-          { 
-            label: "Email", 
+          {
+            label: "Email",
             value: profile.email || "Not provided",
             icon: <Mail className="w-4 h-4" />,
             action: "view" // Read-only
           },
-          { 
-            label: "Mobile number", 
+          {
+            label: "Mobile number",
             value: profile.phoneNo || profile.phone || "Not added",
             icon: <Smartphone className="w-4 h-4" />,
             action: profile.phoneNo || profile.phone ? "manage" : "add",
             onClick: () => setShowPhoneModal(true)
           },
-          { 
-            label: "Change password", 
+          {
+            label: "Change password",
             value: "",
             icon: <Lock className="w-4 h-4" />,
             action: "change",
@@ -57,8 +60,8 @@ export default function SettingTap() {
         title: "Account management",
         description: "Control other options to manage your data, like deleting your account.",
         fields: [
-          { 
-            label: "Delete account", 
+          {
+            label: "Delete account",
             value: "Permanently delete your Expedia account and data",
             icon: <Trash2 className="w-4 h-4" />,
             destructive: true,
@@ -84,17 +87,28 @@ export default function SettingTap() {
     }
   };
 
-  const handleAddPhone = async (phoneNumber: string, countryCode?: string) => {
+  const handleSavePhone = async (phoneNumber: string) => {
     try {
-      await addMobileNumber({ phoneNumber, countryCode }).unwrap();
+      if (!userId) return;
+       if (!/^\+?\d+$/.test(phoneNumber)) {
+        alert("Phone number must contain only numbers.");
+        return;
+      }
+      await updateUser({
+        id: userId,
+        body: {
+          phoneNo: phoneNumber, // 👈 must match backend field
+        },
+      }).unwrap();
+
       setShowPhoneModal(false);
-      // Show success message
-      alert("Phone number added successfully!");
+      alert("Phone number updated successfully!");
     } catch (error) {
-      console.error("Failed to add phone number:", error);
-      alert("Failed to add phone number. Please try again.");
+      console.error("Failed to update phone:", error);
+      alert("Failed to update phone number.");
     }
   };
+
 
   const handleDeleteAccount = async () => {
     try {
@@ -137,9 +151,8 @@ export default function SettingTap() {
                 <div key={field.label} className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3 flex-1">
-                      <div className={`mt-1 p-2 rounded-lg ${
-                        field.destructive ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
-                      }`}>
+                      <div className={`mt-1 p-2 rounded-lg ${field.destructive ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'
+                        }`}>
                         {field.icon}
                       </div>
                       <div className="flex-1">
@@ -147,33 +160,31 @@ export default function SettingTap() {
                           {field.label}
                         </h3>
                         {field.value && (
-                          <p className={`text-sm mt-1 ${
-                            field.destructive ? 'text-red-600' : 'text-gray-600'
-                          }`}>
+                          <p className={`text-sm mt-1 ${field.destructive ? 'text-red-600' : 'text-gray-600'
+                            }`}>
                             {field.value}
                           </p>
                         )}
                       </div>
                     </div>
-                    
+
                     {/* Action Button */}
                     {field.action !== "view" && (
-                      <button 
+                      <button
                         onClick={field.onClick}
                         disabled={isChangingPassword || isAddingPhone || isDeletingAccount}
-                        className={`text-sm font-medium px-4 py-2 rounded-lg border transition-colors ${
-                          field.destructive 
-                            ? 'text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50' 
-                            : 'text-blue-600 border-blue-300 hover:bg-blue-50 disabled:opacity-50'
-                        }`}
+                        className={`text-sm font-medium px-4 py-2 rounded-lg border transition-colors ${field.destructive
+                          ? 'text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50'
+                          : 'text-blue-600 border-blue-300 hover:bg-blue-50 disabled:opacity-50'
+                          }`}
                       >
                         {field.action === "add" ? "Add" :
-                         field.action === "change" ? "Change" :
-                         field.action === "delete" ? "Delete" : "Manage"}
+                          field.action === "change" ? "Change" :
+                            field.action === "delete" ? "Delete" : "Manage"}
                       </button>
                     )}
                   </div>
-                  
+
                   {/* Divider between fields */}
                   <hr className="border-gray-300" />
                 </div>
@@ -183,36 +194,66 @@ export default function SettingTap() {
         ))}
       </div>
       {showDeleteModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-    <div className="bg-white p-6 rounded-xl w-full max-w-sm space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">
-        Delete account
-      </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white p-6 rounded-xl w-full max-w-sm space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Delete account
+            </h3>
 
-      <p className="text-sm text-gray-600">
-        This action is permanent and cannot be undone.
-      </p>
+            <p className="text-sm text-gray-600">
+              This action is permanent and cannot be undone.
+            </p>
 
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={() => setShowDeleteModal(false)}
-          className="px-4 py-2 border rounded-lg"
-        >
-          Cancel
-        </button>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 border rounded-lg"
+              >
+                Cancel
+              </button>
 
-        {/* ✅ THIS BUTTON WAS MISSING */}
-        <button
-          onClick={handleDeleteAccount}
-          disabled={isDeletingAccount}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg disabled:opacity-50"
-        >
-          {isDeletingAccount ? "Deleting..." : "Delete"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              {/* ✅ THIS BUTTON WAS MISSING */}
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeletingAccount}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg disabled:opacity-50"
+              >
+                {isDeletingAccount ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showPhoneModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white p-6 rounded-xl w-full max-w-sm space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Update Phone Number</h3>
+            <input
+              type="text"
+              placeholder="Enter phone number"
+              className="w-full border px-3 py-2 rounded-lg"
+              value={phoneInput}
+              onChange={(e) => setPhoneInput(e.target.value)}
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowPhoneModal(false)}
+                className="px-4 py-2 border rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleSavePhone(phoneInput)}
+                disabled={isUpdatingUser}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+              >
+                {isUpdatingUser ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );
