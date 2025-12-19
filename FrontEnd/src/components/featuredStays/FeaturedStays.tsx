@@ -6,14 +6,28 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import axios from "axios";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useFavorites } from "../../context/favoritesContext";
+import { visitedStorage, VisitedHotel } from "../../utils/visitedStorage";
 
-const API_BASE_URL = "http://localhost:3000";
+// const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "http://localhost:3000/api/v1";
 
 function DestinationCard({ item }: { item: DestinationType }) {
   const { favorites, addFavorite, setOpenSidebar } = useFavorites();
   const isFavorite = favorites.some((f) => f.id === item.id);
   const [showToast, setShowToast] = useState(false);
-
+  const handleVisit = () => {
+    const hotel: VisitedHotel = {
+      id: item.id,
+      title: item.title,
+      image: item.image,
+      rating: item.rating,
+      address: item.address,
+      price: item.price,
+      bestSeller: item.bestSeller,
+      reviewCount: item.reviewCount,
+    };
+    visitedStorage.add(hotel);
+  };
   const handleFavorite = () => {
     if (isFavorite) {
       setOpenSidebar(true);
@@ -34,7 +48,7 @@ function DestinationCard({ item }: { item: DestinationType }) {
     <>
       <div className="group bg-white rounded-xl shadow-md hover:shadow-2xl border border-gray-100 overflow-hidden h-full flex flex-col transition-all duration-300 hover:-translate-y-1">
         <div className="relative">
-          <Link to={`/property/${item.id}`}>
+          <Link to={`/property/${item.id}`} onClick={handleVisit}>
             <img
               src={item.image}
               alt={item.title}
@@ -138,6 +152,18 @@ function DestinationCard({ item }: { item: DestinationType }) {
   );
 }
 
+
+
+const mapHotelToDestination = (hotel: any) => ({
+  id: hotel._id,
+  title: hotel.name,
+  image: hotel.images?.[0] ?? "/placeholder.jpg",
+  rating: hotel.hotelRating ?? hotel.tripAdvisorRating ?? 0,
+  address: hotel.location?.address ?? hotel.location?.city ?? "",
+  price: hotel.lowRate ?? hotel.highRate ?? 0,
+  bestSeller: hotel.featured,
+});
+
 export default function FeaturedStays({}: {}) {
   const [loading, setLoading] = useState(true);
   const [destinations, setDestinations] = useState<DestinationType[]>([]);
@@ -156,13 +182,17 @@ export default function FeaturedStays({}: {}) {
     const controller = new AbortController();
     const fetchFeatured = async () => {
       try {
-        setLoading(true);
-        const response = await axios.get<DestinationType[]>(
-          `${API_BASE_URL}/featuredStays`,
-          { signal: controller.signal }
-        );
-        // console.log("API response:", response.data);
-        setDestinations(response.data);
+        // setLoading(true);
+        // const response = await axios.get<DestinationType[]>(
+        //   `${API_BASE_URL}/featuredStays`,
+        //   { signal: controller.signal }
+        // );
+        // setDestinations(response.data);
+        const response = await axios.get(`${API_BASE_URL}/hotels`, {
+          params: { featured: true },
+          signal: controller.signal,
+        });
+        setDestinations(response.data.data.hotels.map(mapHotelToDestination));
       } catch (err) {
         if (!axios.isCancel(err)) {
           setError("Failed to load featured destinations");

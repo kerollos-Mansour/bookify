@@ -1,6 +1,7 @@
 import { Heart, MapPin, Calendar, Users } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { visitedStorage, VisitedHotel } from "../../utils/visitedStorage";
 
 // Mock data for recently viewed properties
 const RECENTLY_VIEWED = [
@@ -167,6 +168,14 @@ function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
 
 // Main Component
 export function WhereYouLeftOff() {
+  const [visited, setVisited] = useState<VisitedHotel[]>([]);
+
+    useEffect(() => {
+    setVisited(visitedStorage.get());
+  }, []);
+
+  if (!visited.length) return null;
+
   return (
     <section className="py-12 md:py-10 bg-[#EFF3F7] from-gray-50 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
@@ -176,7 +185,7 @@ export function WhereYouLeftOff() {
         </h2>
 
         {/* Recently Viewed Properties */}
-        <div className="mb-10 md:mb-12">
+        {/* <div className="mb-10 md:mb-12">
           <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-5">
             Your recently viewed properties
           </h3>
@@ -193,7 +202,52 @@ export function WhereYouLeftOff() {
               ))}
             </div>
           </div>
+        </div> */}
+
+        {/* Recently Viewed Properties */}
+<div className="mb-10 md:mb-12">
+  <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-5">
+    Your recently viewed properties
+  </h3>
+  <div className="relative">
+    <div
+      className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
+      style={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+    >
+      {visited.map((hotel) => (
+        <div
+          key={hotel.id}
+          className="group flex-shrink-0 w-64 sm:w-72 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+        >
+          <Link to={`/property/${hotel.id}`}>
+            <img
+              src={hotel.image}
+              alt={hotel.title}
+              className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </Link>
+          <div className="p-4">
+            <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-1">
+              {hotel.title}
+            </h3>
+            <div className="flex items-center gap-1.5">
+              <div className="bg-blue-600 text-white text-sm font-semibold px-2 py-0.5 rounded">
+                {hotel.rating}
+              </div>
+              <span className="text-sm text-gray-600">
+                ({hotel.reviewCount ?? 0})
+              </span>
+            </div>
+          </div>
         </div>
+      ))}
+    </div>
+  </div>
+</div>
+
 
         {/* Recent Searches */}
         <div>
