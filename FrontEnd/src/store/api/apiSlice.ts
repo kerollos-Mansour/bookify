@@ -9,6 +9,16 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Hotel", "Desination", "Property", "Room", "Booking", "Coupon", "Payment","Amenity"],
+  tagTypes: [
+    "Hotel",
+    "Desination",
+    "Property",
+    "Room",
+    "Booking",
+    "Coupon",
+    "Payment",
+    "Amenity",
+    "Destination",
+  ],
   endpoints: () => ({}),
 });

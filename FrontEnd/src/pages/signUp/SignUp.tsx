@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import PageTransition from "../../components/pageTransition/pageTransition";
 import { RegisterRequest } from "types/auth.type";
-import { setCredentials } from "store/slices/authSlice";
+import { setCredentials } from "../../store/slices/authSlice";
+import { useRegisterMutation } from "../../store/api/auth.api";
 
 export default function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const [registerUser, { isLoading }] = useRegisterMutation();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -32,21 +34,21 @@ export default function SignUp() {
       const payload: RegisterRequest = {
         name: formData.name,
         email: formData.email,
-        phoneNo: Number(formData.phoneNo),
+        phoneNo: formData.phoneNo,
         username: formData.username,
         password: formData.password,
       };
-      // const result ;
+      const result = await registerUser(payload).unwrap();
 
-      // dispatch(
-      //   setCredentials({
-      //     user: result.data.user,
-      //     accessToken: result.data.accessToken,
-      //   })
-      // );
-      // if (result) {
-      //   navigate("/");
-      // }
+      dispatch(
+        setCredentials({
+          user: result.data.user,
+          accessToken: result.data.accessToken,
+        })
+      );
+      if (result) {
+        navigate("/");
+      }
     } catch (err) {
       console.error("Registration Failed:", err);
     }

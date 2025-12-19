@@ -1,16 +1,32 @@
-// export interface DestinationType {
-//   id?: string; // optional for featured cards, required for category carousel
-//   image: string;
-//   title?: string; // used for FeaturedStays
-//   name?: string; // used for PopularDestinations
-//   address?: string; // for FeaturedStays
-//   location?: string; // for PopularDestinations
-//   rating?: number; // optional
-//   price: number;
-//   bestSeller?: boolean;
-// }
-// export interface HotelDetail {
-//   id: string;
-//   reviewCount?: number;
-//   amenities?: string[];
-// };
+// Destination interface matching backend
+export interface Destination {
+  id: string;
+  name: string;
+  slug: string;
+  location: string;
+  price: number;
+  image?: string;
+  categoryId?: string;
+  bestSeller?: boolean;
+  rating?: number;
+  description?: string;
+  address?: string;
+  searchConfig?: {
+    [key: string]: string | number | boolean;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  image?: string;
+  description?: string;
+}
+
+export interface GroupedDestinations {
+  category: Category;
+  destinations: Destination[];
+}

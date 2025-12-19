@@ -1,20 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
-import {
-  CATEGORIES,
-  DESTINATIONS,
-  type CategoryId,
-} from "../../constants/destinations";
-import { DestinationType } from "../../types/destination.type";
+import { Destination } from "../../types/destination.type";
 import { useNavigate } from "react-router-dom";
 import DestinationCardSkeleton from "../UI/PopularDestinationSkeleton";
-import axios from "axios";
-
+import {
+  useGetGroupedDestinationsQuery,
+  useLazyGetDestinationSearchQuery,
+} from "../../store/api/destination.api";
 const SCROLL_AMOUNT = 400;
 const CURRENCY = "EGP";
-const API_BASE_URL = "http://localhost:3000";
 
-function DestinationCard({ destination }: { destination: DestinationType }) {
+function DestinationCard({ destination }: { destination: Destination }) {
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
   const handleClick = () => {
@@ -32,8 +28,10 @@ function DestinationCard({ destination }: { destination: DestinationType }) {
       <div className="relative aspect-video bg-gray-100 overflow-hidden">
         {!imageError ? (
           <img
-            src={destination.image}
-            alt={`${destination.name}, ${destination.location}`}
+            src={destination.image || ""}
+            alt={`${destination.name || "Destination"}, ${
+              destination.location || ""
+            }`}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             onError={() => setImageError(true)}
             loading="lazy"
@@ -47,14 +45,14 @@ function DestinationCard({ destination }: { destination: DestinationType }) {
 
       <div className="p-4 md:p-6">
         <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 truncate">
-          {destination.name}
+          {destination.name || "Unknown Destination"}
         </h3>
         <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4 truncate">
-          {destination.location}
+          {destination.location || "Unknown Location"}
         </p>
         <div>
           <span className="text-xl md:text-2xl font-bold text-gray-900">
-            {CURRENCY} {destination.price.toLocaleString()}
+            {CURRENCY} {destination.price?.toLocaleString() ?? "N/A"}
           </span>
           <p className="text-xs md:text-sm text-gray-500">avg. nightly price</p>
         </div>
@@ -63,58 +61,44 @@ function DestinationCard({ destination }: { destination: DestinationType }) {
   );
 }
 
-// Main Component
+// 
 export function PopularDestinations() {
-  const [activeCategory, setActiveCategory] = useState<CategoryId>("beach");
-  const [loading, setLoading] = useState(true);
-  const [destinations, setDestinations] = useState<DestinationType[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: groupedDestinations = [],
+    isLoading,
+    error,
+  } = useGetGroupedDestinationsQuery();
+  const [activeCategoryId, setActiveCategoryId] = useState<string>("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   setLoading(true);
-
-  //   // fake API delay
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1500);
-  // }, [activeCategory]);
-
+  // Set initial active category
   useEffect(() => {
-    const controller = new AbortController();
-    setLoading(true);
+    if (groupedDestinations.length > 0 && !activeCategoryId) {
+      setActiveCategoryId(groupedDestinations[0].category._id);
+    }
+  }, [groupedDestinations, activeCategoryId]);
 
-    const fetchDestinations = async () => {
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}/destinations?category=${activeCategory}`,
-          { signal: controller.signal }
-        );
-        // console.log("API response data:", response.data);
-
-        const categoryData = response.data[activeCategory];
-        setDestinations(Array.isArray(categoryData) ? categoryData : []);
-      } catch (err) {
-        if (!axios.isCancel(err)) {
-          setError("Failed to load destinations");
-          console.error(err);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDestinations();
-    return () => controller.abort();
-  }, [activeCategory]);
-
-  // const currentDestinations = DESTINATIONS[activeCategory];
-
+  const activeGroup = groupedDestinations.find(
+    (g) => g.category._id === activeCategoryId
+  );
+  const destinations = activeGroup ? activeGroup.destinations : [];
+  console.log;
   const handleScroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
     const scrollAmount = direction === "left" ? -SCROLL_AMOUNT : SCROLL_AMOUNT;
     scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
+
+  if (error) {
+    return (
+      <section className="py-12 md:py-16 bg-gray-50 text-center">
+        <p className="text-red-600">Error loading destinations</p>
+      </section>
+    );
+  }
+
+  // Generate skeleton items for tabs and cards if loading initially
+  const showSkeleton = isLoading && groupedDestinations.length === 0;
 
   return (
     <section
@@ -138,28 +122,35 @@ export function PopularDestinations() {
           role="tablist"
           aria-label="Destination categories"
         >
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              role="tab"
-              aria-selected={activeCategory === cat}
-              aria-controls={`destinations-${cat}`}
-              className={`relative pb-3 md:pb-4 text-sm md:text-lg font-semibold transition-all duration-200 whitespace-nowrap capitalize focus:ring-offset-2 rounded-t ${
-                activeCategory === cat
-                  ? "text-blue-600"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              {cat}
-              {activeCategory === cat && (
-                <span
-                  className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-full"
-                  aria-hidden="true"
+          {showSkeleton
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-24 h-8 bg-gray-200 rounded animate-pulse"
                 />
-              )}
-            </button>
-          ))}
+              ))
+            : groupedDestinations.map(({ category }) => (
+                <button
+                  key={category._id}
+                  onClick={() => setActiveCategoryId(category._id)}
+                  role="tab"
+                  aria-selected={activeCategoryId === category._id}
+                  aria-controls={`destinations-${category._id}`}
+                  className={`relative pb-3 md:pb-4 text-sm md:text-lg font-semibold transition-all duration-200 whitespace-nowrap capitalize focus:ring-offset-2 rounded-t ${
+                    activeCategoryId === category._id
+                      ? "text-blue-600"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  {category.name}
+                  {activeCategoryId === category._id && (
+                    <span
+                      className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-full"
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              ))}
         </div>
 
         {/* Carousel */}
@@ -183,37 +174,21 @@ export function PopularDestinations() {
           </button>
 
           {/* Destinations */}
-          {/* <div
-            ref={scrollRef}
-            id={`destinations-${activeCategory}`}
-            role="tabpanel"
-            className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
-          >
-            {loading
-              ? Array.from({ length: currentDestinations.length }).map(
-                  (_, i) => <DestinationCardSkeleton key={i} />
-                )
-              : currentDestinations.map((dest) => (
-                  <DestinationCard key={dest.id} destination={dest} />
-                ))}
-          </div> */}
-
           <div
             ref={scrollRef}
-            id={`destinations-${activeCategory}`}
+            id={`destinations-${activeCategoryId}`}
             role="tabpanel"
             className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
           >
-            {loading
-              ? Array.from({ length: destinations.length }).map((_, i) => (
+            {showSkeleton
+              ? Array.from({ length: 4 }).map((_, i) => (
                   <DestinationCardSkeleton key={i} />
                 ))
-              : destinations.map((dest) => (
-                  <DestinationCard key={dest.id} destination={dest} />
+              : destinations.map((dest, index) => (
+                  <DestinationCard key={dest.id || index} destination={dest} />
                 ))}
           </div>
         </div>
-        {error && <p className="text-red-600 mt-4">{error}</p>}
       </div>
     </section>
   );
