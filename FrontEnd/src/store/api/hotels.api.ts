@@ -24,6 +24,7 @@ type SearchHotelsParams = {
   sort?: string;
   page?: number;
   limit?: number;
+  featured?: boolean;
 };
 
 export const hotelsApi = apiSlice.injectEndpoints({

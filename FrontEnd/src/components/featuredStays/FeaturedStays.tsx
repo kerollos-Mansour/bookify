@@ -1,38 +1,43 @@
-import { DestinationType } from "../../types/destination.type";
 import { Link } from "react-router-dom";
 import DestinationCardSkeleton from "../UI/FeaturedDestinationSkeleton";
 import { useEffect, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-import axios from "axios";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useFavorites } from "../../context/favoritesContext";
-import { visitedStorage, VisitedHotel } from "../../utils/visitedStorage";
+import { visitedStorage } from "../../utils/visitedStorage";
+import { Hotel } from "../../types/hotel.type";
+import { useSearchHotelsQuery } from "../../store/api/hotels.api";
 
-// const API_BASE_URL = "http://localhost:3000";
-const API_BASE_URL = "http://localhost:3000/api/v1";
-
-function DestinationCard({ item }: { item: DestinationType }) {
+function DestinationCard({ hotel }: { hotel: Hotel }) {
   const { favorites, addFavorite, setOpenSidebar } = useFavorites();
-  const isFavorite = favorites.some((f) => f.id === item.id);
+  const isFavorite = favorites.some((f) => f.id === hotel._id);
   const [showToast, setShowToast] = useState(false);
+
   const handleVisit = () => {
-    const hotel: VisitedHotel = {
-      id: item.id,
-      title: item.title,
-      image: item.image,
-      rating: item.rating,
-      address: item.address,
-      price: item.price,
-      bestSeller: item.bestSeller,
-      reviewCount: item.reviewCount,
-    };
-    visitedStorage.add(hotel);
+    visitedStorage.add({
+      id: hotel._id,
+      title: hotel.name,
+      image: hotel.images?.[0],
+      rating: hotel.hotelRating,
+      address: hotel.location?.address ?? hotel.location?.city ?? "",
+      price: hotel.lowRate ?? hotel.highRate ?? 0,
+      bestSeller: !!hotel.featured,
+    });
   };
+
   const handleFavorite = () => {
     if (isFavorite) {
       setOpenSidebar(true);
     } else {
-      addFavorite(item);
+      addFavorite({
+        id: hotel._id,
+        title: hotel.name,
+        image: hotel.images?.[0],
+        rating: hotel.hotelRating,
+        address: hotel.location?.address ?? hotel.location?.city ?? "",
+        price: hotel.lowRate ?? hotel.highRate ?? 0,
+        bestSeller: !!hotel.featured,
+      });
       setShowToast(true);
     }
   };
@@ -48,14 +53,14 @@ function DestinationCard({ item }: { item: DestinationType }) {
     <>
       <div className="group bg-white rounded-xl shadow-md hover:shadow-2xl border border-gray-100 overflow-hidden h-full flex flex-col transition-all duration-300 hover:-translate-y-1">
         <div className="relative">
-          <Link to={`/property/${item.id}`} onClick={handleVisit}>
+          <Link to={`/property/${hotel._id}`} onClick={handleVisit}>
             <img
-              src={item.image}
-              alt={item.title}
+              src={hotel.images?.[0]}
+              alt={hotel.name}
               className="w-full h-40 sm:h-44 md:h-48 object-cover group-hover:scale-110 transition-transform duration-500"
             />
           </Link>
-          {item.bestSeller && (
+          {hotel.featured && (
             <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
               Best Seller
             </span>
@@ -76,7 +81,7 @@ function DestinationCard({ item }: { item: DestinationType }) {
         <div className="p-4 sm:p-5 flex-1 flex flex-col">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 flex-1">
-              {item.title}
+              {hotel.name}
             </h3>
             <div className="flex items-center gap-1 flex-shrink-0 bg-blue-50 px-2 py-1 rounded-lg">
               <svg
@@ -90,7 +95,7 @@ function DestinationCard({ item }: { item: DestinationType }) {
                 <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596l-6-5.848 8.332-1.593z" />
               </svg>
               <span className="text-xs sm:text-sm font-semibold text-gray-700">
-                {item.rating}
+                {hotel.hotelRating}
               </span>
             </div>
           </div>
@@ -117,17 +122,17 @@ function DestinationCard({ item }: { item: DestinationType }) {
                 d="M19.5 10.5c0 7-7.5 11-7.5 11S4.5 17.5 4.5 10.5a7.5 7.5 0 1115 0z"
               />
             </svg>
-            <span className="line-clamp-2">{item.address}</span>
+            <span className="line-clamp-2">{hotel.location?.address ?? hotel.location?.city}</span>
           </div>
 
           <div className="flex items-center justify-between mt-auto gap-2 sm:gap-3">
             <p className="text-lg sm:text-xl font-bold text-gray-900">
-              ${item.price}{" "}
+              ${hotel.lowRate ?? hotel.highRate}
               <span className="text-xs sm:text-sm text-gray-400 font-normal">
                 /night
               </span>
             </p>
-            <Link to={`/property/${item.id}`} className="flex-shrink-0">
+            <Link to={`/property/${hotel._id}`} className="flex-shrink-0">
               <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-xs sm:text-sm text-white font-semibold transition-all duration-200 hover:shadow-lg whitespace-nowrap">
                 Book Now
               </button>
@@ -135,10 +140,11 @@ function DestinationCard({ item }: { item: DestinationType }) {
           </div>
         </div>
       </div>
+
       {showToast && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-sm text-white px-6 py-4 rounded-xl shadow-xl flex items-center justify-between gap-4 max-w-[90%] w-auto z-50 animate-toast">
           <p className="text-sm text-gray-200 flex-1">
-            This property was saved to your {item.title} trip.
+            This property was saved to your {hotel.name} trip.
           </p>
           <button
             onClick={() => setOpenSidebar(true)}
@@ -152,91 +158,46 @@ function DestinationCard({ item }: { item: DestinationType }) {
   );
 }
 
+export default function FeaturedStays() {
+  const { data: destinations = [], isLoading, isError } = useSearchHotelsQuery({ featured: true });
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
 
+  const handleScroll = () => {
+    const container = document.getElementById("destinations-row");
+    if (!container) return;
 
-const mapHotelToDestination = (hotel: any) => ({
-  id: hotel._id,
-  title: hotel.name,
-  image: hotel.images?.[0] ?? "/placeholder.jpg",
-  rating: hotel.hotelRating ?? hotel.tripAdvisorRating ?? 0,
-  address: hotel.location?.address ?? hotel.location?.city ?? "",
-  price: hotel.lowRate ?? hotel.highRate ?? 0,
-  bestSeller: hotel.featured,
-});
+    const atStart = container.scrollLeft === 0;
+    const atEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
 
-export default function FeaturedStays({}: {}) {
-  const [loading, setLoading] = useState(true);
-  const [destinations, setDestinations] = useState<DestinationType[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  // useEffect(() => {
-  //   setLoading(true);
-
-  //   setTimeout(() => {
-  //     setDestinations(featuredData);
-  //     setLoading(false);
-  //   }, 1500);
-  // }, []);
+    setShowLeftArrow(!atStart);
+    setShowRightArrow(!atEnd);
+  };
 
   useEffect(() => {
-    const controller = new AbortController();
-    const fetchFeatured = async () => {
-      try {
-        // setLoading(true);
-        // const response = await axios.get<DestinationType[]>(
-        //   `${API_BASE_URL}/featuredStays`,
-        //   { signal: controller.signal }
-        // );
-        // setDestinations(response.data);
-        const response = await axios.get(`${API_BASE_URL}/hotels`, {
-          params: { featured: true },
-          signal: controller.signal,
-        });
-        setDestinations(response.data.data.hotels.map(mapHotelToDestination));
-      } catch (err) {
-        if (!axios.isCancel(err)) {
-          setError("Failed to load featured destinations");
-          console.error(err);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+    const container = document.getElementById("destinations-row");
+    if (!container) return;
 
-    fetchFeatured();
-
-    return () => controller.abort();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen text-red-600">
-        {error}
-      </div>
-    );
-  }
+    handleScroll(); // initial check
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [destinations]);
 
   const scrollLeft = () => {
-    document.getElementById("destinations-row")?.scrollBy({
-      left: -300,
-      behavior: "smooth",
-    });
+    document.getElementById("destinations-row")?.scrollBy({ left: -300, behavior: "smooth" });
   };
 
   const scrollRight = () => {
-    document.getElementById("destinations-row")?.scrollBy({
-      left: 300,
-      behavior: "smooth",
-    });
+    document.getElementById("destinations-row")?.scrollBy({ left: 300, behavior: "smooth" });
   };
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (isError) {
+    return <div className="flex justify-center items-center h-screen text-red-600">Failed to load featured destinations</div>;
+  }
 
   return (
     <section className="py-8 sm:py-12 md:py-16 bg-[#f8f9fb]">
@@ -246,75 +207,42 @@ export default function FeaturedStays({}: {}) {
             Featured Destination
           </h2>
           <p className="text-sm sm:text-base text-gray-500 mt-2 sm:mt-3 max-w-2xl mx-auto px-4">
-            Discover our handpicked selection of exceptional properties around
-            the world, offering unparalleled luxury and unforgettable
-            experiences.
+            Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experiences.
           </p>
         </div>
 
-        {/* <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
-        {destinations.map((item, index) => (
-          <DestinationCard key={index} item={item} />
-        ))}
-
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <DestinationCardSkeleton key={i} />
-            ))
-          : destinations.map((item, index) => (
-              <DestinationCard key={index} item={item} />
-            ))}
-      </div> */}
-
         <div className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10">
-          <button
-            onClick={scrollLeft}
-            className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 
-               bg-white shadow-lg rounded-full p-2 md:p-3 hover:bg-gray-100 transition-colors"
-            aria-label="Scroll left"
-          >
-            <FiChevronLeft size={20} className="md:w-6 md:h-6" />
-          </button>
+          {showLeftArrow && (
+            <button onClick={scrollLeft} className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100">
+              <FiChevronLeft size={22} />
+            </button>
+          )}
 
-          <button
-            onClick={scrollRight}
-            className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20
-               bg-white shadow-lg rounded-full p-2 md:p-3 hover:bg-gray-100 transition-colors"
-            aria-label="Scroll right"
-          >
-            <FiChevronRight size={20} className="md:w-6 md:h-6" />
-          </button>
+          {showRightArrow && (
+            <button onClick={scrollRight} className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100">
+              <FiChevronRight size={22} />
+            </button>
+          )}
 
-          <div
-            id="destinations-row"
-            className="flex gap-4 sm:gap-5 md:gap-6 overflow-x-auto scroll-smooth scrollbar-hide px-2 sm:px-4 pb-4"
-          >
-            {loading
+          <div id="destinations-row" className="flex gap-4 sm:gap-5 md:gap-6 overflow-x-auto scroll-smooth scrollbar-hide px-2 sm:px-4 pb-4">
+            {destinations.length === 0
               ? Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0"
-                  >
+                  <div key={i} className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0">
                     <DestinationCardSkeleton />
                   </div>
                 ))
-              : destinations.map((item, i) => (
-                  <div
-                    key={i}
-                    className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0"
-                  >
-                    <DestinationCard item={item} />
+              : destinations.map((hotel) => (
+                  <div key={hotel._id} className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0">
+                    <DestinationCard hotel={hotel} />
                   </div>
-                ))}
+                ))
+            }
           </div>
         </div>
 
-        {!loading && (
+        {destinations.length > 0 && (
           <div className="text-center mt-8 sm:mt-10 md:mt-12">
-            <Link
-              to={"/search"}
-              className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-400 rounded-full text-sm sm:text-base font-medium hover:bg-gray-100 transition-colors"
-            >
+            <Link to={"/search"} className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-400 rounded-full text-sm sm:text-base font-medium hover:bg-gray-100 transition-colors">
               View All Destinations
             </Link>
           </div>
