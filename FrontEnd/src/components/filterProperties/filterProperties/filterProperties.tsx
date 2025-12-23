@@ -2,6 +2,8 @@ export interface PropertyFilters {
   selectedTypes: string[];
   maxPrice: number;
   minRating: number;
+  propertyName?: string;
+  amenities?: string[];
 }
 
 interface FilterPropertiesProps {
@@ -29,7 +31,7 @@ export default function FilterProperties({
 
   const amenities = ["WiFi", "Pool", "Parking", "Spa", "Gym", "Restaurant"];
   const guestRatingOptions = [
-    { label: "Any", value: "any" },
+    { label: "Any", value: "0" },
     { label: "Wonderful 4.5+", value: "4.5" },
     { label: "Very Good 4+", value: "4" },
     { label: "Good 3.5+", value: "3.5" },
@@ -58,31 +60,6 @@ export default function FilterProperties({
         </button>
       </div>
 
-      {/* Search by Property Name - Static */}
-      <div className="mb-6">
-        <h4 className="font-medium text-lg mb-3">Search by property name</h4>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="e.g. Marriott"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            readOnly
-          />
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
-      </div>
 
       {/* Price Range Filter */}
       <div className="mb-6 p-4 border border-gray-200 rounded-lg">
@@ -91,7 +68,7 @@ export default function FilterProperties({
           type="range"
           min={priceBounds.min}
           max={priceBounds.max}
-          value={filters.maxPrice}
+          value={filters.maxPrice || priceBounds.max}
           onChange={(e) => onChange({ maxPrice: Number(e.target.value) })}
           className="w-full"
         />
@@ -108,7 +85,7 @@ export default function FilterProperties({
           />
           <input
             type="number"
-            value={filters.maxPrice}
+            value={filters.maxPrice || priceBounds.max}
             className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             readOnly
           />
@@ -139,19 +116,19 @@ export default function FilterProperties({
         </ul>
       </div>
 
-      {/* Guest Rating Filter - Static */}
+      {/* Guest Rating Filter */}
       <div className="mb-6">
         <h4 className="font-medium text-lg mb-3">Guest Rating</h4>
         <ul className="space-y-2 text-sm">
-          {guestRatingOptions.map((option, index) => (
+          {guestRatingOptions.map((option) => (
             <li key={option.value} className="flex items-center">
               <input
                 id={`rating-${option.value}`}
                 type="radio"
                 name="guestRating"
-                defaultChecked={index === 3}
+                checked={filters.minRating === Number(option.value)}
+                onChange={() => onChange({ minRating: Number(option.value) })}
                 className="w-4 h-4 text-blue-600 border-gray-300"
-                readOnly
               />
               <label
                 htmlFor={`rating-${option.value}`}
@@ -164,7 +141,7 @@ export default function FilterProperties({
         </ul>
       </div>
 
-      {/* Amenities Filter - Static */}
+      {/* Amenities Filter */}
       <div className="mb-6">
         <h4 className="font-medium text-lg mb-3">Amenities</h4>
         <ul className="space-y-2 text-sm">
@@ -173,8 +150,16 @@ export default function FilterProperties({
               <input
                 id={`amenity-${amenity}`}
                 type="checkbox"
+                checked={filters.amenities?.includes(amenity.toLowerCase())}
+                onChange={() => {
+                  const am = amenity.toLowerCase();
+                  const current = filters.amenities || [];
+                  const newAmenities = current.includes(am)
+                    ? current.filter((a) => a !== am)
+                    : [...current, am];
+                  onChange({ amenities: newAmenities });
+                }}
                 className="w-4 h-4 bg-gray-100 border border-gray-300 rounded text-blue-600"
-                readOnly
               />
               <label
                 htmlFor={`amenity-${amenity}`}
@@ -187,71 +172,43 @@ export default function FilterProperties({
         </ul>
       </div>
 
-      {/* Distance from Center - Static */}
-      <div className="mb-6">
-        <h4 className="font-medium text-lg mb-3">Distance from Center</h4>
-        <ul className="space-y-2 text-sm">
-          {distanceOptions.map((distance) => (
-            <li key={distance} className="flex items-center">
-              <input
-                id={`distance-${distance}`}
-                type="checkbox"
-                className="w-4 h-4 bg-gray-100 border border-gray-300 rounded text-blue-600"
-                readOnly
-              />
-              <label
-                htmlFor={`distance-${distance}`}
-                className="ml-2 text-sm font-medium text-black"
-              >
-                {distance}
-              </label>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Popular Filters - Static */}
+      {/* Popular Filters */}
       <div className="mb-6">
         <h4 className="font-medium text-lg mb-3">Popular Filters</h4>
         <ul className="space-y-2 text-sm">
-          {popularFilters.map((filter) => (
-            <li key={filter} className="flex items-center">
-              <input
-                id={`popular-${filter}`}
-                type="checkbox"
-                className="w-4 h-4 bg-gray-100 border border-gray-300 rounded text-blue-600"
-                readOnly
-              />
-              <label
-                htmlFor={`popular-${filter}`}
-                className="ml-2 text-sm font-medium text-black"
-              >
-                {filter}
-              </label>
-            </li>
-          ))}
+          {popularFilters.map((filter) => {
+            // Map popular filter to a general amenity key if possible, or just treat as amenity
+            const key = filter.toLowerCase();
+
+            return (
+              <li key={filter} className="flex items-center">
+                <input
+                  id={`popular-${filter}`}
+                  type="checkbox"
+                  checked={filters.amenities?.includes(key)}
+                  onChange={() => {
+                    const current = filters.amenities || [];
+                    const newAmenities = current.includes(key)
+                      ? current.filter((a) => a !== key)
+                      : [...current, key];
+                    onChange({ amenities: newAmenities });
+                  }}
+                  className="w-4 h-4 bg-gray-100 border border-gray-300 rounded text-blue-600"
+                />
+                <label
+                  htmlFor={`popular-${filter}`}
+                  className="ml-2 text-sm font-medium text-black"
+                >
+                  {filter}
+                </label>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
-      {/* Minimum Rating Filter */}
-      <div className="mb-6">
-        <h4 className="font-medium text-lg mb-3">Minimum Rating</h4>
-        <div className="flex gap-2">
-          {[0, 1, 2, 3, 4, 5].map((rating) => (
-            <button
-              key={rating}
-              onClick={() => onChange({ minRating: rating })}
-              className={`px-3 py-1 rounded-lg border ${
-                filters.minRating === rating
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {rating}+
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Minimum Rating Filter Buttons (Redundant if using radio above, but keeping if requested) */}
+      {/* Removed redundancy for cleaner UI, or can keep if user likes the pills */}
     </div>
   );
 }

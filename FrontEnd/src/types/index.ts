@@ -6,3 +6,4 @@ export * from "./searchResultListProps.type";
 export * from "./booking.type";
 export * from "./coupon.type";
 export * from "./payment.type";
+export * from "./amenity.type";

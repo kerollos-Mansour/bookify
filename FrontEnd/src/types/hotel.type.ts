@@ -10,7 +10,7 @@ export interface HotelDetail {
 
 // Hotel interface matching your actual backend response
 export interface Hotel {
-  _id: string; 
+  _id: string;
   name: string;
   city?: string;
   stateProvinceCode?: string;
@@ -30,4 +30,6 @@ export interface Hotel {
   hotelDetails?: HotelDetail[]; // Embedded hotel details
   createdAt?: string;
   updatedAt?: string;
+  nightlyPrice?: number;
+  totalRooms?: number;
 }

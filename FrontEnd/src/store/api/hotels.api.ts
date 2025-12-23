@@ -21,9 +21,12 @@ type SearchHotelsParams = {
   rooms?: number;
   minRate?: number;
   maxRate?: number;
+  featured?: boolean;
+  propertyCategory?: string;
   sort?: string;
   page?: number;
   limit?: number;
+  amenities?: string[];
 };
 
 export const hotelsApi = apiSlice.injectEndpoints({

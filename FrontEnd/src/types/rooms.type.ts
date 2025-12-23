@@ -1,13 +1,5 @@
 // Amenity interface
-export interface Amenity {
-  id: string; // Using 'id' to match backend
-  name: string;
-  description?: string;
-  icon?: string;
-  category?: "room" | "hotel" | "both";
-  createdAt?: string;
-  updatedAt?: string;
-}
+
 export interface RoomAmenities {
   breakfast: boolean;
   parking: boolean;

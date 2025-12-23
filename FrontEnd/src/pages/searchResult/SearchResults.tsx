@@ -12,17 +12,22 @@ import PageTransition from "../../components/pageTransition/pageTransition";
 import { Hotel } from "../../types/hotel.type";
 import { HotelCardData } from "../../types/hotelCard.type";
 import { useSearchHotelsQuery } from "../../store/api/hotels.api";
+import { useGetAllAmenitiesQuery } from "../../store/api/amenities.api";
 
 type SearchFilters = PropertyFilters & {
   propertyName: string;
+  amenities?: string[];
 };
 
-const getNightlyRate = (hotel: Hotel) => hotel.lowRate ?? hotel.highRate ?? 0;
-
+const getNightlyRate = (hotel: Hotel) =>
+  hotel.nightlyPrice ?? hotel.lowRate ?? hotel.highRate ?? 0;
 const toCardData = (hotel: Hotel): HotelCardData => {
   const nightly = getNightlyRate(hotel);
   const total = hotel.highRate ?? nightly;
-  const detail = hotel.hotelDetails?.[0];
+  // hotelDetails can be string or array based on API. Safeguard it.
+  const detail = Array.isArray(hotel.hotelDetails)
+    ? hotel.hotelDetails[0]
+    : null;
 
   return {
     id: hotel.id,
@@ -39,11 +44,7 @@ const toCardData = (hotel: Hotel): HotelCardData => {
     location: [hotel.city, hotel.stateProvinceCode, hotel.countryCode]
       .filter(Boolean)
       .join(", "),
-    Amenities: detail?.amenities?.slice(0, 3) ?? [
-      "Free WiFi",
-      "Pool access",
-      "Breakfast",
-    ],
+    Amenities: detail?.amenities?.slice(0, 3) || [],
     reviews: {
       reviewsCount: detail?.reviewCount ?? 0,
       avgReview: Number(hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0),
@@ -67,8 +68,26 @@ const toCardData = (hotel: Hotel): HotelCardData => {
 export default function SearchResult() {
   // States
   const { search } = useLocation();
+
+  const [activeTab, setActiveTab] = useState("all");
+  const [filters, setFilters] = useState<SearchFilters>({
+    propertyName: "",
+    selectedTypes: [],
+    maxPrice: 0,
+    minRating: 0,
+    amenities: [],
+  });
+  const [priceBounds, setPriceBounds] = useState({ min: 0, max: 0 });
+  const [propertyTypeOptions, setPropertyTypeOptions] = useState<string[]>([]);
+  const [locationFilter, setLocationFilter] = useState("");
+
   const searchParams = useMemo(() => {
     const params = new URLSearchParams(search);
+
+    // Map activeTab to propertyCategory
+    let category: string | undefined = undefined;
+    if (activeTab === "hotels") category = "hotel";
+    if (activeTab === "homes") category = "home"; // Adjust 'home' if API expects something else
 
     return {
       location: params.get("location") || undefined,
@@ -81,14 +100,15 @@ export default function SearchResult() {
       minRate: params.get("minRate")
         ? Number(params.get("minRate"))
         : undefined,
-      maxRate: params.get("maxRate")
-        ? Number(params.get("maxRate"))
-        : undefined,
+      maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
+      search: filters.propertyName || undefined,
+      amenities: filters.amenities?.length ? filters.amenities : undefined,
+      propertyCategory: category,
       sort: params.get("sort") || undefined,
       page: params.get("page") ? Number(params.get("page")) : 1,
       limit: params.get("limit") ? Number(params.get("limit")) : 20,
     };
-  }, [search]);
+  }, [search, filters.maxPrice, filters.propertyName, activeTab]);
 
   const {
     data: hotels = [],
@@ -96,16 +116,32 @@ export default function SearchResult() {
     error,
   } = useSearchHotelsQuery(searchParams);
 
-  const [activeTab, setActiveTab] = useState("all");
-  const [filters, setFilters] = useState<SearchFilters>({
-    propertyName: "",
-    selectedTypes: [],
-    maxPrice: 0,
-    minRating: 0,
+  // Fetch Amenities for Sidebar
+  const { data: amenitiesList = [] } = useGetAllAmenitiesQuery({ limit: 50 });
+
+  // Fetch Max Price (Global High) for Slider
+  // We query for 1 hotel, sorted by highest price.
+  const { data: maxPriceHotels = [] } = useSearchHotelsQuery({
+    sort: "-nightlyPrice", // or -highRate depending on backend
+    limit: 1,
   });
-  const [priceBounds, setPriceBounds] = useState({ min: 0, max: 0 });
-  const [propertyTypeOptions, setPropertyTypeOptions] = useState<string[]>([]);
-  const [locationFilter, setLocationFilter] = useState("");
+
+  const globalMaxPrice = useMemo(() => {
+    if (maxPriceHotels.length > 0) {
+      // Use nightlyPrice or highRate
+      return (
+        maxPriceHotels[0].nightlyPrice ?? maxPriceHotels[0].highRate ?? 3000
+      );
+    }
+    return 3000; // Default fallback
+  }, [maxPriceHotels]);
+
+  // Update logic to use this globalMaxPrice for the UI slider bounds
+  useEffect(() => {
+    if (globalMaxPrice > 0 && priceBounds.max !== globalMaxPrice) {
+      setPriceBounds((prev) => ({ ...prev, max: globalMaxPrice }));
+    }
+  }, [globalMaxPrice, priceBounds.max]);
 
   // Effects
   // location from params effect
@@ -115,94 +151,14 @@ export default function SearchResult() {
     setLocationFilter(locationParam);
   }, [search]);
 
-  // Calculate price bounds and property types when hotels data changes
-  useEffect(() => {
-    if (hotels.length > 0) {
-      const nightlyRates = hotels
-        .map((hotel) => getNightlyRate(hotel))
-        .filter((rate) => rate > 0);
-
-      if (nightlyRates.length) {
-        const minRate = Math.min(...nightlyRates);
-        const maxRate = Math.max(...nightlyRates);
-        setPriceBounds({ min: minRate, max: maxRate });
-        setFilters((prev) => ({
-          ...prev,
-          maxPrice: maxRate,
-        }));
-      }
-
-      const types = Array.from(
-        new Set(hotels.map((hotel) => (hotel.type ?? "hotel").toLowerCase()))
-      ).sort();
-      setPropertyTypeOptions(types);
-    }
-  }, [hotels]);
-
-  const filteredHotels = useMemo(() => {
-    const normalizedLocation = locationFilter.trim().toLowerCase();
-    const normalizedName = filters.propertyName.trim().toLowerCase();
-
-    return hotels.filter((hotel) => {
-      const nightlyRate = getNightlyRate(hotel);
-      const rating = hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0;
-      const type = (hotel.type ?? "hotel").toLowerCase();
-      const locationTokens = [
-        hotel.city ?? "",
-        hotel.stateProvinceCode ?? "",
-        hotel.countryCode ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
-      const name = hotel.name.toLowerCase();
-
-      const matchesLocation = true;
-
-      const matchesName = normalizedName ? name.includes(normalizedName) : true;
-
-      const matchesTab =
-        activeTab === "all"
-          ? true
-          : activeTab === "hotels"
-          ? type === "hotel" || hotel.propertyCategory === 1
-          : type !== "hotel" && hotel.propertyCategory !== 1;
-
-      const matchesType =
-        filters.selectedTypes.length > 0
-          ? filters.selectedTypes.includes(type)
-          : true;
-
-      const maxPrice = filters.maxPrice || priceBounds.max || nightlyRate;
-      const matchesPrice = nightlyRate <= maxPrice;
-      const matchesRating = rating >= filters.minRating;
-
-      return (
-        matchesLocation &&
-        matchesName &&
-        matchesTab &&
-        matchesType &&
-        matchesPrice &&
-        matchesRating
-      );
-    });
-  }, [
-    hotels,
-    filters.selectedTypes,
-    filters.maxPrice,
-    filters.minRating,
-    filters.propertyName,
-    locationFilter,
-    activeTab,
-    priceBounds.max,
-  ]);
-
+  // Direct mapping from API data
   const hotelCards = useMemo(
     () =>
-      filteredHotels.map((hotel) => ({
+      hotels.map((hotel) => ({
         hotel,
         card: toCardData(hotel),
       })),
-    [filteredHotels]
+    [hotels]
   );
 
   const mapMarkers = useMemo(
@@ -226,7 +182,7 @@ export default function SearchResult() {
         })),
     [hotelCards]
   );
-  console.log(filters);
+
   const mapCenter = mapMarkers.length
     ? {
         latitude: mapMarkers[0].position[0],
@@ -247,7 +203,7 @@ export default function SearchResult() {
       propertyName: "",
       selectedTypes: [],
       minRating: 0,
-      maxPrice: priceBounds.max || prev.maxPrice,
+      maxPrice: 3000,
     }));
   };
 
@@ -303,9 +259,11 @@ export default function SearchResult() {
                     selectedTypes: filters.selectedTypes,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
+                    amenities: filters.amenities, 
                   }}
-                  priceBounds={priceBounds}
+                  priceBounds={{ min: 0, max: globalMaxPrice }} // Use dynamic max
                   propertyTypeOptions={propertyTypeOptions}
+                  availableAmenities={amenitiesList.map((a) => a.name)} // Pass API amenities
                   onChange={handleFilterChange}
                   onReset={handleResetFilters}
                 />

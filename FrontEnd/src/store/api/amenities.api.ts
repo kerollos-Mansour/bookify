@@ -1,24 +1,16 @@
 import { apiSlice } from "./apiSlice";
-import { Amenity } from "../../types";
+import { Amenity, GetAmenitiesParams,AmenitiesResponse } from "../../types";
 
 export const amenitiesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Get all amenities
-    getAllAmenities: builder.query<
-      Amenity[],
-      { category?: "room" | "hotel" | "both" }
-    >({
+    getAllAmenities: builder.query<Amenity[], GetAmenitiesParams>({
       query: (params) => ({
         url: "/amenities",
         params,
       }),
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({ type: "Amenity" as const, id })),
-              { type: "Amenity", id: "LIST" },
-            ]
-          : [{ type: "Amenity", id: "LIST" }],
+      transformResponse: (response: AmenitiesResponse) => response.data.amenities,
+      providesTags: ["Amenity"],
     }),
 
     // Get amenity by ID
