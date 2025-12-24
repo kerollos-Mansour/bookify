@@ -2,7 +2,7 @@ import Skeleton from "./Skeleton";
 
 export default function DestinationCardSkeleton() {
   return (
-    <article className="shrink-0 w-72 sm:w-80 md:w-96 bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 snap-start">
+    <article className="shrink-0 w-72 sm:w-80 md:w-96 bg-card rounded-xl md:rounded-2xl overflow-hidden border border-card-border snap-start">
       {/* Image skeleton */}
       <Skeleton className="w-full aspect-video" />
 

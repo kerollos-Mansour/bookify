@@ -33,63 +33,63 @@ const tabs: Array<{
   description: string;
   icon: ReactNode;
 }> = [
-  // profile tab
-  {
-    id: "profile",
-    label: "Profile",
-    description: "Provide your personal details and travel documents",
-    icon: <User className="w-5 h-5" />,
-  },
-  // communication tab
-  {
-    id: "communications",
-    label: "Communications",
-    description: "Control which notifications you get",
-    icon: <Bell className="w-5 h-5" />,
-  },
-  // payments tab
-  {
-    id: "payments",
-    label: "Payment methods",
-    description: "View saved payment methods",
-    icon: <CreditCard className="w-5 h-5" />,
-  },
-  // coupons tab
-  {
-    id: "coupons",
-    label: "Coupons",
-    description: "View your available coupons",
-    icon: <Tag className="w-5 h-5" />,
-  },
-  // credits tab
-  {
-    id: "credits",
-    label: "Credits",
-    description: "View your active airline credits",
-    icon: <DollarSign className="w-5 h-5" />,
-  },
-  // reviews tab
-  {
-    id: "reviews",
-    label: "Reviews",
-    description: "Read reviews you've shared",
-    icon: <Star className="w-5 h-5" />,
-  },
-  // security tab
-  {
-    id: "security",
-    label: "Security and settings",
-    description: "Update your email or password",
-    icon: <Shield className="w-5 h-5" />,
-  },
-  // help tab
-  {
-    id: "help",
-    label: "Help and feedback",
-    description: "Get customer support",
-    icon: <HelpCircle className="w-5 h-5" />,
-  },
-];
+    // profile tab
+    {
+      id: "profile",
+      label: "Profile",
+      description: "Provide your personal details and travel documents",
+      icon: <User className="w-5 h-5" />,
+    },
+    // communication tab
+    {
+      id: "communications",
+      label: "Communications",
+      description: "Control which notifications you get",
+      icon: <Bell className="w-5 h-5" />,
+    },
+    // payments tab
+    {
+      id: "payments",
+      label: "Payment methods",
+      description: "View saved payment methods",
+      icon: <CreditCard className="w-5 h-5" />,
+    },
+    // coupons tab
+    {
+      id: "coupons",
+      label: "Coupons",
+      description: "View your available coupons",
+      icon: <Tag className="w-5 h-5" />,
+    },
+    // credits tab
+    {
+      id: "credits",
+      label: "Credits",
+      description: "View your active airline credits",
+      icon: <DollarSign className="w-5 h-5" />,
+    },
+    // reviews tab
+    {
+      id: "reviews",
+      label: "Reviews",
+      description: "Read reviews you've shared",
+      icon: <Star className="w-5 h-5" />,
+    },
+    // security tab
+    {
+      id: "security",
+      label: "Security and settings",
+      description: "Update your email or password",
+      icon: <Shield className="w-5 h-5" />,
+    },
+    // help tab
+    {
+      id: "help",
+      label: "Help and feedback",
+      description: "Get customer support",
+      icon: <HelpCircle className="w-5 h-5" />,
+    },
+  ];
 
 const emptyCopy: Record<TabId, { title: string; message: string }> = {
   profile: {
@@ -139,7 +139,7 @@ export default function Account() {
 
   return (
     <PageTransition>
-      <div className="bg-[#f7f7f9] min-h-screen py-10 px-4">
+      <div className="bg-background min-h-screen py-10 px-4">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Account intro , to say hi and etc. */}
           <AccountIntro
@@ -152,7 +152,7 @@ export default function Account() {
             <AccountSidebar
               tabs={tabs}
               activeTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={(tab: TabId) => setActiveTab(tab)}
             />
             {/* here we add more tabs  */}
             <section>

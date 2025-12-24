@@ -69,30 +69,30 @@ export default function BookingInfo() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gray-50 pt-6 px-4">
+      <div className="min-h-screen bg-background pt-6 px-4 transition-colors duration-300">
         <Logo />
         <ProgressSteps currentStep={1} />
         <div className="flex flex-col items-center gap-4 my-6">
-          <h2 className="text-2xl font-bold text-blue-900">
+          <h2 className="text-2xl font-bold text-foreground">
             Booking Information
           </h2>
-          <p className="text-gray-500 text-center">
+          <p className="text-muted-foreground text-center">
             Please fill up the blank fields below
           </p>
         </div>
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-6 w-110">
-              <div className="bg-white rounded-lg shadow-sm p-4">
+              <div className="bg-card rounded-lg shadow-sm p-4 border border-card-border">
                 <img
                   src={hotel.image}
                   alt={hotel.name}
                   className="w-full h-64 object-cover rounded-lg mb-3"
                 />
-                <h3 className="text-xl font-bold text-gray-800">
+                <h3 className="text-xl font-bold text-card-foreground">
                   {hotel.name}
                 </h3>
-                <div className="flex items-center text-gray-500 text-sm mt-1">
+                <div className="flex items-center text-muted-foreground text-sm mt-1">
                   <MapPin className="w-4 h-4 mr-1" />
                   <span>{hotel.location}</span>
                 </div>
@@ -100,18 +100,18 @@ export default function BookingInfo() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <div className="bg-card rounded-lg shadow-sm p-6 border border-card-border">
+                <h3 className="text-lg font-semibold text-card-foreground mb-4">
                   How long you will stay?
                 </h3>
-                <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between bg-muted rounded-lg p-4">
                   <button
                     onClick={() => handleNightsChange(nights - 1)}
                     className="w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center justify-center transition"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
-                  <span className="text-xl font-semibold text-gray-800">
+                  <span className="text-xl font-semibold text-card-foreground">
                     {nights} Days
                   </span>
                   <button
@@ -123,49 +123,49 @@ export default function BookingInfo() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <div className="bg-card rounded-lg shadow-sm p-6 border border-card-border">
+                <h3 className="text-lg font-semibold text-card-foreground mb-4">
                   Pick a Date
                 </h3>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Check-in Date
                     </label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                       <input
                         type="date"
                         value={checkInDate}
                         onChange={(e) => setCheckInDate(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full pl-10 pr-4 py-3 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Check-out Date
                     </label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                       <input
                         type="date"
                         value={checkOutDate}
                         onChange={(e) => setCheckOutDate(e.target.value)}
                         min={checkInDate}
-                        className="w-full pl-10 pr-4 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full pl-10 pr-4 py-3 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       />
                     </div>
                   </div>
 
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                  <div className="bg-accent/50 border border-card-border rounded-lg p-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-sm font-medium text-muted-foreground">
                         Number of Nights:
                       </span>
-                      <span className="text-lg font-bold text-purple-900">
+                      <span className="text-lg font-bold text-foreground">
                         {nights} {nights === 1 ? "Night" : "Nights"}
                       </span>
                     </div>
@@ -173,13 +173,13 @@ export default function BookingInfo() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              <div className="bg-card rounded-lg shadow-sm p-6 border border-card-border">
+                <h3 className="text-lg font-semibold text-card-foreground mb-4">
                   Price Breakdown
                 </h3>
 
                 <div className="space-y-3">
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>
                       ${priceBreakdown.pricePerNight} × {priceBreakdown.nights}{" "}
                       {priceBreakdown.nights === 1 ? "night" : "nights"}
@@ -187,19 +187,19 @@ export default function BookingInfo() {
                     <span>${priceBreakdown.subtotal.toFixed(2)}</span>
                   </div>
 
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>Service Fee (10%)</span>
                     <span>${priceBreakdown.serviceFee.toFixed(2)}</span>
                   </div>
 
-                  <div className="border-t border-gray-200 pt-3 mt-3">
+                  <div className="border-t border-card-border pt-3 mt-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">You will pay</span>
-                      <span className="text-2xl font-bold text-purple-900">
+                      <span className="text-muted-foreground">You will pay</span>
+                      <span className="text-2xl font-bold text-foreground">
                         ${priceBreakdown.total.toFixed(2)} USD
                       </span>
                     </div>
-                    <div className="text-right text-sm text-gray-500 mt-1">
+                    <div className="text-right text-sm text-muted-foreground mt-1">
                       per {priceBreakdown.nights}{" "}
                       {priceBreakdown.nights === 1 ? "Day" : "Days"}
                     </div>
@@ -215,7 +215,7 @@ export default function BookingInfo() {
             >
               Book Now
             </button>
-            <button className="w-64 bg-gray-100 text-gray-600 py-3 rounded-lg font-medium">
+            <button className="w-64 bg-muted text-muted-foreground py-3 rounded-lg font-medium hover:bg-accent transition">
               Cancel
             </button>
           </div>

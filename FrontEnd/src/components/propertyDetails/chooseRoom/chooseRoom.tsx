@@ -35,11 +35,10 @@ export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
             <button
               key={filter.id}
               onClick={() => setActiveFilter(filter.id)}
-              className={`px-5 py-2 rounded-full border-2 font-medium transition-colors ${
-                activeFilter === filter.id
-                  ? "border-gray-900 bg-gray-900 text-white"
-                  : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
-              }`}
+              className={`px-5 py-2 rounded-full border-2 font-medium transition-colors ${activeFilter === filter.id
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-card-border bg-card text-card-foreground hover:border-foreground"
+                }`}
             >
               {filter.label}
             </button>
@@ -47,7 +46,7 @@ export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
         </div>
 
         {/* Room Count */}
-        <div className="text-sm text-gray-700">
+        <div className="text-sm text-muted-foreground">
           Showing {filteredRooms.length} of {rooms.length} rooms
         </div>
       </div>

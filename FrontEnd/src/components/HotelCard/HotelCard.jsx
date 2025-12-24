@@ -19,7 +19,7 @@ export default function HotelCard({ cardData }) {
   };
 
   return (
-    <div className="mb-4 w-full mx-auto bg-white rounded-2xl border border-gray-200 overflow-hidden font-sans flex flex-col lg:flex-row hover:shadow-lg transition-shadow duration-300">
+    <div className="mb-4 w-full mx-auto bg-card rounded-2xl border border-card-border overflow-hidden font-sans flex flex-col lg:flex-row hover:shadow-lg transition-shadow duration-300">
       <div className="relative w-full lg:w-80 h-56 lg:h-auto flex-shrink-0">
         <img
           className="w-full h-full object-cover"
@@ -37,25 +37,24 @@ export default function HotelCard({ cardData }) {
         {/* Heart Icon */}
         <button
           onClick={() => setIsLiked(!isLiked)}
-          className="cursor-pointer absolute z-10 top-3 right-3 bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-200"
+          className="cursor-pointer absolute z-10 top-3 right-3 bg-card/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-card hover:scale-110 transition-all duration-200"
         >
           <Heart
-            className={`w-5 h-5 transition-all duration-300 ${
-              isLiked ? "fill-red-500 text-red-500 scale-110" : "text-gray-700"
-            }`}
+            className={`w-5 h-5 transition-all duration-300 ${isLiked ? "fill-red-500 text-red-500 scale-110" : "text-muted-foreground"
+              }`}
           />
         </button>
 
         {/* navigate between images */}
         <button
           onClick={prevImage}
-          className="cursor-pointer z-10 absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur p-2 rounded-full shadow-md hover:bg-white transition-all duration-200"
+          className="cursor-pointer z-10 absolute left-2 top-1/2 -translate-y-1/2 bg-card/90 backdrop-blur p-2 rounded-full shadow-md hover:bg-card transition-all duration-200"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
         <button
           onClick={nextImage}
-          className="cursor-pointer z-10 absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur p-2 rounded-full shadow-md hover:bg-white transition-all duration-200"
+          className="cursor-pointer z-10 absolute right-2 top-1/2 -translate-y-1/2 bg-card/90 backdrop-blur p-2 rounded-full shadow-md hover:bg-card transition-all duration-200"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -64,17 +63,17 @@ export default function HotelCard({ cardData }) {
       {/* Content Section */}
       <div className="p-5 lg:p-6 w-full flex flex-col">
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-gray-900 mb-1">
+          <h3 className="text-xl font-bold text-card-foreground mb-1">
             {cardData.title}
           </h3>
-          <p className="text-sm text-gray-600 mb-3">{cardData.location}</p>
+          <p className="text-sm text-muted-foreground mb-3">{cardData.location}</p>
 
           {/* Amenities */}
           <div className="flex flex-wrap gap-2 mb-4">
             {cardData.Amenities.slice(0, 3).map((amenity, index) => (
               <span
                 key={index}
-                className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full"
+                className="text-xs bg-muted text-muted-foreground px-2.5 py-1 rounded-full"
               >
                 {amenity}
               </span>
@@ -83,15 +82,15 @@ export default function HotelCard({ cardData }) {
         </div>
 
         {/* Bottom Section: Rating and Price */}
-        <div className="flex items-end justify-between gap-4 mt-auto pt-4 border-t border-gray-100">
+        <div className="flex items-end justify-between gap-4 mt-auto pt-4 border-t border-card-border">
           {/* Rating */}
           <div className="flex items-center gap-2.5">
             <div className="bg-blue-600 text-white px-3 py-2 rounded-lg text-base font-bold">
               {cardData.reviews.avgReview.toFixed(1)}
             </div>
             <div>
-              <p className="font-semibold text-gray-900 text-sm">Excellent</p>
-              <p className="text-xs text-gray-500">
+              <p className="font-semibold text-card-foreground text-sm">Excellent</p>
+              <p className="text-xs text-muted-foreground">
                 {cardData.reviews.reviewsCount.toLocaleString()} reviews
               </p>
             </div>
@@ -107,8 +106,8 @@ export default function HotelCard({ cardData }) {
             </div>
 
             {/* Nightly Rate */}
-            <p className="text-sm text-gray-600 mb-0.5">
-              <span className="text-xl font-bold text-gray-900">
+            <p className="text-sm text-muted-foreground mb-0.5">
+              <span className="text-xl font-bold text-card-foreground">
                 EGP {cardData.prices.nightly}
               </span>{" "}
               <span className="text-sm font-normal">/ night</span>
@@ -116,19 +115,19 @@ export default function HotelCard({ cardData }) {
 
             {/* Total Price */}
             <div className="flex items-center gap-2 justify-end">
-              <span className="text-sm text-gray-500 line-through">
+              <span className="text-sm text-muted-foreground line-through">
                 EGP {cardData.prices.originalPrice}
               </span>
-              <span className="text-lg font-bold text-gray-900">
+              <span className="text-lg font-bold text-card-foreground">
                 {cardData.prices.day}
               </span>
             </div>
 
             {/* Total Label */}
-            <p className="text-xs text-gray-500 mt-0.5">total price</p>
+            <p className="text-xs text-muted-foreground mt-0.5">total price</p>
 
             {cardData.withFees && (
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 includes taxes & fees
               </p>
             )}

@@ -32,9 +32,9 @@ const RECENTLY_VIEWED = [
     rating: 8.0,
     reviewCount: 19,
   },
-  
+
   {
-    id:6,
+    id: 6,
     name: "Downtown Antique Hotel",
     image: "https://images.trvl-media.com/lodging/118000000/117380000/117376100/117376035/1688e98a.jpg?impolicy=resizecrop&rw=1200&ra=fit",
     rating: 8.0,
@@ -77,7 +77,7 @@ function PropertyCard({ property }: { property: (typeof RECENTLY_VIEWED)[0] }) {
   return (
     <Link
       to={`/property/${property.id}`}
-      className="group flex-shrink-0 w-64 sm:w-72 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="group flex-shrink-0 w-64 sm:w-72 bg-card rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-card-border"
     >
       <div className="relative">
         <img
@@ -90,25 +90,24 @@ function PropertyCard({ property }: { property: (typeof RECENTLY_VIEWED)[0] }) {
             e.preventDefault();
             setIsFavorite(!isFavorite);
           }}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-all duration-200"
+          className="absolute top-3 right-3 p-2 rounded-full bg-card/90 backdrop-blur-sm shadow-md hover:bg-card transition-all duration-200"
           aria-label="Add to favorites"
         >
           <Heart
-            className={`w-5 h-5 transition-colors ${
-              isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
-            }`}
+            className={`w-5 h-5 transition-colors ${isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
+              }`}
           />
         </button>
       </div>
       <div className="p-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-1">
+        <h3 className="text-base font-semibold text-card-foreground mb-2 line-clamp-1">
           {property.name}
         </h3>
         <div className="flex items-center gap-1.5">
           <div className="bg-blue-600 text-white text-sm font-semibold px-2 py-0.5 rounded">
             {property.rating}
           </div>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             ({property.reviewCount})
           </span>
         </div>
@@ -123,8 +122,7 @@ function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
 
   const handleClick = () => {
     navigate(
-      `/search?location=${encodeURIComponent(search.location)}&checkIn=${
-        search.checkIn
+      `/search?location=${encodeURIComponent(search.location)}&checkIn=${search.checkIn
       }&checkOut=${search.checkOut}`
     );
   };
@@ -132,26 +130,26 @@ function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
   return (
     <button
       onClick={handleClick}
-      className="bg-white rounded-lg shadow-sm hover:shadow-md border border-gray-200 p-4 transition-all duration-300 hover:-translate-y-0.5 text-left w-full"
+      className="bg-card rounded-lg shadow-sm hover:shadow-md border border-card-border p-4 transition-all duration-300 hover:-translate-y-0.5 text-left w-full"
     >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 mt-1">
-          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-            <MapPin className="w-5 h-5 text-gray-600" />
+          <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-muted-foreground" />
           </div>
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-base font-semibold text-gray-900 mb-1">
+          <h4 className="text-base font-semibold text-card-foreground mb-1">
             Stays in {search.location}
           </h4>
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">
                 {search.checkIn} – {search.checkOut}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Users className="w-4 h-4 flex-shrink-0" />
               <span>
                 {search.travelers} traveler{search.travelers > 1 ? "s" : ""} •{" "}
@@ -168,16 +166,16 @@ function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
 // Main Component
 export function WhereYouLeftOff() {
   return (
-    <section className="py-12 md:py-10 bg-[#EFF3F7] from-gray-50 to-white">
+    <section className="py-12 md:py-10 bg-background transition-colors duration-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Section Header */}
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 md:mb-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 md:mb-10">
           Here's where you left off
         </h2>
 
         {/* Recently Viewed Properties */}
         <div className="mb-10 md:mb-12">
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-5">
+          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
             Your recently viewed properties
           </h3>
           <div className="relative">
@@ -197,7 +195,7 @@ export function WhereYouLeftOff() {
 
         {/* Recent Searches */}
         <div>
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-5">
+          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
             Your recent searches
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -35,18 +35,18 @@ const quickLinks = [
 
 export default function ProfileTab() {
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
+    <div className="bg-card rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
       {profileSections.map((section) => (
         <article
           key={section.title}
-          className="border border-slate-100 rounded-2xl p-5 sm:p-6"
+          className="border border-card-border rounded-2xl p-5 sm:p-6"
         >
           <header className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 sm:justify-between">
             <div>
-              <p className="text-xl font-semibold text-slate-900">
+              <p className="text-xl font-semibold text-foreground">
                 {section.title}
               </p>
-              <p className="text-sm text-slate-500">{section.description}</p>
+              <p className="text-sm text-muted-foreground">{section.description}</p>
             </div>
             <button className="inline-flex items-center gap-2 text-blue-600 font-semibold text-sm hover:text-blue-500">
               <Edit2 className="w-4 h-4" />
@@ -57,10 +57,10 @@ export default function ProfileTab() {
           <dl className="mt-6 grid gap-6 sm:grid-cols-2">
             {section.fields.map((field) => (
               <div key={field.label}>
-                <dt className="text-sm uppercase tracking-wide text-slate-400 font-semibold">
+                <dt className="text-sm uppercase tracking-wide text-muted-foreground/60 font-semibold">
                   {field.label}
                 </dt>
-                <dd className="text-base text-slate-900">{field.value}</dd>
+                <dd className="text-base text-foreground">{field.value}</dd>
               </div>
             ))}
           </dl>

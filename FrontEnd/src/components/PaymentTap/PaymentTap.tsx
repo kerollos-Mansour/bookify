@@ -78,7 +78,7 @@ export default function PaymentTap() {
     };
 
     return (
-        <div className="mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="mx-auto bg-card rounded-2xl shadow-xl overflow-hidden">
             <div className="p-8">
                 {/* Card Preview */}
                 <div className="relative bg-linear-to-br from-blue-600 to-indigo-800 rounded-2xl p-8 text-white mb-8 shadow-2xl h-56 w-100 mx-auto">
@@ -126,7 +126,7 @@ export default function PaymentTap() {
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-foreground/70 mb-2">
                             Card Number
                         </label>
                         <input
@@ -144,12 +144,12 @@ export default function PaymentTap() {
                             placeholder="1234 5678 9012 3456"
                             maxLength={19}
                             disabled={edit}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-gray-50/50"
+                            className="w-full px-4 py-3 border border-card-border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-muted/30 text-foreground"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-foreground/70 mb-2">
                             Bank
                         </label>
                         <select
@@ -161,7 +161,7 @@ export default function PaymentTap() {
                                 }))
                             }
                             disabled={edit}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-gray-50/50"
+                            className="w-full px-4 py-3 border border-card-border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-muted/30 text-foreground"
                         >
                             <option value="">Select Bank</option>
                             <option value="QNB">QNB</option>
@@ -173,7 +173,7 @@ export default function PaymentTap() {
 
                     <div className="grid grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            <label className="block text-sm font-semibold text-foreground/70 mb-2">
                                 Expiry Date
                             </label>
                             <input
@@ -191,12 +191,12 @@ export default function PaymentTap() {
                                 placeholder="MM/YY"
                                 maxLength={5}
                                 disabled={edit}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-gray-50/50"
+                                className="w-full px-4 py-3 border border-card-border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-muted/30 text-foreground"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            <label className="block text-sm font-semibold text-foreground/70 mb-2">
                                 CVV
                             </label>
                             <input
@@ -211,7 +211,7 @@ export default function PaymentTap() {
                                 placeholder="123"
                                 maxLength={4}
                                 disabled={edit}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-gray-50/50"
+                                className="w-full px-4 py-3 border border-card-border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all bg-muted/30 text-foreground"
                             />
                         </div>
                     </div>
@@ -223,7 +223,7 @@ export default function PaymentTap() {
                     >
                         Add Card
                     </button>
-                    <div className="text-center underline cursor-pointer select-none">
+                    <div className="text-center underline cursor-pointer select-none text-foreground/80 hover:text-foreground">
                         <div
                             onClick={() => {
                                 setEdit(!edit);
@@ -237,7 +237,7 @@ export default function PaymentTap() {
                             Edit Card
                         </div>
                     </div>
-                    <div className="flex items-center justify-center gap-3 text-sm text-gray-600 mt-6">
+                    <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground mt-6">
                         <svg
                             className="w-5 h-5"
                             fill="currentColor"
