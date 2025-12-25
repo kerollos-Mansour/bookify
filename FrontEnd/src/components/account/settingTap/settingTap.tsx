@@ -102,7 +102,7 @@ export default function SettingTap() {
       await updateUser({
         id: userId,
         body: {
-          phoneNo: phoneNumber, 
+          phoneNo: phoneNumber,
         },
       }).unwrap();
 
@@ -142,7 +142,9 @@ export default function SettingTap() {
               <h2 className="text-lg font-semibold text-card-foreground mb-2">
                 {section.title}
               </h2>
-              <p className="text-sm text-muted-foreground">{section.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {section.description}
+              </p>
             </div>
 
             {/* Divider */}
@@ -181,7 +183,6 @@ export default function SettingTap() {
                       </div>
                     </div>
 
-
                     {/* Action Button */}
                     {field.action !== "view" && (
                       <button
@@ -208,7 +209,6 @@ export default function SettingTap() {
                     )}
                   </div>
 
-
                   {/* Divider between fields */}
                   <hr className="border-card-border" />
                 </div>
@@ -219,12 +219,12 @@ export default function SettingTap() {
       </div>
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white p-6 rounded-xl w-full max-w-sm space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-card p-6 rounded-xl w-full max-w-sm space-y-4 border border-input-border">
+            <h3 className="text-lg font-semibold text-foreground">
               Delete account
             </h3>
 
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               This action is permanent and cannot be undone.
             </p>
 
@@ -250,14 +250,14 @@ export default function SettingTap() {
       )}
       {showPhoneModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white p-6 rounded-xl w-full max-w-sm space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-card p-6 rounded-xl w-full max-w-sm space-y-4 border border-input-border">
+            <h3 className="text-lg font-semibold text-foreground">
               Update Phone Number
             </h3>
             <input
               type="text"
               placeholder="Enter phone number"
-              className="w-full border px-3 py-2 rounded-lg"
+              className="w-full border border-input-border bg-background text-foreground px-3 py-2 rounded-lg"
               value={phoneInput}
               onChange={(e) => setPhoneInput(e.target.value)}
             />
@@ -283,8 +283,8 @@ export default function SettingTap() {
       {/* Password Change Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white p-6 rounded-xl w-full max-w-sm space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-card p-6 rounded-xl w-full max-w-sm space-y-4 border border-input-border">
+            <h3 className="text-lg font-semibold text-foreground">
               Change Password
             </h3>
             <form
@@ -309,19 +309,19 @@ export default function SettingTap() {
               className="space-y-4"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Current Password
                 </label>
                 <input
                   type="password"
                   name="currentPassword"
                   required
-                  className="w-full border px-3 py-2 rounded-lg"
+                  className="w-full border border-input-border bg-background text-foreground px-3 py-2 rounded-lg"
                   placeholder="Enter current password"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   New Password
                 </label>
                 <input
@@ -329,12 +329,12 @@ export default function SettingTap() {
                   name="newPassword"
                   required
                   minLength={6}
-                  className="w-full border px-3 py-2 rounded-lg"
+                  className="w-full border border-input-border bg-background text-foreground px-3 py-2 rounded-lg"
                   placeholder="Enter new password"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Confirm New Password
                 </label>
                 <input
@@ -342,7 +342,7 @@ export default function SettingTap() {
                   name="confirmPassword"
                   required
                   minLength={6}
-                  className="w-full border px-3 py-2 rounded-lg"
+                  className="w-full border border-input-border bg-background text-foreground px-3 py-2 rounded-lg"
                   placeholder="Confirm new password"
                 />
               </div>

@@ -185,7 +185,7 @@ export default function HelpTab() {
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-600 to-cyan-600 px-8 py-6">
         <div className="flex items-center gap-4">
@@ -203,41 +203,41 @@ export default function HelpTab() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Options */}
           <div className="lg:col-span-1 space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Contact Us
             </h3>
 
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <Phone className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">Phone</p>
+                  <p className="font-semibold text-foreground text-sm">Phone</p>
                   <p className="text-blue-600 text-sm">1-800-EXPEDIA</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <Mail className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">Email</p>
+                  <p className="font-semibold text-foreground text-sm">Email</p>
                   <p className="text-purple-600 text-sm">support@expedia.com</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-green-100 rounded-lg">
                   <Clock className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">Hours</p>
+                  <p className="font-semibold text-foreground text-sm">Hours</p>
                   <p className="text-green-600 text-sm">24/7 Support</p>
                 </div>
               </div>
@@ -245,7 +245,7 @@ export default function HelpTab() {
 
             {/* FAQs */}
             <div className="mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
                 Frequently Asked Questions
               </h3>
               <div className="space-y-2">
@@ -253,7 +253,7 @@ export default function HelpTab() {
                   <button
                     key={index}
                     onClick={() => askFAQ(faq)}
-                    className="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors text-sm text-gray-700 hover:text-gray-900"
+                    className="w-full text-left p-3 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm text-foreground hover:text-foreground/80"
                   >
                     {faq.question}
                   </button>
@@ -264,7 +264,7 @@ export default function HelpTab() {
 
           {/* Live Chat */}
           <div className="lg:col-span-2">
-            <div className="bg-gray-50 rounded-2xl overflow-hidden border-2 border-gray-200 h-[600px] flex flex-col">
+            <div className="bg-muted rounded-2xl overflow-hidden border-2 border-input-border h-[600px] flex flex-col">
               {/* Chat Header */}
               <div className="bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -322,12 +322,12 @@ export default function HelpTab() {
                           className={`rounded-2xl px-4 py-3 ${
                             message.sender === "user"
                               ? "bg-blue-600 text-white"
-                              : "bg-white text-gray-900 border border-gray-200"
+                              : "bg-card text-foreground border border-input-border"
                           }`}
                         >
                           <p className="text-sm">{message.text}</p>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1 px-2">
+                        <p className="text-xs text-muted-foreground mt-1 px-2">
                           {message.timestamp.toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -344,15 +344,15 @@ export default function HelpTab() {
                       <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center flex-shrink-0">
                         <Bot className="w-4 h-4 text-white" />
                       </div>
-                      <div className="bg-white rounded-2xl px-4 py-3 border border-gray-200">
+                      <div className="bg-card rounded-2xl px-4 py-3 border border-input-border">
                         <div className="flex gap-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
                           <div
-                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                             style={{ animationDelay: "0.2s" }}
                           ></div>
                           <div
-                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                             style={{ animationDelay: "0.4s" }}
                           ></div>
                         </div>
@@ -365,7 +365,7 @@ export default function HelpTab() {
               </div>
 
               {/* Input */}
-              <div className="p-4 bg-white border-t-2 border-gray-200">
+              <div className="p-4 bg-card border-t-2 border-input-border">
                 <div className="flex gap-3">
                   <input
                     type="text"
@@ -373,7 +373,7 @@ export default function HelpTab() {
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
-                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-teal-500 focus:outline-none"
+                    className="flex-1 px-4 py-3 border-2 border-input-border bg-background text-foreground rounded-xl focus:border-teal-500 focus:outline-none"
                   />
                   <button
                     onClick={sendMessage}

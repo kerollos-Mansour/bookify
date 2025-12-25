@@ -77,7 +77,7 @@ export default function CouponsTab() {
   const usedCoupons = coupons.filter((c) => (c.usedCount || 0) >= c.usageLimit);
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-6">
         <div className="flex items-center gap-4">
@@ -97,15 +97,17 @@ export default function CouponsTab() {
       <div className="p-8 space-y-8">
         {/* Active Coupons */}
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <Percent className="w-5 h-5 text-purple-600" />
             Available Coupons
           </h3>
           {activeCoupons.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-2xl">
+            <div className="text-center py-12 bg-muted rounded-2xl">
               <Tag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 font-medium">No active coupons</p>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-muted-foreground font-medium">
+                No active coupons
+              </p>
+              <p className="text-muted-foreground text-sm mt-1">
                 Check back later for exclusive deals!
               </p>
             </div>
@@ -118,7 +120,7 @@ export default function CouponsTab() {
                 return (
                   <div
                     key={coupon._id}
-                    className="relative bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200 overflow-hidden group hover:shadow-lg transition-all"
+                    className="relative bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 border-2 border-purple-200 dark:border-purple-800 overflow-hidden group hover:shadow-lg transition-all"
                   >
                     {/* Decorative circles */}
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-200/30 rounded-full blur-2xl"></div>
@@ -134,14 +136,14 @@ export default function CouponsTab() {
                       </div>
 
                       {/* Description */}
-                      <p className="text-gray-900 font-semibold mb-2">
+                      <p className="text-foreground font-semibold mb-2">
                         {coupon.discountType === "percentage"
                           ? `Get ${coupon.discountValue}% off on your bookings`
                           : `Get $${coupon.discountValue} off on your bookings`}
                       </p>
 
                       {/* Coupon Code */}
-                      <div className="bg-white rounded-xl p-3 mb-4 border-2 border-dashed border-purple-300">
+                      <div className="bg-background rounded-xl p-3 mb-4 border-2 border-dashed border-purple-300 dark:border-purple-700">
                         <div className="flex items-center justify-between">
                           <code className="text-purple-700 font-mono font-bold text-lg">
                             {coupon.code}
@@ -160,18 +162,14 @@ export default function CouponsTab() {
                       </div>
 
                       {/* Details */}
-                      <div className="space-y-2 text-sm">
+                      <div className="space-y-2 text-sm text-muted-foreground">
                         {coupon.minPurchase && (
-                          <p className="text-gray-600">
-                            • Min. purchase: ${coupon.minPurchase}
-                          </p>
+                          <p>• Min. purchase: ${coupon.minPurchase}</p>
                         )}
                         {coupon.maxDiscount && (
-                          <p className="text-gray-600">
-                            • Max. discount: ${coupon.maxDiscount}
-                          </p>
+                          <p>• Max. discount: ${coupon.maxDiscount}</p>
                         )}
-                        <div className="flex items-center gap-2 text-gray-600">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                           <Calendar className="w-4 h-4" />
                           <span
                             className={
@@ -194,27 +192,27 @@ export default function CouponsTab() {
         {/* Used Coupons */}
         {usedCoupons.length > 0 && (
           <section>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Used Coupons
             </h3>
             <div className="space-y-3">
               {usedCoupons.map((coupon) => (
                 <div
                   key={coupon._id}
-                  className="bg-gray-50 rounded-xl p-4 border border-gray-200 opacity-60"
+                  className="bg-muted rounded-xl p-4 border border-input-border opacity-60"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <code className="text-gray-600 font-mono font-bold">
+                      <code className="text-muted-foreground font-mono font-bold">
                         {coupon.code}
                       </code>
-                      <p className="text-gray-500 text-sm mt-1">
+                      <p className="text-muted-foreground/80 text-sm mt-1">
                         {coupon.discountType === "percentage"
                           ? `Get ${coupon.discountValue}% off on your bookings`
                           : `Get $${coupon.discountValue} off on your bookings`}
                       </p>
                     </div>
-                    <span className="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-semibold">
+                    <span className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs font-semibold">
                       Used
                     </span>
                   </div>
@@ -225,11 +223,11 @@ export default function CouponsTab() {
         )}
 
         {/* How to Use */}
-        <section className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
-          <h3 className="text-lg font-semibold text-blue-900 mb-3">
+        <section className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
+          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">
             How to use coupons
           </h3>
-          <ol className="space-y-2 text-sm text-blue-800">
+          <ol className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
             <li className="flex items-start gap-2">
               <span className="font-bold">1.</span>
               <span>Click the copy button to copy the coupon code</span>

@@ -110,7 +110,7 @@ export default function ProfileTab() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-3xl p-8 shadow-sm">
+      <div className="bg-card rounded-3xl p-8 shadow-sm">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
@@ -120,13 +120,13 @@ export default function ProfileTab() {
 
   if (isError || !profile) {
     return (
-      <div className="bg-white rounded-3xl p-8 shadow-sm">
+      <div className="bg-card rounded-3xl p-8 shadow-sm">
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             Failed to load profile
           </h3>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             {error && "data" in error
               ? JSON.stringify(error.data)
               : "Please try again later"}
@@ -137,7 +137,7 @@ export default function ProfileTab() {
   }
 
   return (
-    <div className="bg-card  rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-sm overflow-hidden">
       {/* Success Message */}
       {showSuccess && (
         <div className="bg-green-50 border-l-4 border-green-500 p-4 m-6 rounded-lg">
@@ -188,7 +188,7 @@ export default function ProfileTab() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="flex items-center gap-2 px-6 py-3 bg-background text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit Profile
@@ -206,7 +206,7 @@ export default function ProfileTab() {
                 <button
                   onClick={handleSave}
                   disabled={isUpdating}
-                  className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-3 bg-background text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {isUpdating ? "Saving..." : "Save Changes"}
@@ -222,7 +222,7 @@ export default function ProfileTab() {
         <div className="space-y-8">
           {/* Personal Information */}
           <section>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
               <UserIcon className="w-5 h-5 text-blue-600" />
               Personal Information
             </h3>
@@ -274,11 +274,11 @@ export default function ProfileTab() {
                 icon={<Calendar className="w-4 h-4" />}
               />
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-foreground mb-2">
                   Gender
                 </label>
                 <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                     <Users className="w-4 h-4" />
                   </div>
                   <select
@@ -288,8 +288,8 @@ export default function ProfileTab() {
                     disabled={!isEditing}
                     className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all ${
                       isEditing
-                        ? "bg-white border-gray-300"
-                        : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                        ? "bg-background border-input-border text-foreground"
+                        : "bg-muted border-input-border cursor-not-allowed text-muted-foreground"
                     }`}
                   >
                     <option value="">Select gender</option>
@@ -305,7 +305,7 @@ export default function ProfileTab() {
 
           {/* Location Information */}
           <section>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-blue-600" />
               Location Details
             </h3>
@@ -333,13 +333,13 @@ export default function ProfileTab() {
 
           {/* Additional Information */}
           <section>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5 text-blue-600" />
               Additional Information
             </h3>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-foreground mb-2">
                   Bio
                 </label>
                 <textarea
@@ -351,8 +351,8 @@ export default function ProfileTab() {
                   placeholder="Tell us about yourself..."
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all resize-none ${
                     isEditing
-                      ? "bg-white border-gray-300"
-                      : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                      ? "bg-background border-input-border text-foreground"
+                      : "bg-muted border-input-border cursor-not-allowed text-muted-foreground"
                   }`}
                 />
               </div>
@@ -366,7 +366,7 @@ export default function ProfileTab() {
                 placeholder="Emergency contact number"
               />
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-foreground mb-2">
                   Accessibility Needs
                 </label>
                 <textarea
@@ -378,8 +378,8 @@ export default function ProfileTab() {
                   placeholder="Let us know if you have any accessibility requirements..."
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all resize-none ${
                     isEditing
-                      ? "bg-white border-gray-300"
-                      : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                      ? "bg-background border-input-border text-foreground"
+                      : "bg-muted border-input-border cursor-not-allowed text-muted-foreground"
                   }`}
                 />
               </div>
@@ -415,11 +415,11 @@ function InputField({
 }: InputFieldProps) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <label className="block text-sm font-semibold text-foreground mb-2">
         {label}
       </label>
       <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
           {icon}
         </div>
         <input
@@ -431,8 +431,8 @@ function InputField({
           placeholder={placeholder}
           className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all ${
             disabled
-              ? "bg-gray-50 border-gray-200 cursor-not-allowed"
-              : "bg-white border-gray-300"
+              ? "bg-muted border-input-border cursor-not-allowed text-muted-foreground"
+              : "bg-background border-input-border text-foreground"
           }`}
         />
       </div>

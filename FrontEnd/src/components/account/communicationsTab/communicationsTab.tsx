@@ -110,7 +110,7 @@ export default function CommunicationsTab() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-6">
         <div className="flex items-center justify-between">
@@ -128,7 +128,7 @@ export default function CommunicationsTab() {
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="px-6 py-3 bg-background text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               Mark all as read
             </button>
@@ -139,7 +139,7 @@ export default function CommunicationsTab() {
       <div className="p-8 space-y-8">
         {/* Notifications List */}
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             Recent Notifications
           </h3>
           <div className="space-y-3">
@@ -156,20 +156,22 @@ export default function CommunicationsTab() {
                     key={notification._id}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       notification.read
-                        ? "bg-gray-50 border-gray-200"
-                        : "bg-blue-50 border-blue-200 shadow-sm"
+                        ? "bg-muted border-input-border"
+                        : "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-sm"
                     }`}
                   >
                     <div className="flex items-start gap-4">
                       <div
                         className={`p-3 rounded-xl ${
-                          notification.read ? "bg-gray-200" : "bg-blue-100"
+                          notification.read
+                            ? "bg-muted"
+                            : "bg-blue-100 dark:bg-blue-900"
                         }`}
                       >
                         <Icon
                           className={`w-5 h-5 ${
                             notification.read
-                              ? "text-gray-600"
+                              ? "text-muted-foreground"
                               : "text-blue-600"
                           }`}
                         />
@@ -177,13 +179,13 @@ export default function CommunicationsTab() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 text-sm">
+                            <h4 className="font-semibold text-foreground text-sm">
                               {notification.title}
                             </h4>
-                            <p className="text-gray-600 text-sm mt-1">
+                            <p className="text-muted-foreground text-sm mt-1">
                               {notification.message}
                             </p>
-                            <p className="text-gray-400 text-xs mt-2">
+                            <p className="text-muted-foreground/80 text-xs mt-2">
                               {getTimeAgo(notification.createdAt)}
                             </p>
                           </div>
@@ -219,10 +221,10 @@ export default function CommunicationsTab() {
 
         {/* Notification Preferences */}
         <section>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             Notification Preferences
           </h3>
-          <div className="bg-gray-50 rounded-2xl p-6 space-y-4">
+          <div className="bg-muted rounded-2xl p-6 space-y-4">
             <PreferenceToggle
               label="Email Notifications"
               description="Receive notifications via email"
@@ -241,7 +243,7 @@ export default function CommunicationsTab() {
               checked={preferences.smsNotifications}
               onChange={() => handlePreferenceChange("smsNotifications")}
             />
-            <hr className="border-gray-300" />
+            <hr className="border-input-border" />
             <PreferenceToggle
               label="Promotional Emails"
               description="Receive special offers and deals"
@@ -291,13 +293,13 @@ function PreferenceToggle({
   return (
     <div className="flex items-center justify-between">
       <div className="flex-1">
-        <p className="font-medium text-gray-900 text-sm">{label}</p>
-        <p className="text-gray-600 text-xs mt-0.5">{description}</p>
+        <p className="font-medium text-foreground text-sm">{label}</p>
+        <p className="text-muted-foreground text-xs mt-0.5">{description}</p>
       </div>
       <button
         onClick={onChange}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-          checked ? "bg-blue-600" : "bg-gray-300"
+          checked ? "bg-blue-600" : "bg-input-border dark:bg-gray-600"
         }`}
       >
         <span

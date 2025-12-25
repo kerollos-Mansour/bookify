@@ -19,7 +19,7 @@ export default function AccountSidebar<T extends string>({
   onTabChange,
 }: AccountSidebarProps<T>) {
   return (
-    <aside className="bg-card rounded-3xl p-4 sm:p-6 shadow-sm">
+    <aside className="bg-card  rounded-3xl p-4 sm:p-6 shadow-sm ">
       <nav className="space-y-1">
         {tabs.map((tab) => (
           <button

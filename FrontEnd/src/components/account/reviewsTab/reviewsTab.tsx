@@ -78,7 +78,7 @@ export default function ReviewsTab() {
       : "0.0";
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-8 py-6">
         <div className="flex items-center justify-between">
@@ -101,10 +101,10 @@ export default function ReviewsTab() {
         {reviews.length === 0 ? (
           <div className="text-center py-16">
             <Star className="w-20 h-20 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-foreground mb-2">
               No reviews yet
             </h3>
-            <p className="text-gray-500 mb-6">
+            <p className="text-muted-foreground mb-6">
               Share your experiences by reviewing your past stays
             </p>
             <button className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg">
@@ -116,15 +116,15 @@ export default function ReviewsTab() {
             {reviews.map((review) => (
               <div
                 key={review._id}
-                className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-200 hover:border-amber-300 transition-all hover:shadow-lg"
+                className="bg-card/50 dark:bg-card border-2 border-input-border rounded-2xl p-6 hover:border-amber-300 transition-all hover:shadow-lg"
               >
                 {/* Hotel Info */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900">
+                    <h3 className="text-lg font-bold text-foreground">
                       {review.hotelName}
                     </h3>
-                    <div className="flex items-center gap-2 text-gray-600 text-sm mt-1">
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm mt-1">
                       <MapPin className="w-4 h-4" />
                       <span>{review.hotelLocation}</span>
                     </div>
@@ -155,32 +155,32 @@ export default function ReviewsTab() {
                       className={`w-5 h-5 ${
                         star <= review.rating
                           ? "text-amber-500 fill-amber-500"
-                          : "text-gray-300"
+                          : "text-muted-foreground/30"
                       }`}
                     />
                   ))}
-                  <span className="text-sm font-semibold text-gray-700 ml-2">
+                  <span className="text-sm font-semibold text-foreground ml-2">
                     {review.rating}.0
                   </span>
                 </div>
 
                 {/* Review Content */}
                 <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">
+                  <h4 className="font-semibold text-foreground mb-2">
                     {review.title}
                   </h4>
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-card-foreground/90 leading-relaxed">
                     {review.comment}
                   </p>
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="flex items-center gap-2 text-gray-500 text-sm">
+                <div className="flex items-center justify-between pt-4 border-t border-input-border">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Calendar className="w-4 h-4" />
                     <span>{formatDate(review.createdAt)}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <ThumbsUp className="w-4 h-4" />
                     <span className="text-sm font-medium">
                       {review.helpful} found this helpful
@@ -201,10 +201,10 @@ export default function ReviewsTab() {
                   <Star className="w-6 h-6 text-amber-600 fill-amber-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-foreground">
                     {averageRating}
                   </p>
-                  <p className="text-sm text-gray-600">Average Rating</p>
+                  <p className="text-sm text-foreground/70">Average Rating</p>
                 </div>
               </div>
             </div>
@@ -214,10 +214,10 @@ export default function ReviewsTab() {
                   <Edit2 className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-foreground">
                     {reviews.length}
                   </p>
-                  <p className="text-sm text-gray-600">Total Reviews</p>
+                  <p className="text-sm text-foreground/70">Total Reviews</p>
                 </div>
               </div>
             </div>
@@ -227,10 +227,10 @@ export default function ReviewsTab() {
                   <ThumbsUp className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-foreground">
                     {reviews.reduce((sum, r) => sum + r.helpful, 0)}
                   </p>
-                  <p className="text-sm text-gray-600">Helpful Votes</p>
+                  <p className="text-sm text-foreground/70">Helpful Votes</p>
                 </div>
               </div>
             </div>

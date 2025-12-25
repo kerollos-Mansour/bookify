@@ -46,7 +46,7 @@ export default function CheckoutForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+      <div className="bg-muted p-4 rounded-xl border border-input-border">
         <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
       </div>
 

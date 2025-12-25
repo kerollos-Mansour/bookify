@@ -11,7 +11,11 @@ export function Logo() {
   return (
     <>
       <h1 className="text-2xl font-semibold mb-5 text-center">
-        <img src={theme === "dark" ? "/white-logo.png" : "/full-logo.png"} alt="Logo" className="w-40 mx-auto" />
+        <img
+          src={theme === "dark" ? "/white-logo.png" : "/full-logo.png"}
+          alt="Logo"
+          className="w-40 mx-auto"
+        />
       </h1>
       <div className="w-full h-[1px] bg-card-border mb-8"></div>
     </>
@@ -31,7 +35,7 @@ export function ProgressSteps({ currentStep }: { currentStep: number }) {
                 ? "bg-blue-400 text-white"
                 : currentStep === step
                 ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-400"
+                : "bg-muted text-muted-foreground"
             } w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300`}
           >
             {currentStep > step ? <CheckCircle className="w-6 h-6" /> : step}
@@ -39,7 +43,7 @@ export function ProgressSteps({ currentStep }: { currentStep: number }) {
           {index < steps.length - 1 && (
             <div
               className={`w-16 md:w-24 h-1 transition-colors duration-300 ${
-                currentStep > step ? "bg-blue-600" : "bg-gray-200"
+                currentStep > step ? "bg-blue-600" : "bg-muted"
               }`}
             ></div>
           )}
@@ -54,8 +58,7 @@ export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "success"
-  ); 
-
+  );
 
   const redirectStatus = searchParams.get("redirect_status");
 
@@ -71,9 +74,9 @@ export default function PaymentSuccess() {
 
   if (status === "error") {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center pt-20 px-4">
+      <div className="min-h-screen bg-background flex flex-col items-center pt-20 px-4">
         <h2 className="text-2xl font-bold text-red-600 mb-4">Payment Failed</h2>
-        <p className="text-gray-600 mb-8">
+        <p className="text-muted-foreground mb-8">
           Something went wrong with your payment.
         </p>
         <button
@@ -88,21 +91,21 @@ export default function PaymentSuccess() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-white flex flex-col items-center pt-6 px-4">
+      <div className="min-h-screen bg-background flex flex-col items-center pt-6 px-4">
         <Logo />
         <ProgressSteps currentStep={3} />
 
         <div className="text-center mb-8 animate-fade-in-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-100 mb-3">
             Payment Completed!
           </h2>
-          <p className="text-gray-500 text-lg">
+          <p className="text-muted-foreground text-lg">
             Your booking has been confirmed successfully.
           </p>
         </div>
 
         <div className="relative flex items-center justify-center mb-10 group">
-          <div className="absolute inset-0 bg-blue-100 rounded-full filter blur-3xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+          <div className="absolute inset-0 bg-blue-100 dark:bg-blue-900/30 rounded-full filter blur-3xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
           <img
             src="/Confirm-reservation.png"
             alt="Success Illustration"
@@ -114,7 +117,7 @@ export default function PaymentSuccess() {
           <p className="text-blue-600 font-medium text-lg">
             Please check your email & phone messages.
           </p>
-          <p className="text-gray-500">
+          <p className="text-muted-foreground">
             We have sent all the confirmation details and itinerary to your
             inbox.
           </p>
@@ -123,7 +126,7 @@ export default function PaymentSuccess() {
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
           <button
             onClick={() => navigate("/account")}
-            className="flex-1 bg-white border-2 border-gray-200 text-gray-700 py-3.5 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-300 transition-all text-center"
+            className="flex-1 bg-card border-2 border-input-border text-foreground py-3.5 rounded-xl font-bold hover:bg-muted hover:border-input-border transition-all text-center"
           >
             View Booking
           </button>
