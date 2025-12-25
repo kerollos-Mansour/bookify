@@ -67,7 +67,7 @@ export default function PropertyDetailsPage() {
         <Gallery images={hotel.images ?? []} />
         <NavigationBar />
         <PropertyInfo hotel={hotel} />
-        <RoomsSection rooms={rooms} />
+        <RoomsSection rooms={rooms} hotel={hotel} />
       </div>
     </PageTransition>
   );

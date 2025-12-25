@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { LoginRequest } from "types/auth.type";
 import { setCredentials } from "../../store/slices/authSlice";
 import { useLoginMutation } from "../../store/api/auth.api";
+import { useToast } from "../../components/UI/ToastProvider/ToastProvider";
 
 type Inputs = {
   userName: string;
@@ -17,6 +18,7 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const toast = useToast();
 
   const [login, { isLoading }] = useLoginMutation();
 
@@ -40,7 +42,8 @@ export default function Login() {
       );
       navigate("/");
     } catch (err: any) {
-      console.log("Login Fauled:", err);
+      // toaster
+      toast.error(err.data.message);
     }
   };
 

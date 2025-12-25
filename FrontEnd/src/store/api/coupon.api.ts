@@ -1,15 +1,19 @@
 import { apiSlice } from "./apiSlice";
-import { Coupon, CreateCouponRequest } from "../../types";
+import { Coupon, CouponsResponse, CreateCouponRequest } from "../../types";
 
 export const couponsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Get all coupons
     getAllCoupons: builder.query<Coupon[], void>({
       query: () => "/coupons",
+      transformResponse: (response: CouponsResponse) => {
+        console.log("Raw API response:", response); // DEBUG - check this!
+        return response.data.coupons;
+      },
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "Coupon" as const, id })),
+              ...result.map(({ _id }) => ({ type: "Coupon" as const, _id })),
               { type: "Coupon", id: "LIST" },
             ]
           : [{ type: "Coupon", id: "LIST" }],

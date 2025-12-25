@@ -1,5 +1,3 @@
-
-
 // Payment interface
 export interface PaymentIntent {
   id: string;
@@ -10,9 +8,6 @@ export interface PaymentIntent {
 }
 
 export interface CreatePaymentIntentRequest {
-  amount: number;
-  currency: string;
-  userId: string;
-  hotelId: string;
-  roomId: string;
+  bookingId: string;
+  currency?: string;
 }

@@ -6,6 +6,7 @@ import PageLoader from "./components/UI/PageLoader";
 import ScrollToTop from "./components/scrollToTop/scrollToTop";
 import FavBarSection from "./components/favBar/favBar";
 import { FavoritesProvider } from "./context/favoritesContext";
+import { ToastProvider } from "./components/UI/ToastProvider/ToastProvider";
 
 function App() {
   const navigation = useNavigation();
@@ -19,19 +20,20 @@ function App() {
   ];
   const hideLayout = hideLayoutPages.includes(location.pathname);
 
-
   return (
     <>
-    <FavoritesProvider>
-      {isPageLoading && <PageLoader />}
-      {!hideLayout && <Header />}
-      <FavBarSection items={[]}/>
-      <main>
-        <ScrollToTop />
-        <Outlet />
-      </main>
-      {!hideLayout && <Footer />}
-      </FavoritesProvider>
+      <ToastProvider>
+        <FavoritesProvider>
+          {isPageLoading && <PageLoader />}
+          {!hideLayout && <Header />}
+          <FavBarSection items={[]} />
+          <main>
+            <ScrollToTop />
+            <Outlet />
+          </main>
+          {!hideLayout && <Footer />}
+        </FavoritesProvider>
+      </ToastProvider>
     </>
   );
 }

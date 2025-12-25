@@ -15,7 +15,13 @@ import ProfileTab from "../../components/account/profileTab/profileTab";
 import TabEmptyState from "../../components/account/tabEmptyState/tabEmptyState";
 import SettingTap from "../../components/account/settingTap/settingTap";
 import PageTransition from "../../components/pageTransition/pageTransition";
-import PaymentTap from "../../components/PaymentTap/PaymentTap";
+import PaymentTap from "../../components/paymentTap/paymentTap";
+import CommunicationsTab from "../../components/account/communicationsTab/communicationsTab";
+import CouponsTab from "../../components/account/couponsTab/couponsTab";
+import ReviewsTab from "../../components/account/reviewsTab/reviewsTab";
+import HelpTab from "../../components/account/helpTab/helpTab";
+import { useGetUserByIdQuery } from "../../store/api/user.api";
+import { storage } from "../../utils/storage";
 
 type TabId =
   | "profile"
@@ -60,13 +66,6 @@ const tabs: Array<{
     label: "Coupons",
     description: "View your available coupons",
     icon: <Tag className="w-5 h-5" />,
-  },
-  // credits tab
-  {
-    id: "credits",
-    label: "Credits",
-    description: "View your active airline credits",
-    icon: <DollarSign className="w-5 h-5" />,
   },
   // reviews tab
   {
@@ -133,9 +132,12 @@ import { RootState } from "../../store/store";
 
 export default function Account() {
   const [activeTab, setActiveTab] = useState<TabId>("profile");
-  const { user } = useSelector((state: RootState) => state.auth);
+  const userId = storage.getUser()?.id;
+  const { data: profile } = useGetUserByIdQuery(userId!, { skip: !userId });
 
   const activeTabCopy = useMemo(() => emptyCopy[activeTab], [activeTab]);
+
+  const userName = profile?.name || profile?.username || "User";
 
   return (
     <PageTransition>
@@ -143,7 +145,7 @@ export default function Account() {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Account intro , to say hi and etc. */}
           <AccountIntro
-            greeting={`Hi, ${user?.username || "Traveler"}`}
+            greeting={`Hi, ${userName}`}
             headline="My Account"
             subtext="Manage your personal details, preferences, and saved travelers."
           />
@@ -152,33 +154,18 @@ export default function Account() {
             <AccountSidebar
               tabs={tabs}
               activeTab={activeTab}
-              onTabChange={setActiveTab}
+              onTabChange={(tab) => setActiveTab(tab as TabId)}
             />
-            {/* here we add more tabs  */}
+            {/* Tab Content */}
             <section>
-              {activeTab === "profile" ? (
-                <ProfileTab />
-              ) : (
-                <TabEmptyState
-                  title={activeTabCopy.title}
-                  message={activeTabCopy.message}
-                />
-              )}
-              {/* this is a new tab */}
-
-
-              {activeTab === "payments" ? (
-                <PaymentTap />
-              ) : (
-                <TabEmptyState
-                  title={activeTabCopy.title}
-                  message={activeTabCopy.message}
-                />
-              )}
-
-              {activeTab === "security" ? (
-                <SettingTap />
-              ) : (
+              {activeTab === "profile" && <ProfileTab />}
+              {activeTab === "communications" && <CommunicationsTab />}
+              {activeTab === "payments" && <PaymentTap />}
+              {activeTab === "coupons" && <CouponsTab />}
+              {activeTab === "reviews" && <ReviewsTab />}
+              {activeTab === "security" && <SettingTap />}
+              {activeTab === "help" && <HelpTab />}
+              {activeTab === "credits" && (
                 <TabEmptyState
                   title={activeTabCopy.title}
                   message={activeTabCopy.message}

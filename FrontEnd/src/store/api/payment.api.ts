@@ -9,7 +9,7 @@ export const paymentsApi = apiSlice.injectEndpoints({
       CreatePaymentIntentRequest
     >({
       query: (paymentData) => ({
-        url: "/payments/create-intent",
+        url: "/payments/stripe/create-intent",
         method: "POST",
         body: paymentData,
       }),

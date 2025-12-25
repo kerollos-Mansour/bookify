@@ -12,11 +12,13 @@ import {
 import { MdCameraAlt, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { Room } from "../../../../types/rooms.type";
 import { useNavigate } from "react-router-dom";
+import { Hotel } from "../../../../types/hotel.type";
 
 interface RoomCardProps {
   room: Room;
+  hotel: Hotel;
 }
-export default function RoomCard({ room }: RoomCardProps) {
+export default function RoomCard({ room, hotel }: RoomCardProps) {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   let navigate = useNavigate();
 
@@ -35,17 +37,8 @@ export default function RoomCard({ room }: RoomCardProps) {
   const handleReserve = () => {
     navigate("/booking-info", {
       state: {
-        room: {
-          id: room.id,
-        },
-      },
-    });
-
-    console.log({
-      state: {
-        room: {
-          id: room.id,
-        },
+        room,
+        hotel,
       },
     });
   };
