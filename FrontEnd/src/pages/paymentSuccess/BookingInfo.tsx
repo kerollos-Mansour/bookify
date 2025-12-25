@@ -181,11 +181,11 @@ export default function BookingInfo() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gray-50 pt-6 px-4 pb-20">
+      <div className="min-h-screen bg-background pt-6 px-4 transition-colors duration-300">
         <Logo />
         <ProgressSteps currentStep={1} />
         <div className="flex flex-col items-center gap-4 my-6">
-          <h2 className="text-2xl font-bold text-blue-900">
+          <h2 className="text-2xl font-bold text-foreground">
             Booking Information
           </h2>
           <p className="text-gray-500 text-center">
@@ -201,26 +201,23 @@ export default function BookingInfo() {
         )}
 
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Hotel Details Column */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl shadow-sm p-6 overflow-hidden">
-                <div className="aspect-video w-full rounded-xl overflow-hidden mb-4 bg-gray-200">
-                  <img
-                    src={
-                      room.images[0] || (hotel.images && hotel.images[0]) || ""
-                    }
-                    alt={hotel.name}
-                    className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
-                  />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6 w-110">
+              <div className="bg-card rounded-lg shadow-sm p-4 border border-card-border">
+                 <div className="aspect-video w-full rounded-xl overflow-hidden mb-4 bg-gray-200">
+                <img
+                  src={room.images[0] || (hotel.image&& hotel.images[0]) || ""}
+                  alt={hotel.name}
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500" 
+                />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                <h3 className="text-xl font-bold text-card-foreground">
                   {hotel.name}
                 </h3>
                 <h4 className="text-lg font-medium text-blue-600 mb-3">
                   {room.name}
                 </h4>
-                <div className="flex items-center text-gray-500 text-sm">
+                <div className="flex items-center text-muted-foreground text-sm">
                   <MapPin className="w-4 h-4 mr-1 text-red-500" />
                   <span>
                     {hotel.location
@@ -248,10 +245,10 @@ export default function BookingInfo() {
             {/* Booking Form Column */}
             <div className="space-y-6">
               {/* Duration Card */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="bg-card rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold text-gray-800">Your Stay</h3>
-                  <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-lg">
+                  <h3 className="text-lg font-bold text-card-foreground">Your Stay</h3>
+                  <div className="flex items-center gap-3 bg-muted  px-4 py-2 rounded-lg">
                     <button
                       onClick={() => handleNightsChange(nights - 1)}
                       className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:text-blue-600 disabled:opacity-50"
@@ -259,7 +256,7 @@ export default function BookingInfo() {
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="font-bold text-gray-900 min-w-[3rem] text-center">
+                    <span className="font-bold text-card-foreground min-w-[3rem] text-center">
                       {nights} Night{nights !== 1 && "s"}
                     </span>
                     <button
@@ -287,9 +284,10 @@ export default function BookingInfo() {
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                      Check-out
+
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
+                      Check-out Date
                     </label>
                     <div className="relative">
                       <input
@@ -297,14 +295,14 @@ export default function BookingInfo() {
                         value={checkOutDate}
                         onChange={(e) => setCheckOutDate(e.target.value)}
                         min={checkInDate}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl font-medium text-gray-700 outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                        className="w-full pl-10 pr-4 py-3 border border-card-border bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="mt-4 pt-4 border-t border-card-border">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-600">
                       Guests
@@ -335,13 +333,13 @@ export default function BookingInfo() {
               </div>
 
               {/* Price Breakdown */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">
+              <div className="bg-card rounded-2xl shadow-sm p-6 border border-card-border">
+                <h3 className="text-lg font-bold text-card-foreground mb-4">
                   Price Details
                 </h3>
 
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between text-gray-600">
+                <div className="space-y-3">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>
                       ${pricePerNight.toLocaleString()} × {nights} nights
                     </span>
@@ -350,7 +348,7 @@ export default function BookingInfo() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-muted-foreground">
                     <span className="flex items-center gap-1">
                       Service Fee (10%)
                       <Info className="w-3 h-3 text-gray-400" />
@@ -360,13 +358,13 @@ export default function BookingInfo() {
                     </span>
                   </div>
 
-                  <div className="border-t border-dashed border-gray-200 pt-4 mt-4">
+                  <div className="border-t border-dashed border-card-border pt-4 mt-4">
                     <div className="flex justify-between items-end">
                       <div>
-                        <span className="block text-gray-500 text-xs mb-1">
+                        <span className="block text-muted-foreground text-xs mb-1">
                           Total due today
                         </span>
-                        <span className="text-3xl font-bold text-blue-900 leading-none">
+                        <span className="text-3xl font-bold text-card-foreground leading-none">
                           ${total.toLocaleString()}
                         </span>
                       </div>

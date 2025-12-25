@@ -141,7 +141,7 @@ export default function Account() {
 
   return (
     <PageTransition>
-      <div className="bg-[#f7f7f9] min-h-screen py-10 px-4">
+      <div className="bg-background min-h-screen py-10 px-4">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Account intro , to say hi and etc. */}
           <AccountIntro

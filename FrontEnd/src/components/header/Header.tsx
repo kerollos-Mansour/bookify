@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import ThemeToggle from "../UI/ThemeToggle";
+import { useTheme } from "../../context/themeContext";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -12,6 +14,7 @@ export default function Header() {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const handelScroll = () => {
@@ -27,20 +30,19 @@ export default function Header() {
   }, [isHomePage]);
 
   const textColor = scrolled
-    ? "text-gray-700 hover:text-gray-900"
+    ? "text-foreground hover:text-foreground/80"
     : "text-white hover:text-gray-200";
-  const iconHoverBg = scrolled ? "hover:bg-gray-100" : "hover:bg-white/20";
+  const iconHoverBg = scrolled ? "hover:bg-accent" : "hover:bg-white/20";
 
   const headerBg =
     isHomePage && !scrolled && !mobileMenuOpen
       ? "bg-transparent fixed"
-      : "bg-white/95 backdrop-blur-md shadow-sm";
+      : "bg-card/95 backdrop-blur-md shadow-sm border-b border-card-border";
 
   return (
     <header
-      className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBg} ${
-        isHomePage ? "fixed" : ""
-      }`}
+      className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBg} ${isHomePage ? "fixed" : ""
+        }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-40 py-3 lg:py-2">
         <div className="flex items-center justify-between">
@@ -49,7 +51,7 @@ export default function Header() {
             {/* Logo */}
             <div className="flex items-center gap-2 w-24 sm:w-32 lg:w-40 font-bold text-lg sm:text-xl">
               <img
-                src="/full-logo.png"
+                src={scrolled || !isHomePage || mobileMenuOpen ? (theme === "dark" ? "/white-logo.png" : "/full-logo.png") : "/white-logo.png"}
                 alt="Logo"
                 className="logo cursor-pointer w-full h-auto"
                 onClick={() => navigate("/")}
@@ -91,11 +93,13 @@ export default function Header() {
               className={`p-2 rounded-full transition-colors ${iconHoverBg}`}
             >
               <MessageSquare
-                className={`w-5 h-5 ${
-                  scrolled ? "text-gray-700" : "text-white"
-                }`}
+                className={`w-5 h-5 ${scrolled ? "text-foreground" : "text-white"
+                  }`}
               />
             </button>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
 
             {isAuthenticated ? (
               <Link to="/account">
@@ -104,9 +108,8 @@ export default function Header() {
                   aria-label="Account"
                 >
                   <User
-                    className={`w-5 h-5 ${
-                      scrolled ? "text-gray-700" : "text-white"
-                    }`}
+                    className={`w-5 h-5 ${scrolled ? "text-foreground" : "text-white"
+                      }`}
                   />
                 </button>
               </Link>
@@ -128,9 +131,8 @@ export default function Header() {
               {isAuthenticated ? (
                 <Link to="/account">
                   <User
-                    className={`w-6 h-6 ${
-                      scrolled ? "text-gray-700" : "text-white"
-                    }`}
+                    className={`w-6 h-6 ${scrolled ? "text-foreground" : "text-white"
+                      }`}
                   />
                 </Link>
               ) : (
@@ -144,14 +146,16 @@ export default function Header() {
               )}
             </div>
 
+            {/* Theme Toggle Mobile */}
+            <ThemeToggle />
+
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`p-2 rounded-lg transition-colors ${
-                scrolled
-                  ? "hover:bg-gray-100 text-gray-700"
-                  : "hover:bg-white/20 "
-              }`}
+              className={`p-2 rounded-lg transition-colors ${scrolled
+                ? "hover:bg-accent text-foreground"
+                : "hover:bg-white/20 "
+                }`}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -174,17 +178,15 @@ export default function Header() {
               className="lg:hidden overflow-hidden"
             >
               <div
-                className={`lg:hidden mt-4 pt-4 border-t ${
-                  scrolled ? "border-gray-200" : "border-white/20"
-                }`}
+                className={`lg:hidden mt-4 pt-4 border-t ${scrolled ? "border-card-border" : "border-white/20"
+                  }`}
               >
                 <nav className="flex flex-col gap-2 pb-4">
                   <button
-                    className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${
-                      scrolled
-                        ? "text-gray-800 hover:bg-gray-50"
-                        : "hover:bg-white/10"
-                    }`}
+                    className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${scrolled
+                      ? "text-foreground hover:bg-accent"
+                      : "hover:bg-white/10"
+                      }`}
                   >
                     Shop travel
                     <ChevronDown className="w-5 h-5" />
@@ -192,41 +194,37 @@ export default function Header() {
 
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-gray-700 hover:bg-gray-50"
-                        : " hover:bg-white/10"
-                    }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
+                      ? "text-foreground hover:bg-accent"
+                      : " hover:bg-white/10"
+                      }`}
                   >
                     List your property
                   </a>
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-gray-700 hover:bg-gray-50"
-                        : " hover:bg-white/10"
-                    }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
+                      ? "text-foreground hover:bg-accent"
+                      : " hover:bg-white/10"
+                      }`}
                   >
                     Support
                   </a>
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-gray-700 hover:bg-gray-50"
-                        : " hover:bg-white/10"
-                    }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
+                      ? "text-foreground hover:bg-accent"
+                      : " hover:bg-white/10"
+                      }`}
                   >
                     Trips
                   </a>
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-gray-700 hover:bg-gray-50"
-                        : " hover:bg-white/10"
-                    }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
+                      ? "text-foreground hover:bg-accent"
+                      : " hover:bg-white/10"
+                      }`}
                   >
                     Messages
                   </a>
@@ -234,27 +232,24 @@ export default function Header() {
                   {isAuthenticated ? (
                     <Link
                       to="/account"
-                      className={`py-2 px-2 rounded-lg transition-colors ${
-                        scrolled
-                          ? "text-gray-700 hover:bg-gray-50"
-                          : " hover:bg-white/10"
-                      }`}
+                      className={`py-2 px-2 rounded-lg transition-colors ${scrolled
+                        ? "text-foreground hover:bg-accent"
+                        : " hover:bg-white/10"
+                        }`}
                     >
                       Account
                     </Link>
                   ) : (
                     <div
-                      className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
-                        scrolled ? "border-gray-200" : "border-white/20"
-                      }`}
+                      className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${scrolled ? "border-gray-200" : "border-white/20"
+                        }`}
                     >
                       <Link to="/login" className="flex-1">
                         <button
-                          className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
-                            scrolled
-                              ? "border-gray-300 text-gray-700 hover:bg-gray-50"
-                              : "border-white/40 text-white hover:bg-white/10"
-                          }`}
+                          className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${scrolled
+                            ? "border-card-border text-foreground hover:bg-accent"
+                            : "border-white/40 text-white hover:bg-white/10"
+                            }`}
                         >
                           Sign In
                         </button>
@@ -269,9 +264,8 @@ export default function Header() {
                   )}
 
                   <div
-                    className={`py-3 px-2 flex items-center gap-2 text-sm ${
-                      scrolled ? "text-gray-700" : ""
-                    }`}
+                    className={`py-3 px-2 flex items-center gap-2 text-sm ${scrolled ? "text-foreground" : ""
+                      }`}
                   >
                     <span>🇺🇸 United States</span>
                     <span>• USD</span>

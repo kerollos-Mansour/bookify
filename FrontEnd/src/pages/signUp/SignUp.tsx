@@ -56,7 +56,7 @@ export default function SignUp() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4 py-8">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 py-8 transition-colors duration-300">
         <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 lg:gap-1 items-center">
           {/* Left Side - Image with Branding */}
           <div className="relative hidden md:block h-[700px] lg:h-[950px] rounded-2xl overflow-hidden shadow-2xl group order-2">
@@ -67,7 +67,7 @@ export default function SignUp() {
                 backgroundImage: `url('https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=1000')`,
               }}
             ></div>
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex items-center justify-center ">
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-20 flex items-center justify-center ">
               <div className="text-center px-8 ">
                 <div className="img flex flex-row items-center">
                   <img src="logoItSelf.png" className="w-20 h-20 mb-4"></img>
@@ -75,7 +75,7 @@ export default function SignUp() {
                     Bookify.
                   </h1>
                 </div>
-                <p className="text-xl lg:text-2xl font-semibold text-gray-800 mt-4">
+                <p className="text-xl lg:text-2xl font-semibold text-foreground/80 mt-4">
                   Join us and discover amazing places.
                 </p>
               </div>
@@ -90,12 +90,12 @@ export default function SignUp() {
 
           {/* Right Side - Signup Form */}
           <div className="w-full max-w-lg mx-auto order-1 md:order-2">
-            <div className="bg-white/80  rounded-3xl shadow-2xl p-8 lg:p-10 border border-white/20">
+            <div className="bg-card/80 backdrop-blur-md rounded-3xl shadow-2xl p-8 lg:p-10 border border-card-border">
               <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                <h2 className="text-4xl font-bold text-foreground mb-2">
                   Create Account
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Join us today and start your journey!
                 </p>
               </div>
@@ -105,7 +105,7 @@ export default function SignUp() {
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-semibold text-foreground/70 mb-2"
                   >
                     Name
                   </label>
@@ -117,7 +117,7 @@ export default function SignUp() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-card-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-background text-foreground"
                   />
                 </div>
 
@@ -125,7 +125,7 @@ export default function SignUp() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-semibold text-foreground/70 mb-2"
                   >
                     E-mail
                   </label>
@@ -137,7 +137,7 @@ export default function SignUp() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-card-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-background text-foreground"
                   />
                 </div>
 
@@ -145,7 +145,7 @@ export default function SignUp() {
                 <div>
                   <label
                     htmlFor="phoneNo"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-semibold text-foreground/70 mb-2"
                   >
                     Phone No
                   </label>
@@ -157,7 +157,7 @@ export default function SignUp() {
                     value={formData.phoneNo}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-card-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-background text-foreground"
                   />
                 </div>
 
@@ -165,7 +165,7 @@ export default function SignUp() {
                 <div>
                   <label
                     htmlFor="username"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-semibold text-foreground/70 mb-2"
                   >
                     Username
                   </label>
@@ -177,7 +177,7 @@ export default function SignUp() {
                     value={formData.username}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-card-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-background text-foreground"
                   />
                 </div>
 
@@ -185,7 +185,7 @@ export default function SignUp() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-semibold text-foreground/70 mb-2"
                   >
                     Password
                   </label>
@@ -199,7 +199,7 @@ export default function SignUp() {
                       onChange={handleChange}
                       required
                       minLength={6}
-                      className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
+                      className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-card-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-background text-foreground"
                     />
                     <button
                       type="button"
@@ -213,7 +213,7 @@ export default function SignUp() {
                 </div>
 
                 {/* Terms and Conditions */}
-                <p className="text-sm text-gray-600 text-center">
+                <p className="text-sm text-muted-foreground text-center">
                   By signing up you agree to{" "}
                   <a
                     href="#"
@@ -237,7 +237,7 @@ export default function SignUp() {
                   <button
                     type="button"
                     onClick={() => navigate("/login")}
-                    className="text-gray-700 hover:text-blue-600 font-semibold transition-colors duration-200 text-lg"
+                    className="text-foreground hover:text-blue-600 font-semibold transition-colors duration-200 text-lg"
                   >
                     Login
                   </button>

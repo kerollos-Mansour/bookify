@@ -132,21 +132,21 @@ export default function SettingTap() {
   if (isError) return <p>Failed to load settings</p>;
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm">
+    <div className="bg-card rounded-3xl p-6 sm:p-8 border border-card-border shadow-sm">
       {/* Settings Sections */}
       <div className="space-y-8">
         {settingSections.map((section) => (
           <section key={section.title} className="space-y-6">
             {/* Section Header */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              <h2 className="text-lg font-semibold text-card-foreground mb-2">
                 {section.title}
               </h2>
-              <p className="text-sm text-gray-600">{section.description}</p>
+              <p className="text-sm text-muted-foreground">{section.description}</p>
             </div>
 
             {/* Divider */}
-            <hr className="border-gray-300" />
+            <hr className="border-card-border" />
 
             {/* Fields */}
             <div className="space-y-6">
@@ -158,13 +158,13 @@ export default function SettingTap() {
                         className={`mt-1 p-2 rounded-lg ${
                           field.destructive
                             ? "bg-red-100 text-red-600"
-                            : "bg-gray-100 text-gray-600"
+                            : "bg-muted text-muted-foreground"
                         }`}
                       >
                         {field.icon}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-medium text-gray-900 text-sm">
+                        <h3 className="font-medium text-card-foreground text-sm">
                           {field.label}
                         </h3>
                         {field.value && (
@@ -172,7 +172,7 @@ export default function SettingTap() {
                             className={`text-sm mt-1 ${
                               field.destructive
                                 ? "text-red-600"
-                                : "text-gray-600"
+                                : "text-muted-foreground"
                             }`}
                           >
                             {field.value}
@@ -180,6 +180,7 @@ export default function SettingTap() {
                         )}
                       </div>
                     </div>
+
 
                     {/* Action Button */}
                     {field.action !== "view" && (
@@ -207,8 +208,9 @@ export default function SettingTap() {
                     )}
                   </div>
 
+
                   {/* Divider between fields */}
-                  <hr className="border-gray-300" />
+                  <hr className="border-card-border" />
                 </div>
               ))}
             </div>

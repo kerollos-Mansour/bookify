@@ -137,7 +137,7 @@ export default function ProfileTab() {
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-card  rounded-3xl shadow-sm overflow-hidden">
       {/* Success Message */}
       {showSuccess && (
         <div className="bg-green-50 border-l-4 border-green-500 p-4 m-6 rounded-lg">

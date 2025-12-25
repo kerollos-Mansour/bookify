@@ -25,9 +25,7 @@ const toCardData = (hotel: Hotel): HotelCardData => {
   const nightly = getNightlyRate(hotel);
   const total = hotel.highRate ?? nightly;
   // hotelDetails can be string or array based on API. Safeguard it.
-  const detail = Array.isArray(hotel.hotelDetails)
-    ? hotel.hotelDetails[0]
-    : null;
+  const detail = Array.isArray(hotel.hotelDetails) ? hotel.hotelDetails[0] : null;
 
   return {
     id: hotel._id,
@@ -97,9 +95,7 @@ export default function SearchResult() {
       checkOut: params.get("checkOut") || undefined,
       adults: params.get("adults") ? Number(params.get("adults")) : undefined,
       rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-      minRate: params.get("minRate")
-        ? Number(params.get("minRate"))
-        : undefined,
+      minRate: params.get("minRate") ? Number(params.get("minRate")) : undefined,
       maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
       search: filters.propertyName || undefined,
       amenities: filters.amenities?.length ? filters.amenities : undefined,
@@ -115,10 +111,8 @@ export default function SearchResult() {
     isLoading,
     error,
   } = useSearchHotelsQuery(searchParams);
-
   // Fetch Amenities for Sidebar
   const { data: amenitiesList = [] } = useGetAllAmenitiesQuery({ limit: 50 });
-
   // Fetch Max Price (Global High) for Slider
   // We query for 1 hotel, sorted by highest price.
   const { data: maxPriceHotels = [] } = useSearchHotelsQuery({
@@ -151,7 +145,16 @@ export default function SearchResult() {
     setLocationFilter(locationParam);
   }, [search]);
 
-  // Direct mapping from API data
+  // Calculate property types dynamically
+  useEffect(() => {
+    if (hotels.length > 0) {
+      const types = Array.from(
+        new Set(hotels.map((hotel) => (hotel.type ?? "hotel").toLowerCase()))
+      ).sort();
+      setPropertyTypeOptions(types);
+    }
+  }, [hotels]);
+
   const hotelCards = useMemo(
     () =>
       hotels.map((hotel) => ({
@@ -176,9 +179,7 @@ export default function SearchResult() {
             number
           ],
           title: card.title,
-          description: `${card.location || "Unknown"} • $${
-            card.prices.nightly
-          }`,
+          description: `${card.location || "Unknown"} • $${card.prices.nightly}`,
         })),
     [hotelCards]
   );
@@ -191,10 +192,7 @@ export default function SearchResult() {
     : undefined;
 
   const handleFilterChange = (updates: Partial<PropertyFilters>) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...updates,
-    }));
+    setFilters((prev) => ({ ...prev, ...updates }));
   };
 
   const handleResetFilters = () => {
@@ -209,9 +207,9 @@ export default function SearchResult() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gray-50">
-        {/* Sticky Search Bar - Fixed for Mobile */}
-        <div className="sticky top-0 z-50 bg-white shadow-sm">
+      <div className="min-h-screen bg-background transition-colors duration-300">
+        {/* Sticky Search Bar */}
+        <div className="sticky top-0 z-50 bg-card border-b border-card-border shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <SearchBar />
           </div>
@@ -220,9 +218,8 @@ export default function SearchResult() {
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Sidebar - Hidden on Mobile, Visible on Desktop */}
             <aside className="hidden lg:block lg:w-80 flex-shrink-0">
-              <div className="bg-white p-6 rounded-2xl border border-gray-200 sticky top-24">
+              <div className="bg-card p-6 rounded-2xl border border-card-border sticky top-24">
                 <Map
                   location={mapCenter}
                   markers={mapMarkers}
@@ -233,12 +230,12 @@ export default function SearchResult() {
                   className="mb-6 rounded-xl overflow-hidden"
                 />
 
-                <div className="w-full my-5 py-5 border-gray-200 border-y">
-                  <p className="font-semibold text-lg mb-3">
+                <div className="w-full my-5 py-5 border-card-border border-y">
+                  <p className="font-semibold text-lg mb-3 text-foreground">
                     Search by property name
                   </p>
                   <div className="relative">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <input
                       type="text"
                       placeholder="e.g. Marriott"
@@ -249,7 +246,7 @@ export default function SearchResult() {
                           propertyName: event.target.value,
                         }))
                       }
-                      className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-11 pr-4 py-2.5 border border-card-border bg-background text-foreground rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -259,7 +256,7 @@ export default function SearchResult() {
                     selectedTypes: filters.selectedTypes,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
-                    amenities: filters.amenities, 
+                    amenities: filters.amenities,
                   }}
                   priceBounds={{ min: 0, max: globalMaxPrice }} // Use dynamic max
                   propertyTypeOptions={propertyTypeOptions}
@@ -270,11 +267,10 @@ export default function SearchResult() {
               </div>
             </aside>
 
-            {/* Main Content Section */}
-            <section className="flex-1 bg-white p-4 sm:p-6 rounded-2xl border border-gray-200">
+            <section className="flex-1 bg-card p-4 sm:p-6 rounded-2xl border border-card-border">
               <div className="flex flex-col gap-4 mb-6">
-                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-                <p className="text-sm text-gray-600">
+                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} /> 
+                <p className="text-sm text-muted-foreground">
                   Showing {hotelCards.length}{" "}
                   {hotelCards.length === 1 ? "property" : "properties"}
                   {locationFilter ? ` in "${locationFilter}"` : ""}
@@ -283,7 +279,7 @@ export default function SearchResult() {
 
               {isLoading && (
                 <div className="flex justify-center items-center py-20">
-                  <div className="text-gray-600">Loading properties...</div>
+                  <div className="text-muted-foreground">Loading properties...</div>
                 </div>
               )}
 
@@ -295,12 +291,11 @@ export default function SearchResult() {
 
               {!isLoading && !error && hotelCards.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <p className="text-lg font-semibold text-gray-800 mb-2">
+                  <p className="text-lg font-semibold text-foreground mb-2">
                     No properties match these filters
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Try adjusting your filters or search in a different
-                    location.
+                  <p className="text-sm text-muted-foreground">
+                    Try adjusting your filters or search in a different location.
                   </p>
                 </div>
               )}

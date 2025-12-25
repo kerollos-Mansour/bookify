@@ -1,6 +1,6 @@
 import { IoRestaurantOutline, IoWifiSharp } from "react-icons/io5";
 import { MdPets, MdPool, MdRestaurant, MdSpa } from "react-icons/md";
-import Map from "../../map/map";
+import Map from "../../Map/Map";
 import { Hotel } from "../../../types/hotel.type";
 
 type HotelSummary = {
@@ -79,7 +79,7 @@ export default function PropertyInfo({ hotel }: PropertyInfoProps) {
 
           {/* Star rating */}
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex text-gray-700">
+            <div className="flex text-muted-foreground">
               {[...Array(4)].map((_, i) => (
                 <span key={i}>★</span>
               ))}
@@ -106,11 +106,11 @@ export default function PropertyInfo({ hotel }: PropertyInfoProps) {
             <h2 className="text-xl md:text-2xl font-bold mb-4">
               About this property
             </h2>
-            <p className="text-gray-700 mb-6 text-sm md:text-base">
+            <p className="text-muted-foreground mb-6 text-sm md:text-base">
               {description}
             </p>
             {highlights.length > 0 && (
-              <ul className="list-disc pl-5 text-gray-700 text-sm md:text-base mb-6 space-y-1">
+              <ul className="list-disc pl-5 text-muted-foreground text-sm md:text-base mb-6 space-y-1">
                 {highlights.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -124,11 +124,11 @@ export default function PropertyInfo({ hotel }: PropertyInfoProps) {
                   key={`${text}-${index}`}
                   className="flex items-center gap-3"
                 >
-                  <span className="text-xl md:text-2xl text-gray-700">
+                  <span className="text-xl md:text-2xl text-muted-foreground">
                     {amenityIcons[index] ??
                       amenityIcons[amenityIcons.length - 1]}
                   </span>
-                  <span className="text-gray-800 text-sm md:text-base">
+                  <span className="text-foreground text-sm md:text-base">
                     {text}
                   </span>
                 </div>

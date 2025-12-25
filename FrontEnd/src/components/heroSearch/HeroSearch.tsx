@@ -1,4 +1,4 @@
-import { SearchBar } from "../searchBar/searchBar";
+import { SearchBar } from "../searchBar/SearchBar";
 
 // Constants for maintainability
 const HERO_IMAGE = "/hero-img.jpg";
@@ -39,7 +39,7 @@ export function HeroSearch() {
 
           {/* Search Card - Extends below hero section */}
           <div className="max-w-5xl mx-auto px-2 sm:px-4">
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 transform translate-y-4 sm:translate-y-6 md:translate-y-10 lg:translate-y-12 xl:translate-y-16">
+            <div className="bg-card rounded-xl sm:rounded-2xl shadow-2xl dark:shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 transform translate-y-4 sm:translate-y-6 md:translate-y-10 lg:translate-y-12 xl:translate-y-16 border border-card-border transition-colors duration-300">
               <SearchBar />
             </div>
           </div>

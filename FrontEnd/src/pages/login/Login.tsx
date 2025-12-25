@@ -49,7 +49,7 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 transition-colors duration-300">
         <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Side - Image with Branding */}
           <div className="relative hidden md:block h-[600px] lg:h-[700px] rounded-2xl overflow-hidden shadow-2xl group">
@@ -60,7 +60,7 @@ export default function Login() {
                 backgroundImage: `url('https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=1000')`,
               }}
             ></div>
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-md z-20 flex items-center justify-center">
+            <div className="absolute inset-0 bg-background/40 backdrop-blur-md z-20 flex items-center justify-center">
               {/* logo */}
               <div className="text-center px-8 flex flex-row items-center">
                 <img src="logoItSelf.png" className="w-20 h-20 mb-4"></img>
@@ -73,12 +73,12 @@ export default function Login() {
 
           {/* Right Side - Login Form */}
           <div className="w-full max-w-md mx-auto">
-            <div className="bg-white/80 rounded-3xl shadow-2xl p-8 lg:p-10 border border-white/20">
+            <div className="bg-card/80 backdrop-blur-md rounded-3xl shadow-2xl p-8 lg:p-10 border border-card-border">
               <div className="text-center mb-8">
-                <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                <h2 className="text-4xl font-bold text-foreground mb-2">
                   Login Account
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Welcome back! Please enter your details.
                 </p>
               </div>
@@ -88,7 +88,7 @@ export default function Login() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-semibold text-foreground/70 mb-2"
                   >
                     Email
                   </label>
@@ -103,7 +103,7 @@ export default function Login() {
                     id="username"
                     type="text"
                     placeholder="Enter your username"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-card-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-background text-foreground"
                   />
                   {errors.username && (
                     <p className="mt-1 text-sm text-red-500">
@@ -116,7 +116,7 @@ export default function Login() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="block text-sm font-semibold text-gray-700 mb-2"
+                    className="block text-sm font-semibold text-foreground/70 mb-2"
                   >
                     Password
                   </label>
@@ -132,7 +132,7 @@ export default function Login() {
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="6+ characters"
-                      className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-white"
+                      className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-card-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-200 bg-background text-foreground"
                     />
                     <button
                       type="button"
@@ -151,7 +151,7 @@ export default function Login() {
                 </div>
 
                 {/* Terms and Conditions */}
-                <p className="text-sm text-gray-600 text-center">
+                <p className="text-sm text-muted-foreground text-center">
                   By signing up you agree to{" "}
                   <a
                     href="#"
@@ -175,7 +175,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => navigate("/signUp")}
-                    className="text-gray-700 hover:text-blue-600 font-semibold transition-colors duration-200 text-lg"
+                    className="text-foreground hover:text-blue-600 font-semibold transition-colors duration-200 text-lg"
                   >
                     Create Account
                   </button>

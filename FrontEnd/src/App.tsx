@@ -1,7 +1,7 @@
 import "./App.css";
 import { Outlet, useNavigation } from "react-router-dom";
 import Footer from "./components/footer/footer";
-import Header from "./components/header/header";
+import Header from "./components/header/Header";
 import PageLoader from "./components/UI/PageLoader";
 import ScrollToTop from "./components/scrollToTop/scrollToTop";
 import FavBarSection from "./components/favBar/favBar";
@@ -24,14 +24,16 @@ function App() {
     <>
       <ToastProvider>
         <FavoritesProvider>
-          {isPageLoading && <PageLoader />}
-          {!hideLayout && <Header />}
-          <FavBarSection items={[]} />
-          <main>
-            <ScrollToTop />
-            <Outlet />
-          </main>
-          {!hideLayout && <Footer />}
+          <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+            {isPageLoading && <PageLoader />}
+            {!hideLayout && <Header />}
+            <FavBarSection />
+            <main>
+              <ScrollToTop />
+              <Outlet />
+            </main>
+            {!hideLayout && <Footer />}
+          </div>
         </FavoritesProvider>
       </ToastProvider>
     </>

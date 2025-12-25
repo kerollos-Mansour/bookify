@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { SearchBar } from "../../components/searchBar/searchBar";
+import { SearchBar } from "../../components/searchBar/SearchBar";
 import PageTransition from "../../components/pageTransition/pageTransition";
 
 export default function NotFound() {
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-blue-100 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <header className="max-w-6xl w-full mx-auto px-4 pt-8">
           <SearchBar />
         </header>
@@ -14,10 +14,10 @@ export default function NotFound() {
           <p className="text-blue-500 text-sm font-semibold uppercase tracking-widest mb-3">
             Error 404
           </p>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-snug">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-snug">
             We couldn’t find the page <br /> you were looking for.
           </h1>
-          <p className="text-gray-600 mt-4 max-w-xl">
+          <p className="text-muted-foreground mt-4 max-w-xl">
             The link may be broken or the page may have been removed. Let’s get
             you back to exploring the best stays and travel deals.
           </p>
@@ -31,7 +31,7 @@ export default function NotFound() {
             </Link>
             <Link
               to="/search"
-              className="inline-flex justify-center items-center px-6 py-3 rounded-full border border-blue-200 text-blue-600 font-semibold bg-white hover:border-blue-400 transition"
+              className="inline-flex justify-center items-center px-6 py-3 rounded-full border border-card-border text-blue-600 font-semibold bg-card hover:bg-muted transition"
             >
               Search for stays
             </Link>

@@ -116,23 +116,23 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
 
   return (
     <div className={`relative ${hideOnMobile ? "hidden md:block" : ""}`}>
-      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-white rounded-xl md:rounded-full shadow-lg p-1.5 sm:p-2 md:p-2">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-card rounded-xl md:rounded-full shadow-lg dark:shadow-lg p-1.5 sm:p-2 md:p-2 border border-card-border">
         {/* Where to? */}
         <div
           ref={locationRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-t-xl md:rounded-t-none md:rounded-l-full transition-colors"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-card-border cursor-pointer hover:bg-muted rounded-t-xl md:rounded-t-none md:rounded-l-full transition-colors"
           onClick={() => {
             setShowLocationDropdown(!showLocationDropdown);
             setShowDatesDropdown(false);
             setShowTravelersDropdown(false);
           }}
         >
-          <MdLocationOn className="text-xl sm:text-2xl text-gray-600 flex-shrink-0" />
+          <MdLocationOn className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
-            <label className="text-xs text-gray-600 font-medium mb-1">
+            <label className="text-xs text-muted-foreground font-medium mb-1">
               Where to?
             </label>
-            <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+            <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
               {selectedLocation.name}
             </span>
           </div>
@@ -140,7 +140,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
           {/* Location Dropdown */}
           {showLocationDropdown && (
             <div
-              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-white rounded-lg shadow-2xl p-4 z-50 w-full md:w-96 max-h-96 overflow-y-auto"
+              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 z-50 w-full md:w-96 max-h-96 overflow-y-auto border border-card-border"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-3">
@@ -149,7 +149,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                   placeholder="Search destinations, hotels..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground"
                   autoFocus
                 />
               </div>
@@ -159,9 +159,8 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                   filteredLocations.map((location) => (
                     <div
                       key={location.id}
-                      className={`p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors ${
-                        selectedLocation.id === location.id ? "bg-blue-50" : ""
-                      }`}
+                      className={`p-3 hover:bg-muted rounded-lg cursor-pointer transition-colors ${selectedLocation.id === location.id ? "bg-accent" : ""
+                        }`}
                       onClick={() => {
                         setSelectedLocation(location);
                         setShowLocationDropdown(false);
@@ -169,12 +168,12 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                       }}
                     >
                       <div className="flex items-start gap-3">
-                        <MdLocationOn className="text-gray-400 mt-1 flex-shrink-0" />
+                        <MdLocationOn className="text-muted-foreground mt-1 flex-shrink-0" />
                         <div>
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-card-foreground">
                             {location.name}
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-muted-foreground">
                             {location.city}, {location.country}
                           </div>
                         </div>
@@ -182,7 +181,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                     </div>
                   ))
                 ) : (
-                  <div className="p-4 text-center text-gray-500">
+                  <div className="p-4 text-center text-muted-foreground">
                     No results found
                   </div>
                 )}
@@ -194,19 +193,19 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
         {/* Dates */}
         <div
           ref={datesRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-card-border cursor-pointer hover:bg-muted transition-colors"
           onClick={() => {
             setShowDatesDropdown(!showDatesDropdown);
             setShowLocationDropdown(false);
             setShowTravelersDropdown(false);
           }}
         >
-          <MdCalendarToday className="text-xl sm:text-2xl text-gray-600 flex-shrink-0" />
+          <MdCalendarToday className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
-            <label className="text-xs text-gray-600 font-medium mb-1">
+            <label className="text-xs text-muted-foreground font-medium mb-1">
               Dates
             </label>
-            <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+            <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
               {formatDate(checkInDate)} - {formatDate(checkOutDate)}
             </span>
           </div>
@@ -214,21 +213,21 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
           {/* Dates Dropdown */}
           {showDatesDropdown && (
             <div
-              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-white rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80"
+              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="font-semibold mb-4 text-gray-900">Select dates</h3>
+              <h3 className="font-semibold mb-4 text-card-foreground">Select dates</h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-card-foreground mb-2">
                     Check-in
                   </label>
                   <input
                     type="date"
                     value={checkInDate}
                     onChange={(e) => setCheckInDate(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -241,7 +240,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                     value={checkOutDate}
                     onChange={(e) => setCheckOutDate(e.target.value)}
                     min={checkInDate}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -259,19 +258,19 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
         {/* Travelers */}
         <div
           ref={travelersRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 cursor-pointer hover:bg-gray-50 transition-colors rounded-b-xl md:rounded-b-none"
+          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 cursor-pointer hover:bg-muted transition-colors rounded-b-xl md:rounded-b-none"
           onClick={() => {
             setShowTravelersDropdown(!showTravelersDropdown);
             setShowLocationDropdown(false);
             setShowDatesDropdown(false);
           }}
         >
-          <MdPerson className="text-xl sm:text-2xl text-gray-600 flex-shrink-0" />
+          <MdPerson className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
           <div className="flex flex-col min-w-0 flex-1">
-            <label className="text-xs text-gray-600 font-medium mb-1">
+            <label className="text-xs text-muted-foreground font-medium mb-1">
               Travelers
             </label>
-            <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+            <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
               {adults} traveler{adults > 1 ? "s" : ""}, {rooms} room
               {rooms > 1 ? "s" : ""}
             </span>
@@ -280,34 +279,34 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
           {/* Travelers Dropdown */}
           {showTravelersDropdown && (
             <div
-              className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-white rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80"
+              className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="font-semibold mb-4 text-gray-900">Travelers</h3>
+              <h3 className="font-semibold mb-4 text-card-foreground">Travelers</h3>
 
               <div className="space-y-4">
                 {/* Adults */}
                 <div className="flex justify-between items-center">
                   <div>
-                    <div className="font-medium text-gray-900">Adults</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="font-medium text-card-foreground">Adults</div>
+                    <div className="text-sm text-muted-foreground">
                       Ages 18 or above
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setAdults(Math.max(1, adults - 1))}
-                      className="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-blue-500 hover:text-blue-500 transition-colors font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
                       disabled={adults <= 1}
                     >
                       -
                     </button>
-                    <span className="w-8 text-center font-medium">
+                    <span className="w-8 text-center font-medium text-foreground">
                       {adults}
                     </span>
                     <button
                       onClick={() => setAdults(adults + 1)}
-                      className="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-blue-500 hover:text-blue-500 transition-colors font-medium"
+                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground"
                     >
                       +
                     </button>
@@ -315,22 +314,22 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                 </div>
 
                 {/* Rooms */}
-                <div className="flex justify-between items-center pt-4 border-t">
+                <div className="flex justify-between items-center pt-4 border-t border-card-border">
                   <div>
-                    <div className="font-medium text-gray-900">Rooms</div>
+                    <div className="font-medium text-card-foreground">Rooms</div>
                   </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setRooms(Math.max(1, rooms - 1))}
-                      className="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-blue-500 hover:text-blue-500 transition-colors font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
                       disabled={rooms <= 1}
                     >
                       -
                     </button>
-                    <span className="w-8 text-center font-medium">{rooms}</span>
+                    <span className="w-8 text-center font-medium text-foreground">{rooms}</span>
                     <button
                       onClick={() => setRooms(rooms + 1)}
-                      className="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-blue-500 hover:text-blue-500 transition-colors font-medium"
+                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground"
                     >
                       +
                     </button>

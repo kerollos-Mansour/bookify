@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTheme } from "../../context/themeContext";
 import { CheckCircle, Home, Loader2 } from "lucide-react";
 import PageTransition from "../../components/pageTransition/pageTransition";
 import { useStripe } from "@stripe/react-stripe-js";
 
 // Re-export common components for ConfirmReservation if it still imports them
 export function Logo() {
+  const { theme } = useTheme();
   return (
     <>
       <h1 className="text-2xl font-semibold mb-5 text-center">
-        <img src="/full-logo.png" alt="Expedia" className="w-40 mx-auto" />
+        <img src={theme === "dark" ? "/white-logo.png" : "/full-logo.png"} alt="Logo" className="w-40 mx-auto" />
       </h1>
-      <div className="w-full h-[1px] bg-gray-300 mb-8"></div>
+      <div className="w-full h-[1px] bg-card-border mb-8"></div>
     </>
   );
 }
@@ -26,7 +28,7 @@ export function ProgressSteps({ currentStep }: { currentStep: number }) {
           <div
             className={`${
               currentStep > step
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-400 text-white"
                 : currentStep === step
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-400"

@@ -46,8 +46,8 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
   return (
     <>
       {/* i need to make all cards has the same height */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-        <div className="relative h-64 bg-gray-200 ">
+      <div className="bg-card rounded-lg border border-card-border overflow-hidden hover:shadow-lg transition-shadow">
+        <div className="relative h-64 bg-muted ">
           <img
             src={room.images[currentImgIndex]}
             alt={room.name}
@@ -57,13 +57,13 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
           {/* Navigation Arrows */}
           <button
             onClick={handlPrevImg}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-card/90 rounded-full p-2 shadow-md hover:bg-card transition-colors"
           >
             <MdChevronLeft className="text-xl" />
           </button>
           <button
             onClick={handlNextImage}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-card/90 rounded-full p-2 shadow-md hover:bg-card transition-colors"
           >
             <MdChevronRight className="text-xl" />
           </button>
@@ -74,7 +74,7 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
         </div>
         <div className="p-4">
           {/* Room Name */}
-          <h3 className="text-lg font-bold text-gray-900 mb-3">{room.name}</h3>
+          <h3 className="text-lg font-bold text-foreground mb-3">{room.name}</h3>
           {/* Amenities */}
           <div className="space-y-2 mb-4">
             {room.amenities.breakfast && (
@@ -89,7 +89,7 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
                 <span>Free self parking</span>
               </div>
             )}
-            <div className="flex items-center gap-2 text-sm text-gray-700">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <IoResizeOutline className="text-lg" />
               <span>{room.amenities.size}</span>
             </div>
@@ -102,22 +102,22 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-2 text-sm text-gray-700">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <IoPeopleOutline className="text-lg" />
               <span>Sleeps {room.amenities.sleeps}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-700">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <IoBedOutline className="text-lg" />
               <span>{room.amenities.bedType}</span>
             </div>
             {room.amenities.allInclusive && (
-              <div className="flex items-center gap-2 text-sm text-gray-700">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <IoInfiniteOutline className="text-lg" />
                 <span>All-inclusive (food/beverages/snacks)</span>
               </div>
             )}
             {room.amenities.wifi && (
-              <div className="flex items-center gap-2 text-sm text-gray-700">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <IoWifiOutline className="text-lg" />
                 <span>Free WiFi</span>
               </div>
@@ -136,7 +136,7 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
                 <IoInformationCircleOutline className="text-lg" />
               </div>
             )}
-            <div className="text-xs text-gray-600 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               Before {room.refundable.deadline}
             </div>
           </div>
@@ -148,7 +148,7 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
           </button>
 
           {/* Price Section */}
-          <div className="border-t pt-4">
+          <div className="border-t border-card-border pt-4">
             {room.price.discount > 0 && (
               <div className="bg-black text-white px-3 py-1 rounded text-xs font-semibold inline-block mb-2">
                 Black Friday {room.price.currency}
@@ -157,11 +157,11 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
             )}
 
             <div className="flex items-baseline gap-2 mb-1">
-              <span className="text-2xl font-bold text-gray-900">
+              <span className="text-2xl font-bold text-foreground">
                 {room.price.currency}
                 {room.price.discounted.toLocaleString()}
               </span>
-              <span className="text-sm text-gray-600">nightly</span>
+              <span className="text-sm text-muted-foreground">nightly</span>
             </div>
 
             {room.price.original > room.price.discounted && (
@@ -170,7 +170,7 @@ export default function RoomCard({ room, hotel }: RoomCardProps) {
                   {room.price.currency}
                   {room.price.original.toLocaleString()}
                 </span>
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-foreground">
                   {room.price.currency}
                   {room.price.discounted.toLocaleString()} total
                 </span>
