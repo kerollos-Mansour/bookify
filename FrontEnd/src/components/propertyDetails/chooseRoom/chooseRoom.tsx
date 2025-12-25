@@ -2,9 +2,11 @@
 import { useMemo, useState } from "react";
 import RoomCard from "./roomCard/roomCard";
 import { FILTERS, Room } from "../../../types/rooms.type";
+import { Hotel } from "../../../types/hotel.type";
 
 interface RoomsSectionProps {
   rooms?: Room[];
+  hotel: Hotel;
 }
 
 const parseBedCount = (bedType?: string) => {
@@ -13,7 +15,7 @@ const parseBedCount = (bedType?: string) => {
   return match ? Number(match[0]) : 1;
 };
 
-export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
+export default function RoomsSection({ rooms = [], hotel }: RoomsSectionProps) {
   const [activeFilter, setActiveFilter] = useState("all");
 
   const filteredRooms = useMemo(() => {
@@ -59,7 +61,7 @@ export default function RoomsSection({ rooms = [] }: RoomsSectionProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredRooms.map((room) => (
-            <RoomCard key={room.id} room={room} />
+            <RoomCard key={room.id} room={room} hotel={hotel} />
           ))}
         </div>
       )}

@@ -1,92 +1,122 @@
 import { apiSlice } from "./apiSlice";
+import {
+  User,
+  UpdateUserRequest,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+} from "../../types/user.type";
 
-export interface UserProfile {
-  _id: string;
-  username?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  phoneNo?: string;
-  bio?: string;
-  dateOfBirth?: string;
-  gender?: string;
-  phone?: string;
-  address?: string;
-  accessibilityNeeds?: string;
-  emergencyContact?: string;
+// Response interfaces
+interface UserResponse {
+  message: string;
+  user: User;
 }
 
-interface ProfileResponse {
-  message: string;
-  user: UserProfile;
-}
-interface ChangePasswordRequest {
-  currentPassword: string;
-  newPassword: string;
-}
-
-interface ChangePasswordResponse {
-  message: string;
-}
-interface AddPhoneRequest {
-  phoneNumber: string;
-  countryCode?: string;
-}
-interface AddPhoneResponse {
-  message: string;
-  user: UserProfile;
-}
 interface DeleteAccountResponse {
   message: string;
 }
+
+interface GetAllUsersResponse {
+  page: number;
+  limit: number;
+  totalUsers: number;
+  totalPages: number;
+  users: User[];
+}
+
+/**
+ * User API endpoints for managing user data
+ * Provides CRUD operations and account management
+ */
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // Fetch user by ID
-    getUserById: builder.query<UserProfile, string>({
-      query: (id) => `/users/${id}`, // <-- use the user ID here
-transformResponse: (response: ProfileResponse) => response.user,
+    getAllUsers: builder.query<
+      GetAllUsersResponse,
+      { page?: number; limit?: number }
+    >({
+      query: ({ page = 1, limit = 10 }) => `/users?page=${page}&limit=${limit}`,
       providesTags: ["User"],
     }),
 
-    // Update user by ID
-    updateUserById: builder.mutation<UserProfile, { id: string; body: Partial<UserProfile> }>({
+    getUserById: builder.query<User, string>({
+      query: (id) => `/users/${id}`,
+      transformResponse: (response: UserResponse) => response.user,
+      providesTags: (result, error, id) => [{ type: "User", id }],
+    }),
+
+    createUser: builder.mutation<User, Partial<User>>({
+      query: (body) => ({
+        url: "/users",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: { status: string; data: User }) =>
+        response.data,
+      invalidatesTags: ["User"],
+    }),
+
+    updateUserById: builder.mutation<
+      User,
+      { id: string; body: UpdateUserRequest }
+    >({
       query: ({ id, body }) => ({
-        url: `/users/${id}`, // <-- use the user ID here
+        url: `/users/${id}`,
         method: "PUT",
         body,
       }),
-      invalidatesTags: ["User"],
+      transformResponse: (response: UserResponse) => response.user,
+      invalidatesTags: (result, error, { id }) => [
+        { type: "User", id },
+        "User",
+      ],
     }),
-     // New endpoints for settings
-    changePassword: builder.mutation<ChangePasswordResponse, ChangePasswordRequest>({
-      query: (body) => ({
-        url: '/users/password/change',
-        method: 'POST',
-        body,
-      }),
-    }),
-     addMobileNumber: builder.mutation<AddPhoneResponse, AddPhoneRequest>({
-      query: (body) => ({
-        url: '/users/phone',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ["User"],
-    }),
-    deleteAccount: builder.mutation<DeleteAccountResponse, string>({
+
+    // Delete User
+    deleteUser: builder.mutation<DeleteAccountResponse, string>({
       query: (id) => ({
         url: `/users/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
       invalidatesTags: ["User"],
+    }),
+
+    // Change Password
+    changePassword: builder.mutation<
+      ChangePasswordResponse,
+      ChangePasswordRequest
+    >({
+      query: (body) => ({
+        url: "/users/password/change",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // Change User Role
+    changeUserRole: builder.mutation<
+      User,
+      { id: string; role: "user" | "admin" }
+    >({
+      query: ({ id, role }) => ({
+        url: `/users/${id}`,
+        method: "PATCH",
+        body: { role },
+      }),
+      transformResponse: (response: UserResponse) => response.user,
+      invalidatesTags: (result, error, { id }) => [
+        { type: "User", id },
+        "User",
+      ],
     }),
   }),
 });
 
 export const {
+  useGetAllUsersQuery,
   useGetUserByIdQuery,
+  useCreateUserMutation,
   useUpdateUserByIdMutation,
+  useDeleteUserMutation,
   useChangePasswordMutation,
-  useAddMobileNumberMutation,
-  useDeleteAccountMutation,
+  useChangeUserRoleMutation,
 } = userApi;

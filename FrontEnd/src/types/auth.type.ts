@@ -2,6 +2,8 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  name?: string;
+  role?: string;
 }
 export interface AuthResponse {
   status: string;
@@ -14,7 +16,7 @@ export interface AuthResponse {
 export interface LoginRequest {
   email: string;
   password: string;
-  username:string;
+  username: string;
 }
 export interface RegisterRequest {
   username: string;

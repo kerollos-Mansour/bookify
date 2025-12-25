@@ -25,7 +25,7 @@ const toCardData = (hotel: Hotel): HotelCardData => {
   const detail = hotel.hotelDetails?.[0];
 
   return {
-    id: hotel.id,
+    id: hotel._id,
     img: {
       img:
         hotel.images && hotel.images.length > 0

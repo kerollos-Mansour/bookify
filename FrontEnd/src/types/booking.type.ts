@@ -35,5 +35,5 @@ export interface CreateBookingRequest {
   currency?: string;
   couponId?: string;
   paymentMethod: "stripe" | "paypal" | "cash" | "other";
-  paymentIntentId: string;
+  paymentIntentId?: string;
 }

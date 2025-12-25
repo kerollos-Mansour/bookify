@@ -1,20 +1,31 @@
 // Coupon interface
 export interface Coupon {
-  id: string; // Using 'id' to match backend
+  _id: string;
   code: string;
-  discountType: "percentage" | "fixed";
   discountValue: number;
+  discountType: "percentage" | "fixed";
   validTo: string;
   validFrom?: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  minPurchase?: number;
+  maxDiscount?: number;
+  isActive: boolean;
+  usedCount: number | null;
+  usageLimit: number;
 }
-
 export interface CreateCouponRequest {
   code: string;
   discountType: "percentage" | "fixed";
   discountValue: number;
   validTo: string;
   validFrom?: string;
+}
+
+export interface CouponsResponse {
+  success: boolean;
+  data: {
+    coupons: Coupon[];
+    page: number;
+    totalCoupons: number;
+    totalPages: number;
+  };
 }

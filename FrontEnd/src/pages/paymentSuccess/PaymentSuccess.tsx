@@ -1,22 +1,22 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { CheckCircle, Home, Loader2 } from "lucide-react";
+import PageTransition from "../../components/pageTransition/pageTransition";
+import { useStripe } from "@stripe/react-stripe-js";
 
-interface ProgressStepsProps {
-  currentStep: number;
-}
-
+// Re-export common components for ConfirmReservation if it still imports them
 export function Logo() {
   return (
     <>
       <h1 className="text-2xl font-semibold mb-5 text-center">
-        <img src="/full-logo.png" alt="" className="w-40 mx-auto"/>
+        <img src="/full-logo.png" alt="Expedia" className="w-40 mx-auto" />
       </h1>
       <div className="w-full h-[1px] bg-gray-300 mb-8"></div>
     </>
   );
 }
 
-export function ProgressSteps({ currentStep }: ProgressStepsProps) {
+export function ProgressSteps({ currentStep }: { currentStep: number }) {
   const steps = [1, 2, 3];
 
   return (
@@ -26,32 +26,20 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
           <div
             className={`${
               currentStep > step
-                ? "bg-blue-400 text-white"
+                ? "bg-blue-600 text-white"
                 : currentStep === step
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-600"
-            } w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-lg font-semibold`}
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-400"
+            } w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300`}
           >
-            {currentStep > step ? (
-              <svg
-                className="w-7 h-7"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            ) : (
-              step
-            )}
+            {currentStep > step ? <CheckCircle className="w-6 h-6" /> : step}
           </div>
           {index < steps.length - 1 && (
-            <div className="w-20 h-[2px] bg-gray-300"></div>
+            <div
+              className={`w-16 md:w-24 h-1 transition-colors duration-300 ${
+                currentStep > step ? "bg-blue-600" : "bg-gray-200"
+              }`}
+            ></div>
           )}
         </React.Fragment>
       ))}
@@ -61,96 +49,91 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
-  return (
-    <div className="min-h-screen bg-white flex flex-col items-center pt-6 px-4">
-      <Logo />
-      <ProgressSteps currentStep={2} />
+  const [searchParams] = useSearchParams();
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "success"
+  ); 
 
-      <div className="text-center mb-10">
-        <h2 className="text-[34px] font-bold text-blue-900 mb-2">Payment</h2>
-        <p className="text-gray-500 text-[15px]">
-          Kindly follow the instructions below
+
+  const redirectStatus = searchParams.get("redirect_status");
+
+  useEffect(() => {
+    if (redirectStatus) {
+      if (redirectStatus === "succeeded") {
+        setStatus("success");
+      } else {
+        setStatus("error");
+      }
+    }
+  }, [redirectStatus]);
+
+  if (status === "error") {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center pt-20 px-4">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Payment Failed</h2>
+        <p className="text-gray-600 mb-8">
+          Something went wrong with your payment.
         </p>
-      </div>
-
-      <div className="w-full max-w-4xl flex p-6 md:p-10 flex-col md:flex-row gap-20 mt-4 ">
-        <div className="w-full md:w-1/2 pl-30 flex flex-col justify-start gap-8">
-          <p className="text-[18px]  text-[#4B5563]  font-medium">
-            Transfer Bookify:
-          </p>
-          <p className="text-[16px] leading-[1.85] text-[#4B5563]  font-medium">
-            2 Days at Blue Origin Fams,
-            <br />
-            Galle, Sri Lanka
-          </p>
-          <p className="text-[16px] text-[#4B5563] font-medium">
-            Total:
-            <span className="font-bold text-blue-900 ml-2">$400 USD</span>
-          </p>
-          <p className="text-[16px] text-[#4B5563] font-medium">
-            Initial Payment:
-            <span className="font-bold text-blue-900 ml-2">$200</span>
-          </p>
-        </div>
-
-        <div className="hidden md:block w-[1px] bg-gray-300 h-68 opacity-70"></div>
-
-        <div className="w-full md:w-1/2 space-y-4">
-          <div>
-            <label className="block text-[14px] text-gray-600 font-semibold mb-2">
-              Card Number
-            </label>
-            <input
-              type="text"
-              placeholder="Payment card number"
-              className="w-full bg-gray-100 rounded-md px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 outline-none border-0"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[14px] text-gray-600 font-semibold mb-2">
-              Bank
-            </label>
-            <select className="w-full bg-gray-100 rounded-md px-4 py-2.5 text-sm text-gray-400 outline-none border-0 appearance-none">
-              <option>Select Bank</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[14px] text-gray-600 font-semibold mb-2">
-              Exp Date
-            </label>
-            <input
-              type="text"
-              placeholder="Validation date"
-              className="w-full bg-gray-100 rounded-md px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 outline-none border-0"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[14px] text-gray-600 font-semibold mb-2">
-              CVV
-            </label>
-            <input
-              type="text"
-              placeholder="Beside the card"
-              className="w-full bg-gray-100 rounded-md px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 outline-none border-0"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 mt-12 mb-10">
         <button
-          onClick={() => navigate("/confirm-reservation")}
-          className="w-64 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
+          onClick={() => navigate("/")}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg"
         >
-          Pay Now
-        </button>
-        <button className="w-64 bg-gray-100 text-gray-600 py-3 rounded-lg font-medium">
-          Cancel
+          Try Again
         </button>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <PageTransition>
+      <div className="min-h-screen bg-white flex flex-col items-center pt-6 px-4">
+        <Logo />
+        <ProgressSteps currentStep={3} />
+
+        <div className="text-center mb-8 animate-fade-in-up">
+          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-3">
+            Payment Completed!
+          </h2>
+          <p className="text-gray-500 text-lg">
+            Your booking has been confirmed successfully.
+          </p>
+        </div>
+
+        <div className="relative flex items-center justify-center mb-10 group">
+          <div className="absolute inset-0 bg-blue-100 rounded-full filter blur-3xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+          <img
+            src="/Confirm-reservation.png"
+            alt="Success Illustration"
+            className="relative w-64 md:w-[400px] h-auto mx-auto object-contain transform group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+
+        <div className="text-center mb-12 max-w-md mx-auto space-y-2">
+          <p className="text-blue-600 font-medium text-lg">
+            Please check your email & phone messages.
+          </p>
+          <p className="text-gray-500">
+            We have sent all the confirmation details and itinerary to your
+            inbox.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+          <button
+            onClick={() => navigate("/account")}
+            className="flex-1 bg-white border-2 border-gray-200 text-gray-700 py-3.5 rounded-xl font-bold hover:bg-gray-50 hover:border-gray-300 transition-all text-center"
+          >
+            View Booking
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          >
+            <Home className="w-5 h-5" />
+            Go to Home
+          </button>
+        </div>
+      </div>
+    </PageTransition>
   );
 }

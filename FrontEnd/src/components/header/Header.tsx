@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Menu, X, ChevronDown, MessageSquare } from "lucide-react";
+import { Menu, X, ChevronDown, MessageSquare, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -9,6 +11,7 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const handelScroll = () => {
@@ -93,23 +96,53 @@ export default function Header() {
                 }`}
               />
             </button>
-            <Link to="/login">
-              <span className={`cursor-pointer transition-colors ${textColor}`}>
-                Sign In
-              </span>
-            </Link>
+
+            {isAuthenticated ? (
+              <Link to="/account">
+                <button
+                  className={`flex items-center gap-2 p-2 rounded-full transition-colors ${iconHoverBg}`}
+                  aria-label="Account"
+                >
+                  <User
+                    className={`w-5 h-5 ${
+                      scrolled ? "text-gray-700" : "text-white"
+                    }`}
+                  />
+                </button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <span
+                  className={`cursor-pointer transition-colors ${textColor}`}
+                >
+                  Sign In
+                </span>
+              </Link>
+            )}
           </nav>
 
           {/* Tablet/Mobile Right Section */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3">
-            {/* Sign In - visible on tablet */}
-            <Link to="/login" className="hidden md:block">
-              <span
-                className={`text-sm font-medium cursor-pointer transition-colors ${textColor}`}
-              >
-                Sign In
-              </span>
-            </Link>
+            {/* Sign In / Account - visible on tablet */}
+            <div className="hidden md:block">
+              {isAuthenticated ? (
+                <Link to="/account">
+                  <User
+                    className={`w-6 h-6 ${
+                      scrolled ? "text-gray-700" : "text-white"
+                    }`}
+                  />
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <span
+                    className={`text-sm font-medium cursor-pointer transition-colors ${textColor}`}
+                  >
+                    Sign In
+                  </span>
+                </Link>
+              )}
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -198,6 +231,43 @@ export default function Header() {
                     Messages
                   </a>
 
+                  {isAuthenticated ? (
+                    <Link
+                      to="/account"
+                      className={`py-2 px-2 rounded-lg transition-colors ${
+                        scrolled
+                          ? "text-gray-700 hover:bg-gray-50"
+                          : " hover:bg-white/10"
+                      }`}
+                    >
+                      Account
+                    </Link>
+                  ) : (
+                    <div
+                      className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
+                        scrolled ? "border-gray-200" : "border-white/20"
+                      }`}
+                    >
+                      <Link to="/login" className="flex-1">
+                        <button
+                          className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
+                            scrolled
+                              ? "border-gray-300 text-gray-700 hover:bg-gray-50"
+                              : "border-white/40 text-white hover:bg-white/10"
+                          }`}
+                        >
+                          Sign In
+                        </button>
+                      </Link>
+                      <button
+                        onClick={() => navigate("/signUp")}
+                        className="flex-1 py-3 px-5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                      >
+                        Sign Up
+                      </button>
+                    </div>
+                  )}
+
                   <div
                     className={`py-3 px-2 flex items-center gap-2 text-sm ${
                       scrolled ? "text-gray-700" : ""
@@ -205,27 +275,6 @@ export default function Header() {
                   >
                     <span>🇺🇸 United States</span>
                     <span>• USD</span>
-                  </div>
-
-                  <div
-                    className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
-                      scrolled ? "border-gray-200" : "border-white/20"
-                    }`}
-                  >
-                    <Link to="/login" className="flex-1">
-                      <button
-                        className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
-                          scrolled
-                            ? "border-gray-300 text-gray-700 hover:bg-gray-50"
-                            : "border-white/40 text-white hover:bg-white/10"
-                        }`}
-                      >
-                        Sign In
-                      </button>
-                    </Link>
-                    <button className="flex-1 py-3 px-5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                      Sign Up
-                    </button>
                   </div>
                 </nav>
               </div>

@@ -1,80 +1,441 @@
-import { Edit2 } from "lucide-react";
-import { useMemo } from "react";
-import { useGetUserByIdQuery } from "../../../store/api/user.api";
+import { useState, useEffect } from "react";
+import {
+  User as UserIcon,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Users,
+  FileText,
+  AlertCircle,
+  Heart,
+  Edit2,
+  Save,
+  X,
+} from "lucide-react";
+import {
+  useGetUserByIdQuery,
+  useUpdateUserByIdMutation,
+} from "../../../store/api/user.api";
+import { User } from "../../../types/user.type";
 import { storage } from "../../../utils/storage";
 
-export default function ProfileTab() {
+interface FormData extends Partial<User> {}
 
-  const userId = storage.getUser()?.id; // get ID from localStorage
-  const { data: profile, isLoading, isError } = useGetUserByIdQuery(userId!);
-  const profileSections = useMemo(() => {
-    if (!profile) return [];
-    return [
-      {
-        title: "Basic information",
-        description:
-          "Make sure this information matches your travel ID, like your passport or license.",
-        fields: [
-          { label: "Name", value: profile.name },
-          { label: "Bio", value: profile.bio || "Not provided" },
-          { label: "Date of birth", value: profile.dateOfBirth || "Not provided" },
-          { label: "Gender", value: profile.gender || "Not provided" },
-          { label: "Accessibility needs", value: profile.accessibilityNeeds || "Not provided" },
-        ],
-      },
-      {
-        title: "Contact",
-        description:
-          "You can sign in, receive account activity alerts, and get trip updates by sharing this information.",
-        fields: [
-          { label: "Mobile number", value: profile.phoneNo || profile.phone || "Not provided" }, {
-            label: "Emergency contact",
-            value: profile.emergencyContact || "Not provided",
-          },
-          { label: "Email", value: profile.email },
-          { label: "Address", value: profile.address || "Not provided" },
-        ],
-      },
-    ];
+export default function ProfileTab() {
+  const userId = storage.getUser()?.id;
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    error,
+  } = useGetUserByIdQuery(userId!, {
+    skip: !userId,
+  });
+
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserByIdMutation();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<FormData>({});
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Initialize form data when profile loads
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || "",
+        username: profile.username || "",
+        email: profile.email || "",
+        phoneNo: profile.phoneNo || "",
+        country: profile.country || "",
+        dateOfBirth: profile.dateOfBirth
+          ? profile.dateOfBirth.split("T")[0]
+          : "",
+        gender: profile.gender || "",
+        bio: profile.bio || "",
+        address: profile.address || "",
+        emergencyContact: profile.emergencyContact || "",
+        accessibilityNeeds: profile.accessibilityNeeds || "",
+      });
+    }
   }, [profile]);
 
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  const handleSave = async () => {
+    if (!userId) return;
 
-  if (isLoading) return <p>Loading profile...</p>;
-  if (isError) return <p>Failed to load profile</p>;
+    try {
+      await updateUser({
+        id: userId,
+        body: formData,
+      }).unwrap();
+
+      setIsEditing(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      alert("Failed to update profile. Please try again.");
+    }
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      setFormData({
+        name: profile.name || "",
+        username: profile.username || "",
+        email: profile.email || "",
+        phoneNo: profile.phoneNo || "",
+        country: profile.country || "",
+        dateOfBirth: profile.dateOfBirth
+          ? profile.dateOfBirth.split("T")[0]
+          : "",
+        gender: profile.gender || "",
+        bio: profile.bio || "",
+        address: profile.address || "",
+        emergencyContact: profile.emergencyContact || "",
+        accessibilityNeeds: profile.accessibilityNeeds || "",
+      });
+    }
+    setIsEditing(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-3xl p-8 shadow-sm">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !profile) {
+    return (
+      <div className="bg-white rounded-3xl p-8 shadow-sm">
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Failed to load profile
+          </h3>
+          <p className="text-gray-600">
+            {error && "data" in error
+              ? JSON.stringify(error.data)
+              : "Please try again later"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm space-y-8">
-      {profileSections.map((section) => (
-        <article
-          key={section.title}
-          className="border border-slate-100 rounded-2xl p-5 sm:p-6"
-        >
-          <header className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 sm:justify-between">
-            <div>
-              <p className="text-xl font-semibold text-slate-900">
-                {section.title}
-              </p>
-              <p className="text-sm text-slate-500">{section.description}</p>
+    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="bg-green-50 border-l-4 border-green-500 p-4 m-6 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-green-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </div>
-            <button className="inline-flex items-center gap-2 text-blue-600 font-semibold text-sm hover:text-blue-500">
-              <Edit2 className="w-4 h-4" />
-              Edit
-            </button>
-          </header>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-800">
+                Profile updated successfully!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
-          <dl className="mt-6 grid gap-6 sm:grid-cols-2">
-            {section.fields.map((field) => (
-              <div key={field.label}>
-                <dt className="text-sm uppercase tracking-wide text-slate-400 font-semibold">
-                  {field.label}
-                </dt>
-                <dd className="text-base text-slate-900">{field.value}</dd>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30">
+              <UserIcon className="w-10 h-10 text-white" />
+            </div>
+            <div className="text-white">
+              <h2 className="text-2xl font-bold">
+                {formData.name || formData.username || "User"}
+              </h2>
+              <p className="text-blue-100 text-sm">@{formData.username}</p>
+              <p className="text-blue-100 text-xs mt-1">
+                Member since{" "}
+                {new Date(profile.createdAt || "").toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+
+          {/* Edit/Save Buttons */}
+          <div className="flex gap-2">
+            {!isEditing ? (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <Edit2 className="w-4 h-4" />
+                Edit Profile
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={handleCancel}
+                  disabled={isUpdating}
+                  className="flex items-center gap-2 px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all border border-white/30 disabled:opacity-50"
+                >
+                  <X className="w-4 h-4" />
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isUpdating}
+                  className="flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" />
+                  {isUpdating ? "Saving..." : "Save Changes"}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Form Content */}
+      <div className="p-8">
+        <div className="space-y-8">
+          {/* Personal Information */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <UserIcon className="w-5 h-5 text-blue-600" />
+              Personal Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InputField
+                label="Full Name"
+                name="name"
+                value={formData.name || ""}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={<UserIcon className="w-4 h-4" />}
+                placeholder="Enter your full name"
+              />
+              <InputField
+                label="Username"
+                name="username"
+                value={formData.username || ""}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={<UserIcon className="w-4 h-4" />}
+                placeholder="Enter your username"
+              />
+              <InputField
+                label="Email Address"
+                name="email"
+                type="email"
+                value={formData.email || ""}
+                onChange={handleInputChange}
+                disabled={true} // Email should not be editable
+                icon={<Mail className="w-4 h-4" />}
+                placeholder="your.email@example.com"
+              />
+              <InputField
+                label="Phone Number"
+                name="phoneNo"
+                value={formData.phoneNo || ""}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={<Phone className="w-4 h-4" />}
+                placeholder="+1 234 567 8900"
+              />
+              <InputField
+                label="Date of Birth"
+                name="dateOfBirth"
+                type="date"
+                value={formData.dateOfBirth || ""}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={<Calendar className="w-4 h-4" />}
+              />
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Gender
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <select
+                    name="gender"
+                    value={formData.gender || ""}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all ${
+                      isEditing
+                        ? "bg-white border-gray-300"
+                        : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                    }`}
+                  >
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                  </select>
+                </div>
               </div>
-            ))}
-          </dl>
-        </article>
-      ))}
+            </div>
+          </section>
+
+          {/* Location Information */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-blue-600" />
+              Location Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InputField
+                label="Country"
+                name="country"
+                value={formData.country || ""}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={<MapPin className="w-4 h-4" />}
+                placeholder="Enter your country"
+              />
+              <InputField
+                label="Address"
+                name="address"
+                value={formData.address || ""}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={<MapPin className="w-4 h-4" />}
+                placeholder="Enter your address"
+              />
+            </div>
+          </section>
+
+          {/* Additional Information */}
+          <section>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-blue-600" />
+              Additional Information
+            </h3>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Bio
+                </label>
+                <textarea
+                  name="bio"
+                  value={formData.bio || ""}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  rows={4}
+                  placeholder="Tell us about yourself..."
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all resize-none ${
+                    isEditing
+                      ? "bg-white border-gray-300"
+                      : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                  }`}
+                />
+              </div>
+              <InputField
+                label="Emergency Contact"
+                name="emergencyContact"
+                value={formData.emergencyContact || ""}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                icon={<Heart className="w-4 h-4" />}
+                placeholder="Emergency contact number"
+              />
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Accessibility Needs
+                </label>
+                <textarea
+                  name="accessibilityNeeds"
+                  value={formData.accessibilityNeeds || ""}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  rows={3}
+                  placeholder="Let us know if you have any accessibility requirements..."
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all resize-none ${
+                    isEditing
+                      ? "bg-white border-gray-300"
+                      : "bg-gray-50 border-gray-200 cursor-not-allowed"
+                  }`}
+                />
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Reusable Input Field Component
+interface InputFieldProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled: boolean;
+  icon: React.ReactNode;
+  placeholder?: string;
+  type?: string;
+}
+
+function InputField({
+  label,
+  name,
+  value,
+  onChange,
+  disabled,
+  icon,
+  placeholder,
+  type = "text",
+}: InputFieldProps) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+        {label}
+      </label>
+      <div className="relative">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          {icon}
+        </div>
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          placeholder={placeholder}
+          className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-4 focus:ring-blue-500/30 focus:border-blue-500 transition-all ${
+            disabled
+              ? "bg-gray-50 border-gray-200 cursor-not-allowed"
+              : "bg-white border-gray-300"
+          }`}
+        />
+      </div>
     </div>
   );
 }
