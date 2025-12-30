@@ -4,17 +4,20 @@ import "./App.css";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./config/routes";
 import { Provider } from "react-redux";
-import { store } from './store/store'
+import { store } from "./store/store";
 import { AuthProvider } from "./context/authContext";
 import { ThemeProvider } from "./context/themeContext";
+import { LocationProvider } from "./context/locationContext";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <Provider store={store}>
       <ThemeProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
+        <LocationProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </LocationProvider>
       </ThemeProvider>
     </Provider>
   </StrictMode>

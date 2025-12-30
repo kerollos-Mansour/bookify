@@ -1,36 +1,13 @@
 import { Heart, MapPin, Calendar, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { visitedStorage, VisitedHotel } from "../../utils/visitedStorage";
+import {
+  visitedStorage,
+  VisitedHotel,
+  searchStorage,
+  VisitedSearch,
+} from "../../utils/visitedStorage";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-
-// Mock data for recent searches
-const RECENT_SEARCHES = [
-  {
-    id: 1,
-    location: "Cairo",
-    checkIn: "Fri, Feb 20",
-    checkOut: "Sun, Feb 22",
-    travelers: 2,
-    rooms: 1,
-  },
-  {
-    id: 2,
-    location: "Cancun",
-    checkIn: "Fri, Feb 6",
-    checkOut: "Sun, Feb 8",
-    travelers: 2,
-    rooms: 1,
-  },
-  {
-    id: 3,
-    location: "Punta Sam",
-    checkIn: "Fri, Feb 6",
-    checkOut: "Sun, Feb 8",
-    travelers: 2,
-    rooms: 1,
-  },
-];
 
 // Property Card Component
 function PropertyCard({ property }: { property: VisitedHotel }) {
@@ -81,14 +58,18 @@ function PropertyCard({ property }: { property: VisitedHotel }) {
 }
 
 // Search Card Component
-function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
+function SearchCard({ search }: { search: VisitedSearch }) {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate(
-      `/search?location=${encodeURIComponent(search.location)}&checkIn=${
-        search.checkIn
-      }&checkOut=${search.checkOut}`
-    );
+    const params = new URLSearchParams({
+      location: search.location,
+      checkIn: search.checkIn,
+      checkOut: search.checkOut,
+      adults: search.travelers.toString(),
+      rooms: search.rooms.toString(),
+    });
+
+    navigate(`/search?${params.toString()}`);
   };
 
   return (
@@ -130,11 +111,13 @@ function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
 // Main Component
 export function WhereYouLeftOff() {
   const [visited, setVisited] = useState<VisitedHotel[]>([]);
+  const [recentSearches, setRecentSearches] = useState<VisitedSearch[]>([]);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
   useEffect(() => {
     setVisited(visitedStorage.get());
+    setRecentSearches(searchStorage.get());
   }, []);
 
   const handleScroll = () => {
@@ -166,7 +149,7 @@ export function WhereYouLeftOff() {
       ?.scrollBy({ left: 300, behavior: "smooth" });
   };
 
-  if (!visited.length) return null;
+  if (!visited.length && !recentSearches.length) return null;
 
   return (
     <section className="py-12 md:py-10 bg-[#EFF3F7] dark:bg-background transition-colors duration-300">
@@ -176,50 +159,54 @@ export function WhereYouLeftOff() {
         </h2>
 
         {/* Recently Viewed */}
-        <div className="relative mb-10 md:mb-12">
-          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
-            Your recently viewed properties
-          </h3>
+        {visited.length > 0 && (
+          <div className="relative mb-10 md:mb-12">
+            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
+              Your recently viewed properties
+            </h3>
 
-          {showLeftArrow && (
-            <button
-              onClick={scrollLeft}
-              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-card  text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+            {showLeftArrow && (
+              <button
+                onClick={scrollLeft}
+                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-card  text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+              >
+                <FiChevronLeft size={22} />
+              </button>
+            )}
+
+            {showRightArrow && (
+              <button
+                onClick={scrollRight}
+                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-card  text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+              >
+                <FiChevronRight size={22} />
+              </button>
+            )}
+
+            <div
+              id="visited-row"
+              className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
             >
-              <FiChevronLeft size={22} />
-            </button>
-          )}
-
-          {showRightArrow && (
-            <button
-              onClick={scrollRight}
-              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-card  text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
-            >
-              <FiChevronRight size={22} />
-            </button>
-          )}
-
-          <div
-            id="visited-row"
-            className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-4"
-          >
-            {visited.map((hotel) => (
-              <PropertyCard key={hotel.id} property={hotel} />
-            ))}
+              {visited.map((hotel) => (
+                <PropertyCard key={hotel.id} property={hotel} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Recent Searches */}
-        <div>
-          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
-            Your recent searches
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {RECENT_SEARCHES.map((search) => (
-              <SearchCard key={search.id} search={search} />
-            ))}
+        {recentSearches.length > 0 && (
+          <div>
+            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
+              Your recent searches
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentSearches.map((search) => (
+                <SearchCard key={search.id} search={search} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

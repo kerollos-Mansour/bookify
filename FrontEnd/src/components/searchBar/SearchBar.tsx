@@ -1,5 +1,6 @@
 import { LOCATIONS } from "../../constants/locations";
 import { useState, useRef, useEffect } from "react";
+import { searchStorage } from "../../utils/visitedStorage";
 import {
   MdLocationOn,
   MdCalendarToday,
@@ -111,6 +112,15 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
       rooms: rooms.toString(),
     });
 
+    // Save to history
+    searchStorage.add({
+      location: selectedLocation.name,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+      travelers: adults,
+      rooms: rooms,
+    });
+
     navigate(`/search?${params.toString()}`);
   };
 
@@ -159,8 +169,9 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                   filteredLocations.map((location) => (
                     <div
                       key={location.id}
-                      className={`p-3 hover:bg-muted rounded-lg cursor-pointer transition-colors ${selectedLocation.id === location.id ? "bg-accent" : ""
-                        }`}
+                      className={`p-3 hover:bg-muted rounded-lg cursor-pointer transition-colors ${
+                        selectedLocation.id === location.id ? "bg-accent" : ""
+                      }`}
                       onClick={() => {
                         setSelectedLocation(location);
                         setShowLocationDropdown(false);
@@ -216,7 +227,9 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
               className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="font-semibold mb-4 text-card-foreground">Select dates</h3>
+              <h3 className="font-semibold mb-4 text-card-foreground">
+                Select dates
+              </h3>
 
               <div className="space-y-4">
                 <div>
@@ -282,13 +295,17 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
               className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="font-semibold mb-4 text-card-foreground">Travelers</h3>
+              <h3 className="font-semibold mb-4 text-card-foreground">
+                Travelers
+              </h3>
 
               <div className="space-y-4">
                 {/* Adults */}
                 <div className="flex justify-between items-center">
                   <div>
-                    <div className="font-medium text-card-foreground">Adults</div>
+                    <div className="font-medium text-card-foreground">
+                      Adults
+                    </div>
                     <div className="text-sm text-muted-foreground">
                       Ages 18 or above
                     </div>
@@ -316,7 +333,9 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                 {/* Rooms */}
                 <div className="flex justify-between items-center pt-4 border-t border-card-border">
                   <div>
-                    <div className="font-medium text-card-foreground">Rooms</div>
+                    <div className="font-medium text-card-foreground">
+                      Rooms
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <button
@@ -326,7 +345,9 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                     >
                       -
                     </button>
-                    <span className="w-8 text-center font-medium text-foreground">{rooms}</span>
+                    <span className="w-8 text-center font-medium text-foreground">
+                      {rooms}
+                    </span>
                     <button
                       onClick={() => setRooms(rooms + 1)}
                       className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground"

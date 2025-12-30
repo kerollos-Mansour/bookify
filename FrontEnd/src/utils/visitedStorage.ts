@@ -39,3 +39,62 @@ export const visitedStorage = {
     localStorage.removeItem(STORAGE_KEY);
   },
 };
+
+export interface VisitedSearch {
+  id: string; // unique ID or timestamp
+  location: string;
+  checkIn: string;
+  checkOut: string;
+  travelers: number;
+  rooms: number;
+  timestamp: number;
+}
+
+const SEARCH_STORAGE_KEY = "recentSearches";
+
+export const searchStorage = {
+  get: (): VisitedSearch[] => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem(SEARCH_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+      console.error("Error reading recent searches", e);
+      return [];
+    }
+  },
+
+  add: (search: Omit<VisitedSearch, "id" | "timestamp">) => {
+    if (typeof window === "undefined") return;
+    try {
+      const current = searchStorage.get();
+      const newSearch: VisitedSearch = {
+        ...search,
+        id: Date.now().toString(),
+        timestamp: Date.now(),
+      };
+
+      // Remove duplicates (same location, checkIn, checkOut) to keep list clean
+      const filtered = current.filter(
+        (s) =>
+          !(
+            s.location === search.location &&
+            s.checkIn === search.checkIn &&
+            s.checkOut === search.checkOut
+          )
+      );
+
+      // Keep only last 10 searches
+      const updated = [newSearch, ...filtered].slice(0, 10);
+
+      localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error("Error saving recent search", e);
+    }
+  },
+
+  clear: () => {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(SEARCH_STORAGE_KEY);
+  },
+};

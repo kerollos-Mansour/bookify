@@ -1,20 +1,28 @@
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, MessageSquare, User } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation as useRouterLocation,
+  useNavigate,
+} from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import ThemeToggle from "../UI/ThemeToggle";
 import { useTheme } from "../../context/themeContext";
+import { useLocation } from "../../context/locationContext";
+import { LocationSelector } from "../locationSelector/LocationSelector";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showLocationSelector, setShowLocationSelector] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-  const isHomePage = location.pathname === "/";
+  const routerLocation = useRouterLocation();
+  const isHomePage = routerLocation.pathname === "/";
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { theme } = useTheme();
+  const { location: userLocation } = useLocation();
 
   useEffect(() => {
     const handelScroll = () => {
@@ -41,8 +49,9 @@ export default function Header() {
 
   return (
     <header
-      className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBg} ${isHomePage ? "fixed" : ""
-        }`}
+      className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBg} ${
+        isHomePage ? "fixed" : ""
+      }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-40 py-3 lg:py-2">
         <div className="flex items-center justify-between">
@@ -51,7 +60,13 @@ export default function Header() {
             {/* Logo */}
             <div className="flex items-center gap-2 w-24 sm:w-32 lg:w-40 font-bold text-lg sm:text-xl">
               <img
-                src={scrolled || !isHomePage || mobileMenuOpen ? (theme === "dark" ? "/white-logo.png" : "/full-logo.png") : "/white-logo.png"}
+                src={
+                  scrolled || !isHomePage || mobileMenuOpen
+                    ? theme === "dark"
+                      ? "/white-logo.png"
+                      : "/full-logo.png"
+                    : "/white-logo.png"
+                }
                 alt="Logo"
                 className="logo cursor-pointer w-full h-auto"
                 onClick={() => navigate("/")}
@@ -70,10 +85,11 @@ export default function Header() {
           {/* Desktop Right Menu */}
           <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm font-medium">
             <button
-              className={`hidden xl:flex items-center gap-2 transition-colors ${textColor}`}
+              onClick={() => setShowLocationSelector(true)}
+              className={`hidden xl:flex items-center gap-2 transition-colors hover:opacity-80 ${textColor}`}
             >
-              <span>USD</span>
-              <span className="text-xl">🇺🇸</span>
+              <span>{userLocation.currency}</span>
+              <span className="text-xl">{userLocation.flag}</span>
             </button>
             <a
               href="#"
@@ -93,8 +109,9 @@ export default function Header() {
               className={`p-2 rounded-full transition-colors ${iconHoverBg}`}
             >
               <MessageSquare
-                className={`w-5 h-5 ${scrolled ? "text-foreground" : "text-white"
-                  }`}
+                className={`w-5 h-5 ${
+                  scrolled ? "text-foreground" : "text-white"
+                }`}
               />
             </button>
 
@@ -108,8 +125,9 @@ export default function Header() {
                   aria-label="Account"
                 >
                   <User
-                    className={`w-5 h-5 ${scrolled ? "text-foreground" : "text-white"
-                      }`}
+                    className={`w-5 h-5 ${
+                      scrolled ? "text-foreground" : "text-white"
+                    }`}
                   />
                 </button>
               </Link>
@@ -131,8 +149,9 @@ export default function Header() {
               {isAuthenticated ? (
                 <Link to="/account">
                   <User
-                    className={`w-6 h-6 ${scrolled ? "text-foreground" : "text-white"
-                      }`}
+                    className={`w-6 h-6 ${
+                      scrolled ? "text-foreground" : "text-white"
+                    }`}
                   />
                 </Link>
               ) : (
@@ -152,10 +171,11 @@ export default function Header() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`p-2 rounded-lg transition-colors ${scrolled
-                ? "hover:bg-accent text-foreground"
-                : "hover:bg-white/20 "
-                }`}
+              className={`p-2 rounded-lg transition-colors ${
+                scrolled
+                  ? "hover:bg-accent text-foreground"
+                  : "hover:bg-white/20 "
+              }`}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -178,15 +198,17 @@ export default function Header() {
               className="lg:hidden overflow-hidden"
             >
               <div
-                className={`lg:hidden mt-4 pt-4 border-t ${scrolled ? "border-card-border" : "border-white/20"
-                  }`}
+                className={`lg:hidden mt-4 pt-4 border-t ${
+                  scrolled ? "border-card-border" : "border-white/20"
+                }`}
               >
                 <nav className="flex flex-col gap-2 pb-4">
                   <button
-                    className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${scrolled
-                      ? "text-foreground hover:bg-accent"
-                      : "hover:bg-white/10"
-                      }`}
+                    className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${
+                      scrolled
+                        ? "text-foreground hover:bg-accent"
+                        : "hover:bg-white/10"
+                    }`}
                   >
                     Shop travel
                     <ChevronDown className="w-5 h-5" />
@@ -194,37 +216,41 @@ export default function Header() {
 
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
-                      ? "text-foreground hover:bg-accent"
-                      : " hover:bg-white/10"
-                      }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-foreground hover:bg-accent"
+                        : " hover:bg-white/10"
+                    }`}
                   >
                     List your property
                   </a>
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
-                      ? "text-foreground hover:bg-accent"
-                      : " hover:bg-white/10"
-                      }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-foreground hover:bg-accent"
+                        : " hover:bg-white/10"
+                    }`}
                   >
                     Support
                   </a>
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
-                      ? "text-foreground hover:bg-accent"
-                      : " hover:bg-white/10"
-                      }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-foreground hover:bg-accent"
+                        : " hover:bg-white/10"
+                    }`}
                   >
                     Trips
                   </a>
                   <a
                     href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${scrolled
-                      ? "text-foreground hover:bg-accent"
-                      : " hover:bg-white/10"
-                      }`}
+                    className={`py-2 px-2 rounded-lg transition-colors ${
+                      scrolled
+                        ? "text-foreground hover:bg-accent"
+                        : " hover:bg-white/10"
+                    }`}
                   >
                     Messages
                   </a>
@@ -232,24 +258,27 @@ export default function Header() {
                   {isAuthenticated ? (
                     <Link
                       to="/account"
-                      className={`py-2 px-2 rounded-lg transition-colors ${scrolled
-                        ? "text-foreground hover:bg-accent"
-                        : " hover:bg-white/10"
-                        }`}
+                      className={`py-2 px-2 rounded-lg transition-colors ${
+                        scrolled
+                          ? "text-foreground hover:bg-accent"
+                          : " hover:bg-white/10"
+                      }`}
                     >
                       Account
                     </Link>
                   ) : (
                     <div
-                      className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${scrolled ? "border-gray-200" : "border-white/20"
-                        }`}
+                      className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
+                        scrolled ? "border-gray-200" : "border-white/20"
+                      }`}
                     >
                       <Link to="/login" className="flex-1">
                         <button
-                          className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${scrolled
-                            ? "border-card-border text-foreground hover:bg-accent"
-                            : "border-white/40 text-white hover:bg-white/10"
-                            }`}
+                          className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
+                            scrolled
+                              ? "border-card-border text-foreground hover:bg-accent"
+                              : "border-white/40 text-white hover:bg-white/10"
+                          }`}
                         >
                           Sign In
                         </button>
@@ -263,19 +292,29 @@ export default function Header() {
                     </div>
                   )}
 
-                  <div
-                    className={`py-3 px-2 flex items-center gap-2 text-sm ${scrolled ? "text-foreground" : ""
-                      }`}
+                  <button
+                    onClick={() => setShowLocationSelector(true)}
+                    className={`py-3 px-2 flex items-center gap-2 text-sm hover:bg-muted rounded-lg transition-colors ${
+                      scrolled ? "text-foreground" : ""
+                    }`}
                   >
-                    <span>🇺🇸 United States</span>
-                    <span>• USD</span>
-                  </div>
+                    <span>
+                      {userLocation.flag} {userLocation.country}
+                    </span>
+                    <span>• {userLocation.currency}</span>
+                  </button>
                 </nav>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Location Selector Modal */}
+      <LocationSelector
+        isOpen={showLocationSelector}
+        onClose={() => setShowLocationSelector(false)}
+      />
     </header>
   );
 }
