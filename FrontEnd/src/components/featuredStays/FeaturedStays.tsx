@@ -122,7 +122,9 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
                 d="M19.5 10.5c0 7-7.5 11-7.5 11S4.5 17.5 4.5 10.5a7.5 7.5 0 1115 0z"
               />
             </svg>
-            <span className="line-clamp-2">{hotel.location?.address ?? hotel.location?.city}</span>
+            <span className="line-clamp-2">
+              {hotel.location?.address ?? hotel.location?.city}
+            </span>
           </div>
 
           <div className="flex items-center justify-between mt-auto gap-2 sm:gap-3">
@@ -159,7 +161,11 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
 }
 
 export default function FeaturedStays() {
-  const { data: destinations = [], isLoading, isError } = useSearchHotelsQuery({ featured: true });
+  const {
+    data: destinations = [],
+    isLoading,
+    isError,
+  } = useSearchHotelsQuery({ featured: true });
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
@@ -168,7 +174,8 @@ export default function FeaturedStays() {
     if (!container) return;
 
     const atStart = container.scrollLeft === 0;
-    const atEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
+    const atEnd =
+      container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
 
     setShowLeftArrow(!atStart);
     setShowRightArrow(!atEnd);
@@ -184,19 +191,31 @@ export default function FeaturedStays() {
   }, [destinations]);
 
   const scrollLeft = () => {
-    document.getElementById("destinations-row")?.scrollBy({ left: -300, behavior: "smooth" });
+    document
+      .getElementById("destinations-row")
+      ?.scrollBy({ left: -300, behavior: "smooth" });
   };
 
   const scrollRight = () => {
-    document.getElementById("destinations-row")?.scrollBy({ left: 300, behavior: "smooth" });
+    document
+      .getElementById("destinations-row")
+      ?.scrollBy({ left: 300, behavior: "smooth" });
   };
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (isError) {
-    return <div className="flex justify-center items-center h-screen text-red-600">Failed to load featured destinations</div>;
+    return (
+      <div className="flex justify-center items-center h-screen text-red-600">
+        Failed to load featured destinations
+      </div>
+    );
   }
 
   return (
@@ -207,42 +226,61 @@ export default function FeaturedStays() {
             Featured Destination
           </h2>
           <p className="text-sm sm:text-base text-gray-500 mt-2 sm:mt-3 max-w-2xl mx-auto px-4">
-            Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experiences.
+            Discover our handpicked selection of exceptional properties around
+            the world, offering unparalleled luxury and unforgettable
+            experiences.
           </p>
         </div>
 
         <div className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10">
           {showLeftArrow && (
-            <button onClick={scrollLeft} className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100">
-              <FiChevronLeft size={22} />
+            <button
+              onClick={scrollLeft}
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-card shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+            >
+              <FiChevronLeft size={22} className="text-foreground" />
             </button>
           )}
 
           {showRightArrow && (
-            <button onClick={scrollRight} className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100">
-              <FiChevronRight size={22} />
+            <button
+              onClick={scrollRight}
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-card shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+            >
+              <FiChevronRight size={22} className="text-foreground" />
             </button>
           )}
 
-          <div id="destinations-row" className="flex gap-4 sm:gap-5 md:gap-6 overflow-x-auto scroll-smooth scrollbar-hide px-2 sm:px-4 pb-4">
+          <div
+            id="destinations-row"
+            className="flex gap-4 sm:gap-5 md:gap-6 overflow-x-auto scroll-smooth scrollbar-hide px-2 sm:px-4 pb-4"
+          >
             {destinations.length === 0
               ? Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0">
+                  <div
+                    key={i}
+                    className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0"
+                  >
                     <DestinationCardSkeleton />
                   </div>
                 ))
               : destinations.map((hotel) => (
-                  <div key={hotel._id} className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0">
+                  <div
+                    key={hotel._id}
+                    className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0"
+                  >
                     <DestinationCard hotel={hotel} />
                   </div>
-                ))
-            }
+                ))}
           </div>
         </div>
 
         {destinations.length > 0 && (
           <div className="text-center mt-8 sm:mt-10 md:mt-12">
-            <Link to={"/search"} className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-400 rounded-full text-sm sm:text-base font-medium hover:bg-gray-100 transition-colors">
+            <Link
+              to={"/search"}
+              className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-400 rounded-full text-sm sm:text-base font-medium hover:bg-gray-100 transition-colors"
+            >
               View All Destinations
             </Link>
           </div>

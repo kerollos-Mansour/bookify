@@ -12,13 +12,17 @@ import {
 import { useToast } from "../../UI/ToastProvider/ToastProvider";
 import { io, Socket } from "socket.io-client";
 import { storage } from "../../../utils/storage";
+import { useAuth } from "../../../context/authContext";
 
 interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "support";
-  timestamp: Date;
-  read: boolean;
+  _id?: string;
+  id?: string;
+  content: string;
+  text?: string;
+  senderId: string;
+  receiverId?: string;
+  createdAt?: string;
+  read?: boolean;
 }
 
 interface FAQ {
@@ -26,14 +30,17 @@ interface FAQ {
   answer: string;
 }
 
+const SUPPORT_AGENT_ID = "6952ea4876f3c3957941b93b";
+
 export default function HelpTab() {
   const toast = useToast();
+  const { user, token, isAuthenticated } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! How can we help you today?",
-      sender: "support",
-      timestamp: new Date(),
+      content: "Hello! How can we help you today?",
+      senderId: SUPPORT_AGENT_ID,
+      createdAt: new Date().toISOString(),
       read: true,
     },
   ]);
@@ -43,6 +50,7 @@ export default function HelpTab() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   const faqs: FAQ[] = [
     {
@@ -67,21 +75,30 @@ export default function HelpTab() {
     },
   ];
 
+  const currentUserId = user?.id || user?.id || "";
+
   // Initialize Socket.io connection
   useEffect(() => {
-    const user = storage.getUser();
-    if (!user) return;
+    if (!isAuthenticated || !token || !user) {
+      console.log("Not authenticated, skipping socket connection");
+      return;
+    }
+    console.log("🔌 Connecting to socket with user:", user);
 
     // Replace with your actual backend URL
     const newSocket = io("http://localhost:5000", {
       auth: {
-        userId: user.id,
+        token: token,
       },
+      reconnection: true,
+      reconnectionAttempts: 5,
     });
 
     newSocket.on("connect", () => {
       setIsConnected(true);
       toast.success("Connected to support chat");
+
+      newSocket.emit("chat:join", { receiverId: SUPPORT_AGENT_ID });
     });
 
     newSocket.on("disconnect", () => {
@@ -89,65 +106,104 @@ export default function HelpTab() {
       toast.warning("Disconnected from support chat");
     });
 
-    newSocket.on("message", (data: { text: string; timestamp: string }) => {
-      const newMessage: Message = {
-        id: Math.random().toString(36).substring(7),
-        text: data.text,
-        sender: "support",
-        timestamp: new Date(data.timestamp),
-        read: false,
-      };
-      setMessages((prev) => [...prev, newMessage]);
+    newSocket.on("connect_error", (error) => {
+      console.error("Connection error:", error.message);
+      setIsConnected(false);
+
+      if (
+        error.message.includes("token") ||
+        error.message.includes("Authentication")
+      ) {
+        toast.error("Authentication failed. Please log in again.");
+      }
+    });
+
+    newSocket.on("chat:history", (history: Message[]) => {
+      console.log("📜 Received chat history:", history);
+      if (history.length > 0) {
+        setMessages(history);
+      }
+    });
+
+    newSocket.on("chat:message", (data: Message) => {
+      console.log("📥 New message received:", data);
+
+      setMessages((prev) => {
+        // Avoid duplicates
+        const exists = prev.some(
+          (msg) =>
+            msg._id === data._id ||
+            (msg.content === data.content && msg.senderId === data.senderId)
+        );
+        if (exists) return prev;
+        return [...prev, data];
+      });
+
       setIsTyping(false);
     });
 
-    newSocket.on("typing", () => {
-      setIsTyping(true);
-    });
+    newSocket.on(
+      "chat:typing",
+      ({ userId, isTyping: typing }: { userId: string; isTyping: boolean }) => {
+        if (userId === SUPPORT_AGENT_ID) {
+          setIsTyping(typing);
+        }
+      }
+    );
 
-    newSocket.on("stop-typing", () => {
-      setIsTyping(false);
+    newSocket.on("chat:joined", ({ room }) => {
+      console.log("✅ Joined room:", room);
     });
 
     setSocket(newSocket);
 
     return () => {
+      newSocket.removeAllListeners();
       newSocket.close();
     };
-  }, []);
+  }, [isAuthenticated, token, user]);
 
   // Auto-scroll to bottom
+  const scrollChatToBottom = () => {
+    if (!chatContainerRef.current) return;
+
+    chatContainerRef.current.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+    scrollChatToBottom();
+  }, [messages,isTyping]);
 
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
 
-    const newMessage: Message = {
-      id: Math.random().toString(36).substring(7),
-      text: inputMessage,
-      sender: "user",
-      timestamp: new Date(),
-      read: true,
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-
-    // Send via Socket.io if connected
     if (socket && isConnected) {
-      socket.emit("message", {
-        text: inputMessage,
-        timestamp: new Date().toISOString(),
+      socket.emit("chat:message", {
+        receiverId: SUPPORT_AGENT_ID,
+        content: inputMessage,
       });
     } else {
-      // Fallback: simulate response
+      // Fallback: simulate response when not connected
+      const userMessage: Message = {
+        id: Math.random().toString(36).substring(7),
+        content: inputMessage,
+        senderId: currentUserId,
+        createdAt: new Date().toISOString(),
+        read: true,
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+
       setTimeout(() => {
         const response: Message = {
           id: Math.random().toString(36).substring(7),
-          text: "Thank you for your message. A support agent will respond shortly.",
-          sender: "support",
-          timestamp: new Date(),
+          content:
+            "Thank you for your message. A support agent will respond shortly.",
+          senderId: SUPPORT_AGENT_ID,
+          createdAt: new Date().toISOString(),
           read: false,
         };
         setMessages((prev) => [...prev, response]);
@@ -155,6 +211,28 @@ export default function HelpTab() {
     }
 
     setInputMessage("");
+  };
+
+  const handelInputChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputMessage(e.target.value);
+
+    if (socket.emit && isConnected) {
+      socket.emit("chat:typing", {
+        receiverId: SUPPORT_AGENT_ID,
+        isTyping: true,
+      });
+    }
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      if (socket.emit && isConnected) {
+        socket.emit("chat:typing", {
+          receiverId: SUPPORT_AGENT_ID,
+          isTyping: false,
+        });
+      }
+    }, 2000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -167,23 +245,45 @@ export default function HelpTab() {
   const askFAQ = (faq: FAQ) => {
     const userMessage: Message = {
       id: Math.random().toString(36).substring(7),
-      text: faq.question,
-      sender: "user",
-      timestamp: new Date(),
+      content: faq.question,
+      senderId: currentUserId,
+      createdAt: new Date().toISOString(),
       read: true,
     };
 
     const botResponse: Message = {
       id: Math.random().toString(36).substring(7),
-      text: faq.answer,
-      sender: "support",
-      timestamp: new Date(),
+      content: faq.answer,
+      senderId: SUPPORT_AGENT_ID,
+      createdAt: new Date().toISOString(),
       read: false,
     };
 
     setMessages((prev) => [...prev, userMessage, botResponse]);
   };
 
+  const isOwnMessage = (message: Message): boolean => {
+    const msgSenderId = String(message.senderId);
+    const myId = String(currentUserId);
+    return msgSenderId === myId;
+  };
+
+  // ✅ Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="bg-card rounded-3xl shadow-sm overflow-hidden p-8">
+        <div className="text-center">
+          <HelpCircle className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            Please Log In
+          </h2>
+          <p className="text-muted-foreground">
+            You need to be logged in to access the support chat.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="bg-card rounded-3xl shadow-sm overflow-hidden">
       {/* Header */}
@@ -284,59 +384,60 @@ export default function HelpTab() {
               </div>
 
               {/* Messages */}
+              {/* Messages */}
               <div
                 ref={chatContainerRef}
                 className="flex-1 overflow-y-auto p-6 space-y-4"
               >
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${
-                      message.sender === "user"
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
+                {messages.map((message, idx) => {
+                  const isOwn = isOwnMessage(message);
+
+                  return (
                     <div
-                      className={`flex gap-3 max-w-[80%] ${
-                        message.sender === "user"
-                          ? "flex-row-reverse"
-                          : "flex-row"
+                      key={message._id || message.id || idx}
+                      className={`flex ${
+                        isOwn ? "justify-end" : "justify-start"
                       }`}
                     >
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          message.sender === "user"
-                            ? "bg-blue-600"
-                            : "bg-teal-600"
+                        className={`flex gap-3 max-w-[80%] ${
+                          isOwn ? "flex-row-reverse" : "flex-row"
                         }`}
                       >
-                        {message.sender === "user" ? (
-                          <User className="w-4 h-4 text-white" />
-                        ) : (
-                          <Bot className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-                      <div>
                         <div
-                          className={`rounded-2xl px-4 py-3 ${
-                            message.sender === "user"
-                              ? "bg-blue-600 text-white"
-                              : "bg-card text-foreground border border-input-border"
+                          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            isOwn ? "bg-blue-600" : "bg-teal-600"
                           }`}
                         >
-                          <p className="text-sm">{message.text}</p>
+                          {isOwn ? (
+                            <User className="w-4 h-4 text-white" />
+                          ) : (
+                            <Bot className="w-4 h-4 text-white" />
+                          )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1 px-2">
-                          {message.timestamp.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
+                        <div>
+                          <div
+                            className={`rounded-2xl px-4 py-3 ${
+                              isOwn
+                                ? "bg-blue-600 text-white"
+                                : "bg-card text-foreground border border-input-border"
+                            }`}
+                          >
+                            <p className="text-sm">{message.content}</p>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 px-2">
+                            {new Date(
+                              message.createdAt || Date.now()
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {isTyping && (
                   <div className="flex justify-start">

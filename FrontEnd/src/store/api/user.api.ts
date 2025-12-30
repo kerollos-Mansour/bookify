@@ -30,6 +30,7 @@ interface GetAllUsersResponse {
  */
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    
     getAllUsers: builder.query<
       GetAllUsersResponse,
       { page?: number; limit?: number }

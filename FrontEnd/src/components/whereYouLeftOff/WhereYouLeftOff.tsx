@@ -39,7 +39,7 @@ function PropertyCard({ property }: { property: VisitedHotel }) {
   return (
     <Link
       to={`/property/${property.id}`}
-      className="group flex-shrink-0 w-64 sm:w-72 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden relative"
+      className="group flex-shrink-0 w-64 sm:w-72 bg-card rounded-xl shadow-md hover:shadow-xl border border-card-border transition-all duration-300 overflow-hidden relative"
     >
       <img
         src={property.image}
@@ -51,25 +51,25 @@ function PropertyCard({ property }: { property: VisitedHotel }) {
           e.preventDefault();
           setIsFavorite(!isFavorite);
         }}
-        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-all duration-200 z-10"
+        className="absolute top-3 right-3 p-2 rounded-full bg-card/90 backdrop-blur-sm shadow-md hover:bg-card transition-all duration-200 z-10"
         aria-label="Add to favorites"
       >
         <Heart
           className={`w-5 h-5 transition-colors ${
-            isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
+            isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
           }`}
         />
       </button>
 
       <div className="p-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-1">
+        <h3 className="text-base font-semibold text-foreground mb-2 line-clamp-1">
           {property.title}
         </h3>
         <div className="flex items-center gap-1.5">
           <div className="bg-blue-600 text-white text-sm font-semibold px-2 py-0.5 rounded">
             {property.rating}
           </div>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             ({property.reviewCount ?? 0})
           </span>
         </div>
@@ -79,11 +79,13 @@ function PropertyCard({ property }: { property: VisitedHotel }) {
 }
 
 // Search Card Component
-function SearchCard({ search }: { search: typeof RECENT_SEARCHES[0] }) {
+function SearchCard({ search }: { search: (typeof RECENT_SEARCHES)[0] }) {
   const navigate = useNavigate();
   const handleClick = () => {
     navigate(
-      `/search?location=${encodeURIComponent(search.location)}&checkIn=${search.checkIn}&checkOut=${search.checkOut}`
+      `/search?location=${encodeURIComponent(search.location)}&checkIn=${
+        search.checkIn
+      }&checkOut=${search.checkOut}`
     );
   };
 
@@ -137,7 +139,8 @@ export function WhereYouLeftOff() {
     const container = document.getElementById("visited-row");
     if (!container) return;
     const atStart = container.scrollLeft === 0;
-    const atEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
+    const atEnd =
+      container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
     setShowLeftArrow(!atStart);
     setShowRightArrow(!atEnd);
   };
@@ -151,42 +154,46 @@ export function WhereYouLeftOff() {
   }, [visited]);
 
   const scrollLeft = () => {
-    document.getElementById("visited-row")?.scrollBy({ left: -300, behavior: "smooth" });
+    document
+      .getElementById("visited-row")
+      ?.scrollBy({ left: -300, behavior: "smooth" });
   };
   const scrollRight = () => {
-    document.getElementById("visited-row")?.scrollBy({ left: 300, behavior: "smooth" });
+    document
+      .getElementById("visited-row")
+      ?.scrollBy({ left: 300, behavior: "smooth" });
   };
 
   if (!visited.length) return null;
 
   return (
-    <section className="py-12 md:py-10 bg-[#EFF3F7]">
+    <section className="py-12 md:py-10 ">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 md:mb-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 md:mb-10">
           Here's where you left off
         </h2>
 
         {/* Recently Viewed */}
         <div className="relative mb-10 md:mb-12">
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-5">
+          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
             Your recently viewed properties
           </h3>
 
           {showLeftArrow && (
             <button
               onClick={scrollLeft}
-              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-card shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
             >
-              <FiChevronLeft size={22} />
+              <FiChevronLeft size={22} className="text-foreground" />
             </button>
           )}
 
           {showRightArrow && (
             <button
               onClick={scrollRight}
-              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full p-3 hover:bg-gray-100"
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-card shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
             >
-              <FiChevronRight size={22} />
+              <FiChevronRight size={22} className="text-foreground" />
             </button>
           )}
 
