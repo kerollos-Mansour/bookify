@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import { SearchBar } from "../../components/searchBar/searchBar";
 import RoomsSection from "../../components/propertyDetails/chooseRoom/chooseRoom";
 import Gallery from "../../components/propertyDetails/gallery/gallery";
 import NavigationBar from "../../components/propertyDetails/navigationBar/navigationBar";
@@ -7,6 +6,7 @@ import PropertyInfo from "../../components/propertyDetails/propertyInfo/property
 import PageTransition from "../../components/pageTransition/pageTransition";
 import { useGetHotelByIdQuery } from "../../store/api/hotels.api";
 import { useGetRoomsByHotelIdQuery } from "../../store/api/room.api";
+import { SearchBar } from "../../components/searchBar/SearchBar";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
