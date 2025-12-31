@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -21,6 +22,8 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-input-border: var(--input-border);
+  --color-alternate: var(--alternate);
+  --color-Background: var(--Background);
 }
 
 :root {
@@ -34,6 +37,8 @@
   --accent: #f1f5f9;
   --accent-foreground: #0f172a;
   --input-border: #cbd5e1;
+  --alternate: #EFF3F7;
+  --Background: #f8fbf8;
 }
 
 .dark {
@@ -47,6 +52,8 @@
   --accent: #1e293b;
   --accent-foreground: #f8fafc;
   --input-border: #334155;
+  --alternate: #0f172a;
+  --Background: #121827;
 }
 
 @layer base {

@@ -100,7 +100,7 @@ export default function HotelCard({ cardData }) {
           <div className="text-right">
             {/* Discount Badge */}
             <div className="flex items-center gap-2 justify-end mb-1.5">
-              <span className="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+              <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full">
                 {cardData.prices.offer}% off
               </span>
             </div>

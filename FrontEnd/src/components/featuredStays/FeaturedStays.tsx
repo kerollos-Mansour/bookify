@@ -51,7 +51,7 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
 
   return (
     <>
-      <div className="group bg-card rounded-xl shadow-md hover:shadow-2xl overflow-hidden h-full flex flex-col transition-all duration-300 hover:-translate-y-1">
+      <div className="group bg-card rounded-xl shadow-md hover:shadow-2xl border border-card-border overflow-hidden h-full flex flex-col transition-all duration-300 hover:-translate-y-1">
         <div className="relative">
           <Link to={`/property/${hotel._id}`} onClick={handleVisit}>
             <img
@@ -68,12 +68,12 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
 
           <button
             onClick={handleFavorite}
-            className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-sm shadow-md hover:bg-white dark:hover:bg-black/70 hover:scale-110 transition-all duration-200"
+            className="absolute top-3 right-3 p-2 rounded-full bg-card/90 backdrop-blur-sm shadow-md hover:bg-card hover:scale-110 transition-all duration-200"
           >
             {isFavorite ? (
               <AiFillHeart className="text-red-500 w-6 h-6" />
             ) : (
-              <AiOutlineHeart className="text-red-500 w-6 h-6" />
+              <AiOutlineHeart className="text-red-500 dark:text-red-400 w-6 h-6" />
             )}
           </button>
         </div>
@@ -94,7 +94,7 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
               >
                 <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596l-6-5.848 8.332-1.593z" />
               </svg>
-              <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <span className="text-xs sm:text-sm font-semibold text-foreground">
                 {hotel.hotelRating}
               </span>
             </div>
@@ -219,13 +219,13 @@ export default function FeaturedStays() {
   }
 
   return (
-    <section className="py-8 sm:py-12 md:py-16 bg-background transition-colors duration-300">
+    <section className="py-8 sm:py-12 md:py-16 bg-Background transition-colors duration-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground">
             Featured Destination
           </h2>
-          <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-2 sm:mt-3 max-w-2xl mx-auto px-4">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 sm:mt-3 max-w-2xl mx-auto px-4">
             Discover our handpicked selection of exceptional properties around
             the world, offering unparalleled luxury and unforgettable
             experiences.
@@ -236,7 +236,7 @@ export default function FeaturedStays() {
           {showLeftArrow && (
             <button
               onClick={scrollLeft}
-              className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-card border border-border text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-card shadow-lg rounded-full p-2 md:p-3 hover:bg-accent border border-card-border transition-colors"
             >
               <FiChevronLeft size={22} />
             </button>
@@ -245,7 +245,8 @@ export default function FeaturedStays() {
           {showRightArrow && (
             <button
               onClick={scrollRight}
-              className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-card border border-border text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20
+              bg-card shadow-lg rounded-full p-2 md:p-3 hover:bg-accent border border-card-border transition-colors"
             >
               <FiChevronRight size={22} />
             </button>
@@ -257,21 +258,21 @@ export default function FeaturedStays() {
           >
             {destinations.length === 0
               ? Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="min-w-[300px] sm:min-w-[340px] md:min-w-[380px] flex-shrink-0"
-                  >
-                    <DestinationCardSkeleton />
-                  </div>
-                ))
+                <div
+                  key={i}
+                  className="min-w-[300px] sm:min-w-[340px] md:min-w-[380px] flex-shrink-0"
+                >
+                  <DestinationCardSkeleton />
+                </div>
+              ))
               : destinations.map((hotel) => (
-                  <div
-                    key={hotel._id}
-                    className="min-w-[300px] sm:min-w-[340px] md:min-w-[380px] flex-shrink-0"
-                  >
-                    <DestinationCard hotel={hotel} />
-                  </div>
-                ))}
+                <div
+                  key={hotel._id}
+                  className="min-w-[300px] sm:min-w-[340px] md:min-w-[380px] flex-shrink-0"
+                >
+                  <DestinationCard hotel={hotel} />
+                </div>
+              ))}
           </div>
         </div>
 
@@ -279,7 +280,7 @@ export default function FeaturedStays() {
           <div className="text-center mt-8 sm:mt-10 md:mt-12">
             <Link
               to={"/search"}
-              className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-400 rounded-full text-sm sm:text-base font-medium hover:bg-gray-100 transition-colors"
+              className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 border border-card-border rounded-full text-sm sm:text-base font-medium text-foreground hover:bg-accent transition-colors"
             >
               View All Destinations
             </Link>
