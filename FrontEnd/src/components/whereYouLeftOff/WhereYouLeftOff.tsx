@@ -195,14 +195,17 @@ export function WhereYouLeftOff() {
         )}
 
         {/* Recent Searches */}
-        {recentSearches.length > 0 && (
+        
+        {recentSearches.length > 0  && (
           <div>
             <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
               Your recent searches
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentSearches.map((search) => (
-                <SearchCard key={search.id} search={search} />
+              {recentSearches.map((search , index) => (
+                index < 3 ? (
+                  <SearchCard key={search.id} search={search} />
+                ) : null
               ))}
             </div>
           </div>

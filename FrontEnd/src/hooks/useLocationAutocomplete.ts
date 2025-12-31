@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "./useDebounce";
 import { LocationSuggestion } from "../types/location.types";
 
-const API_BASE_URL =
-  import.meta.env?.VITE_API_BASE_URL || "http://localhost:3000/api/v1";
+const API_BASE_URL = "http://localhost:5000/api/v1";
 
 interface UseLocationAutocompleteResult {
   suggestions: LocationSuggestion[];
@@ -41,7 +40,7 @@ export function useLocationAutocomplete(
           limit: "10",
         });
 
-        const response = await fetch(`${API_BASE_URL}/hotel?${params}`);
+        const response = await fetch(`${API_BASE_URL}/hotels?${params}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch suggestions");

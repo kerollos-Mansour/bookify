@@ -13,29 +13,23 @@ const STORAGE_KEY = "visitedHotels";
 
 export const visitedStorage = {
   get: (): VisitedHotel[] => {
-    if (typeof window === "undefined") 
-        return [];
+    if (typeof window === "undefined") return [];
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
   },
 
   add: (hotel: VisitedHotel) => {
-    if (typeof window === "undefined") 
-        return;
+    if (typeof window === "undefined") return;
     const current = visitedStorage.get();
     // to avoid duplicates
     const exists = current.some((p) => p.id === hotel.id);
     if (!exists) {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify([hotel, ...current])
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([hotel, ...current]));
     }
   },
 
   clear: () => {
-    if (typeof window === "undefined")
-        return;
+    if (typeof window === "undefined") return;
     localStorage.removeItem(STORAGE_KEY);
   },
 };
@@ -90,6 +84,17 @@ export const searchStorage = {
       localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(updated));
     } catch (e) {
       console.error("Error saving recent search", e);
+    }
+  },
+
+  remove: (id: string) => {
+    if (typeof window === "undefined") return;
+    try {
+      const current = searchStorage.get();
+      const updated = current.filter((s) => s.id !== id);
+      localStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error("Error removing search", e);
     }
   },
 

@@ -1,14 +1,18 @@
-import { LOCATIONS } from "../../constants/locations";
 import { useState, useRef, useEffect } from "react";
-import { searchStorage } from "../../utils/visitedStorage";
+import { searchStorage, VisitedSearch } from "../../utils/visitedStorage";
 import {
   MdLocationOn,
   MdCalendarToday,
   MdPerson,
   MdClose,
 } from "react-icons/md";
+import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useLocationAutocomplete } from "../../hooks/useLocationAutocomplete";
+import { DateRangePicker } from "../UI/DateRangePicker";
+import { DateRange } from "react-day-picker";
+import { format, addDays } from "date-fns";
 
 interface SearchBarProps {
   hideOnMobile?: boolean;
@@ -19,12 +23,15 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
   const { search } = useLocation();
 
   // States
-  const [selectedLocation, setSelectedLocation] = useState(LOCATIONS[0]);
+  const [selectedLocation, setSelectedLocation] = useState("Where to?");
   const [searchQuery, setSearchQuery] = useState("");
-  const [checkInDate, setCheckInDate] = useState("2024-02-06");
-  const [checkOutDate, setCheckOutDate] = useState("2024-02-08");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 2),
+  });
   const [adults, setAdults] = useState(2);
   const [rooms, setRooms] = useState(1);
+  const [recentSearches, setRecentSearches] = useState<VisitedSearch[]>([]);
 
   // Dropdown states
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
@@ -36,22 +43,21 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
   const datesRef = useRef<HTMLDivElement>(null);
   const travelersRef = useRef<HTMLDivElement>(null);
 
-  // Filter locations based on search
-  const filteredLocations = LOCATIONS.filter(
-    (location) =>
-      location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      location.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      location.country.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Real-time location autocomplete
+  const { suggestions, isLoading, error } =
+    useLocationAutocomplete(searchQuery);
+
+  // Load recent searches
+  useEffect(() => {
+    setRecentSearches(searchStorage.get());
+  }, [showLocationDropdown]);
 
   // Format dates
-  const formatDate = (date: string) => {
-    const d = new Date(date);
-    return d.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
+  const formatDateRange = (range: DateRange | undefined) => {
+    if (!range?.from) return "Select dates";
+    const fromStr = format(range.from, "MMM d");
+    if (!range.to) return `${fromStr} - ...`;
+    return `${fromStr} - ${format(range.to, "MMM d")}`;
   };
 
   useEffect(() => {
@@ -64,14 +70,16 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
     const urlRooms = params.get("rooms");
 
     if (urlLocation) {
-      const found = LOCATIONS.find(
-        (loc) => loc.name.toLowerCase() === urlLocation.toLowerCase()
-      );
-      if (found) setSelectedLocation(found);
+      setSelectedLocation(urlLocation);
     }
 
-    if (urlCheckIn) setCheckInDate(urlCheckIn);
-    if (urlCheckOut) setCheckOutDate(urlCheckOut);
+    if (urlCheckIn && urlCheckOut) {
+      setDateRange({
+        from: new Date(urlCheckIn),
+        to: new Date(urlCheckOut),
+      });
+    }
+
     if (urlAdults) setAdults(Number(urlAdults));
     if (urlRooms) setRooms(Number(urlRooms));
   }, [search]);
@@ -104,19 +112,22 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
   }, []);
 
   const handleSearch = () => {
+    const checkIn = dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : "";
+    const checkOut = dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : "";
+
     const params = new URLSearchParams({
-      location: selectedLocation.name,
-      checkIn: checkInDate,
-      checkOut: checkOutDate,
+      location: selectedLocation,
+      checkIn,
+      checkOut,
       adults: adults.toString(),
       rooms: rooms.toString(),
     });
 
     // Save to history
     searchStorage.add({
-      location: selectedLocation.name,
-      checkIn: checkInDate,
-      checkOut: checkOutDate,
+      location: selectedLocation,
+      checkIn,
+      checkOut,
       travelers: adults,
       rooms: rooms,
     });
@@ -143,20 +154,20 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
               Where to?
             </label>
             <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
-              {selectedLocation.name}
+              {selectedLocation}
             </span>
           </div>
 
           {/* Location Dropdown */}
           {showLocationDropdown && (
             <div
-              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 z-50 w-full md:w-96 max-h-96 overflow-y-auto border border-card-border"
+              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 z-50 w-full md:w-96 max-h-[28rem] overflow-y-auto border border-card-border"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-3">
                 <input
                   type="text"
-                  placeholder="Search destinations, hotels..."
+                  placeholder="Search destinations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground"
@@ -164,39 +175,98 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                 />
               </div>
 
-              <div className="space-y-1">
-                {filteredLocations.length > 0 ? (
-                  filteredLocations.map((location) => (
+              {/* Recent Searches */}
+              {!searchQuery && recentSearches.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-1">
+                    Recent Searches
+                  </h3>
+                  {recentSearches.slice(0, 3).map((recentSearch) => (
                     <div
-                      key={location.id}
-                      className={`p-3 hover:bg-muted rounded-lg cursor-pointer transition-colors ${
-                        selectedLocation.id === location.id ? "bg-accent" : ""
-                      }`}
-                      onClick={() => {
-                        setSelectedLocation(location);
-                        setShowLocationDropdown(false);
-                        setSearchQuery("");
-                      }}
+                      key={recentSearch.id}
+                      className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg group transition-colors"
                     >
-                      <div className="flex items-start gap-3">
-                        <MdLocationOn className="text-muted-foreground mt-1 flex-shrink-0" />
-                        <div>
-                          <div className="font-medium text-card-foreground">
-                            {location.name}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {location.city}, {location.country}
-                          </div>
+                      <MdLocationOn className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                      <div
+                        className="flex-1 min-w-0 cursor-pointer"
+                        onClick={() => {
+                          setSelectedLocation(recentSearch.location);
+                          setSearchQuery("");
+                          setShowLocationDropdown(false);
+                        }}
+                      >
+                        <div className="text-sm text-card-foreground truncate">
+                          {recentSearch.location}
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          searchStorage.remove(recentSearch.id);
+                          setRecentSearches(searchStorage.get());
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-background rounded transition-opacity"
+                        aria-label="Remove"
+                      >
+                        <MdClose className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                    </div>
+                  ))}
+                  {recentSearches.length > 0 && searchQuery === "" && (
+                    <div className="border-t border-card-border my-3" />
+                  )}
+                </div>
+              )}
+
+              {/* Loading State */}
+              {isLoading && searchQuery && (
+                <div className="flex items-center justify-center py-8 text-muted-foreground">
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  <span className="text-sm">Searching...</span>
+                </div>
+              )}
+
+              {/* Suggestions from Backend */}
+              {!isLoading && searchQuery && suggestions.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-1">
+                    Suggestions
+                  </h3>
+                  {suggestions.map((suggestion) => (
+                    <div
+                      key={suggestion.id}
+                      onClick={() => {
+                        setSelectedLocation(suggestion.displayName);
+                        setSearchQuery("");
+                        setShowLocationDropdown(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg cursor-pointer transition-colors"
+                    >
+                      <MdLocationOn className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-card-foreground truncate">
+                          {suggestion.displayName}
                         </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="p-4 text-center text-muted-foreground">
-                    No results found
-                  </div>
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
+
+              {/* No Results */}
+              {!isLoading && searchQuery && suggestions.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MdLocationOn className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No locations found</p>
+                </div>
+              )}
+
+              {/* Error State */}
+              {error && (
+                <div className="text-center py-8 text-red-500">
+                  <p className="text-sm">Failed to load suggestions</p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -217,53 +287,21 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
               Dates
             </label>
             <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
-              {formatDate(checkInDate)} - {formatDate(checkOutDate)}
+              {formatDateRange(dateRange)}
             </span>
           </div>
 
           {/* Dates Dropdown */}
           {showDatesDropdown && (
             <div
-              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
+              className="absolute top-full left-0 md:left-1/2 md:-translate-x-1/2 mt-4 z-50"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="font-semibold mb-4 text-card-foreground">
-                Select dates
-              </h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-2">
-                    Check-in
-                  </label>
-                  <input
-                    type="date"
-                    value={checkInDate}
-                    onChange={(e) => setCheckInDate(e.target.value)}
-                    className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Check-out
-                  </label>
-                  <input
-                    type="date"
-                    value={checkOutDate}
-                    onChange={(e) => setCheckOutDate(e.target.value)}
-                    min={checkInDate}
-                    className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <button
-                onClick={() => setShowDatesDropdown(false)}
-                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Done
-              </button>
+              <DateRangePicker
+                date={dateRange}
+                setDate={setDateRange}
+                className="w-auto"
+              />
             </div>
           )}
         </div>

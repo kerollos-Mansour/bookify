@@ -1,4 +1,4 @@
-import { SearchBar } from "../../components/searchBar/searchBar";
+import { SearchBar } from "../../components/searchBar/SearchBar";
 import HotelCard from "../../components/HotelCard/HotelCard";
 import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
@@ -25,7 +25,9 @@ const toCardData = (hotel: Hotel): HotelCardData => {
   const nightly = getNightlyRate(hotel);
   const total = hotel.highRate ?? nightly;
   // hotelDetails can be string or array based on API. Safeguard it.
-  const detail = Array.isArray(hotel.hotelDetails) ? hotel.hotelDetails[0] : null;
+  const detail = Array.isArray(hotel.hotelDetails)
+    ? hotel.hotelDetails[0]
+    : null;
 
   return {
     id: hotel._id,
@@ -95,7 +97,9 @@ export default function SearchResult() {
       checkOut: params.get("checkOut") || undefined,
       adults: params.get("adults") ? Number(params.get("adults")) : undefined,
       rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-      minRate: params.get("minRate") ? Number(params.get("minRate")) : undefined,
+      minRate: params.get("minRate")
+        ? Number(params.get("minRate"))
+        : undefined,
       maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
       search: filters.propertyName || undefined,
       amenities: filters.amenities?.length ? filters.amenities : undefined,
@@ -179,7 +183,9 @@ export default function SearchResult() {
             number
           ],
           title: card.title,
-          description: `${card.location || "Unknown"} • $${card.prices.nightly}`,
+          description: `${card.location || "Unknown"} • $${
+            card.prices.nightly
+          }`,
         })),
     [hotelCards]
   );
@@ -269,7 +275,7 @@ export default function SearchResult() {
 
             <section className="flex-1 bg-card p-4 sm:p-6 rounded-2xl border border-card-border">
               <div className="flex flex-col gap-4 mb-6">
-                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} /> 
+                <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 <p className="text-sm text-muted-foreground">
                   Showing {hotelCards.length}{" "}
                   {hotelCards.length === 1 ? "property" : "properties"}
@@ -279,7 +285,9 @@ export default function SearchResult() {
 
               {isLoading && (
                 <div className="flex justify-center items-center py-20">
-                  <div className="text-muted-foreground">Loading properties...</div>
+                  <div className="text-muted-foreground">
+                    Loading properties...
+                  </div>
                 </div>
               )}
 
@@ -295,7 +303,8 @@ export default function SearchResult() {
                     No properties match these filters
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Try adjusting your filters or search in a different location.
+                    Try adjusting your filters or search in a different
+                    location.
                   </p>
                 </div>
               )}
