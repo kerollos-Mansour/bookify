@@ -12,30 +12,41 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 // Property Card Component
 function PropertyCard({ property }: { property: VisitedHotel }) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   return (
     <Link
       to={`/property/${property.id}`}
-      className="group flex-shrink-0 w-64 sm:w-72 bg-card rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden relative "
+      className="group flex-shrink-0 w-64 sm:w-72 bg-card rounded-xl border border-card-border shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden relative "
     >
-      <img
-        src={property.image}
-        alt={property.title}
-        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
-      />
+      <div className="relative w-full h-44 bg-muted overflow-hidden">
+        {!imageError ? (
+          <img
+            src={property.image}
+            alt={property.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-muted text-muted-foreground p-4 text-center">
+            <span className="text-xs font-medium line-clamp-2">
+              {property.title}
+            </span>
+          </div>
+        )}
+      </div>
+
       <button
         onClick={(e) => {
           e.preventDefault();
           setIsFavorite(!isFavorite);
         }}
-        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-sm shadow-md hover:bg-white dark:hover:bg-black/70 transition-all duration-200 z-10"
+        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-card/80 backdrop-blur-sm shadow-md hover:bg-white dark:hover:bg-card transition-all duration-200 z-10 border border-transparent dark:border-card-border"
         aria-label="Add to favorites"
       >
         <Heart
           className={`w-5 h-5 transition-colors ${
-            isFavorite
-              ? "fill-red-500 text-red-500"
-              : "text-gray-700 dark:text-white"
+            isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
           }`}
         />
       </button>
@@ -75,11 +86,11 @@ function SearchCard({ search }: { search: VisitedSearch }) {
   return (
     <button
       onClick={handleClick}
-      className="bg-card rounded-lg shadow-sm hover:shadow-md  p-4 transition-all duration-300 hover:-translate-y-0.5 text-left w-full"
+      className="bg-card rounded-lg border border-card-border shadow-sm hover:shadow-md p-4 transition-all duration-300 hover:-translate-y-0.5 text-left w-full group"
     >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 mt-1">
-          <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center group-hover:bg-accent transition-colors">
             <MapPin className="w-5 h-5 text-muted-foreground" />
           </div>
         </div>
@@ -152,7 +163,7 @@ export function WhereYouLeftOff() {
   if (!visited.length && !recentSearches.length) return null;
 
   return (
-    <section className="py-12 md:py-10 bg-[#EFF3F7] dark:bg-background transition-colors duration-300">
+    <section className="py-12 md:py-10 bg-alternate border-y border-card-border/50 transition-colors duration-300 rounded-t-[7rem]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[95%] 2xl:max-w-[90%]">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8 md:mb-10">
           Here's where you left off
@@ -168,7 +179,7 @@ export function WhereYouLeftOff() {
             {showLeftArrow && (
               <button
                 onClick={scrollLeft}
-                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-card  text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-card border border-card-border text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
               >
                 <FiChevronLeft size={22} />
               </button>
@@ -177,7 +188,7 @@ export function WhereYouLeftOff() {
             {showRightArrow && (
               <button
                 onClick={scrollRight}
-                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-card  text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
+                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-card border border-card-border text-foreground shadow-lg rounded-full p-3 hover:bg-muted transition-colors"
               >
                 <FiChevronRight size={22} />
               </button>
@@ -195,18 +206,18 @@ export function WhereYouLeftOff() {
         )}
 
         {/* Recent Searches */}
-        
-        {recentSearches.length > 0  && (
+
+        {recentSearches.length > 0 && (
           <div>
             <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-5">
               Your recent searches
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentSearches.map((search , index) => (
+              {recentSearches.map((search, index) =>
                 index < 3 ? (
                   <SearchCard key={search.id} search={search} />
                 ) : null
-              ))}
+              )}
             </div>
           </div>
         )}

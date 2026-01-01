@@ -8,9 +8,9 @@ const CONTENT = {
     "Discover amazing hotels, apartments, and unique stays around the world",
 } as const;
 
-export function HeroSearch() {
+export function HeroSection() {
   return (
-    <div className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] lg:min-h-[85vh] flex flex-col justify-end">
+    <div className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] lg:min-h-[85vh] flex flex-col justify-center pb-20">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -25,10 +25,10 @@ export function HeroSearch() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 pb-6 sm:pb-8 md:pb-12 lg:pb-16 pt-20 sm:pt-24 md:pt-32">
+      <div className="relative z-10 pt-20 sm:pt-24 md:pt-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           {/* Hero Text */}
-          <header className="text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12 text-white">
+          <header className="text-center text-white">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 drop-shadow-2xl leading-tight px-2">
               {CONTENT.title}
             </h1>
@@ -36,15 +36,31 @@ export function HeroSearch() {
               {CONTENT.description}
             </p>
           </header>
-
-          {/* Search Card - Extends below hero section */}
-          <div className="max-w-5xl mx-auto px-2 sm:px-4">
-            <div className="bg-card rounded-xl sm:rounded-2xl shadow-2xl dark:shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 transform translate-y-4 sm:translate-y-6 md:translate-y-10 lg:translate-y-12 xl:translate-y-16 border border-card-border transition-colors duration-300">
-              <SearchBar />
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
+}
+
+export function HeroFloatingSearch() {
+  return (
+    <div className="max-w-5xl mx-auto px-2 sm:px-4">
+      {/* <div className="bg-card rounded-full shadow-2xl dark:shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 border border-card-border transition-colors duration-300">
+        <SearchBar />
+      </div> */}
+      <SearchBar />
+    </div>
+  );
+}
+
+// Keep default export for backward compatibility if needed, but composed
+export function HeroSearch() {
+  return (
+    <div className="relative">
+      <HeroSection />
+      <div className="absolute bottom-0 left-0 right-0 transform translate-y-1/2 z-20">
+        <HeroFloatingSearch />
+      </div>
+    </div>
+  )
 }
