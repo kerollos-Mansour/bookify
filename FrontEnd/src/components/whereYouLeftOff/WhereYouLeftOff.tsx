@@ -1,6 +1,7 @@
-import { Heart, MapPin, Calendar, Users } from "lucide-react";
+import { MapPin, Calendar, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import {
   visitedStorage,
   VisitedHotel,
@@ -8,63 +9,101 @@ import {
   VisitedSearch,
 } from "../../utils/visitedStorage";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useFavorites } from "../../context/favoritesContext";
 
 // Property Card Component
 function PropertyCard({ property }: { property: VisitedHotel }) {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { favorites, addFavorite, setOpenSidebar } = useFavorites();
+  const isFavorite = favorites?.some((f) => f.id === property.id) ?? false;
   const [imageError, setImageError] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   return (
-    <Link
-      to={`/property/${property.id}`}
-      className="group flex-shrink-0 w-64 sm:w-72 bg-card rounded-xl border border-card-border shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden relative "
-    >
-      <div className="relative w-full h-44 bg-muted overflow-hidden">
-        {!imageError ? (
-          <img
-            src={property.image}
-            alt={property.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-muted text-muted-foreground p-4 text-center">
-            <span className="text-xs font-medium line-clamp-2">
-              {property.title}
-            </span>
+    <>
+      <Link
+        to={`/property/${property.id}`}
+        className="group flex-shrink-0 w-64 sm:w-72 bg-card rounded-xl border border-card-border shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden relative "
+      >
+        <div className="relative w-full h-44 bg-muted overflow-hidden">
+          {!imageError ? (
+            <img
+              src={property.image}
+              alt={property.title}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-muted text-muted-foreground p-4 text-center">
+              <span className="text-xs font-medium line-clamp-2">
+                {property.title}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            if (isFavorite) {
+              setOpenSidebar(true);
+            } else {
+              addFavorite({
+                ...property,
+                address: property.address ?? "",
+                price: property.price ?? 0,
+              });
+              setShowToast(true);
+            }
+          }}
+          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-card/80 backdrop-blur-sm shadow-md hover:bg-white dark:hover:bg-card hover:scale-110 transition-all duration-200 z-10 border border-transparent dark:border-card-border"
+          aria-label="Add to favorites"
+        >
+          {isFavorite ? (
+            <AiFillHeart className="text-red-500 w-5 h-5" />
+          ) : (
+            <AiOutlineHeart className="text-red-500 dark:text-red-400 w-5 h-5" />
+          )}
+        </button>
+
+        {showToast && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-sm text-white px-6 py-4 rounded-xl shadow-xl flex items-center justify-between gap-4 max-w-[90%] w-auto z-50 animate-toast">
+            <p className="text-sm text-gray-200 flex-1">
+              This property was saved to your {property.title} trip.
+            </p>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setOpenSidebar(true);
+              }}
+              className="text-blue-400 font-medium hover:underline whitespace-nowrap"
+            >
+              Edit
+            </button>
           </div>
         )}
-      </div>
 
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          setIsFavorite(!isFavorite);
-        }}
-        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 dark:bg-card/80 backdrop-blur-sm shadow-md hover:bg-white dark:hover:bg-card transition-all duration-200 z-10 border border-transparent dark:border-card-border"
-        aria-label="Add to favorites"
-      >
-        <Heart
-          className={`w-5 h-5 transition-colors ${
-            isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
-          }`}
-        />
-      </button>
-
-      <div className="p-4">
-        <h3 className="text-base font-semibold text-card-foreground mb-2 line-clamp-1">
-          {property.title}
-        </h3>
-        <div className="flex items-center gap-1.5">
-          <div className="bg-blue-600 text-white text-sm font-semibold px-2 py-0.5 rounded">
-            {property.rating}
+        <div className="p-4">
+          <h3 className="text-base font-semibold text-card-foreground mb-2 line-clamp-1">
+            {property.title}
+          </h3>
+          <div className="flex items-center gap-1.5">
+            <div className="bg-blue-600 text-white text-sm font-semibold px-2 py-0.5 rounded">
+              ★ {property.rating}
+            </div>
+            <span className="text-sm text-muted-foreground font-semibold">
+              ${property.price} /night
+            </span>
           </div>
-          <span className="text-sm text-muted-foreground">
-            ({property.reviewCount ?? 0})
-          </span>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </>
   );
 }
 
