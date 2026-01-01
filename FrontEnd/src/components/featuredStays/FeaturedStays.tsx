@@ -61,7 +61,7 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
             />
           </Link>
           {hotel.featured && (
-            <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+            <span className="absolute top-3 left-3 bg-linear-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
               Best Seller
             </span>
           )}
