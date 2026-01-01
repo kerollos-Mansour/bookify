@@ -8,6 +8,7 @@ import { store } from "./store/store";
 import { AuthProvider } from "./context/authContext";
 import { ThemeProvider } from "./context/themeContext";
 import { LocationProvider } from "./context/locationContext";
+import { SocketProvider } from "./context/SocketContext";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root") as HTMLElement).render(
       <ThemeProvider>
         <LocationProvider>
           <AuthProvider>
-            <RouterProvider router={router} />
+            <SocketProvider>
+              <RouterProvider router={router} />
+            </SocketProvider>
           </AuthProvider>
         </LocationProvider>
       </ThemeProvider>

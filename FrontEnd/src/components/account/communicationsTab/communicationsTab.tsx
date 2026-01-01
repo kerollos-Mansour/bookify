@@ -9,6 +9,7 @@ interface Notification {
   message: string;
   read: boolean;
   createdAt: string;
+  data?: any;
 }
 
 interface NotificationPreferences {
@@ -20,35 +21,60 @@ interface NotificationPreferences {
   priceAlerts: boolean;
 }
 
+import { useSocket } from "../../../context/SocketContext";
+import { useAuth } from "../../../context/authContext";
+
 export default function CommunicationsTab() {
   const toast = useToast();
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      _id: "1",
-      type: "booking",
-      title: "Booking Confirmed",
-      message:
-        "Your booking at Grand Hotel has been confirmed for Dec 25, 2025",
-      read: false,
-      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      _id: "2",
-      type: "promotion",
-      title: "Special Offer!",
-      message: "Get 20% off on your next booking. Use code: WINTER2025",
-      read: false,
-      createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-      _id: "3",
-      type: "update",
-      title: "Profile Updated",
-      message: "Your profile information has been successfully updated",
-      read: true,
-      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    },
-  ]);
+  const { socket } = useSocket();
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // Listen for real-time notifications & history
+  useEffect(() => {
+    if (!socket) return;
+
+    // Join room/fetch history
+    socket.emit("notification:join");
+
+    const handleHistory = (history: Notification[]) => {
+      console.log("Notification history:", history);
+      setNotifications(history);
+    };
+
+    const handleNewNotification = (notification: Notification) => {
+      console.log("New notification received:", notification);
+      setNotifications((prev) => [notification, ...prev]);
+      toast.info(`New notification: ${notification.title}`);
+    };
+
+    const handleNotificationUpdated = (updated: {
+      id: string;
+      read: boolean;
+    }) => {
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n._id === updated.id ? { ...n, read: updated.read } : n
+        )
+      );
+    };
+
+    const handleAllRead = () => {
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    };
+
+    socket.on("notification:history", handleHistory);
+    socket.on("new_notification", handleNewNotification);
+    socket.on("notification:updated", handleNotificationUpdated);
+    socket.on("notification:all_read", handleAllRead);
+
+    return () => {
+      socket.off("notification:history", handleHistory);
+      socket.off("new_notification", handleNewNotification);
+      socket.off("notification:updated", handleNotificationUpdated);
+      socket.off("notification:all_read", handleAllRead);
+    };
+  }, [socket, toast]);
 
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     emailNotifications: true,
@@ -66,21 +92,33 @@ export default function CommunicationsTab() {
     promotion: Bell,
     update: MessageSquare,
     message: Mail,
+    system: Bell,
   };
 
   const markAsRead = (id: string) => {
+    // Optimistic update
     setNotifications((prev) =>
       prev.map((notif) => (notif._id === id ? { ...notif, read: true } : notif))
     );
-    toast.success("Notification marked as read");
+
+    if (socket) {
+      socket.emit("notification:mark_read", id);
+    }
   };
 
   const markAllAsRead = () => {
+    // Optimistic update
     setNotifications((prev) => prev.map((notif) => ({ ...notif, read: true })));
+
+    if (socket) {
+      socket.emit("notification:mark_all_read");
+    }
     toast.success("All notifications marked as read");
   };
 
   const deleteNotification = (id: string) => {
+    // Delete logic might need backend support if we want it permanent
+    // For now, just remove from UI or implement notification:delete logic
     setNotifications((prev) => prev.filter((notif) => notif._id !== id));
     toast.success("Notification deleted");
   };
