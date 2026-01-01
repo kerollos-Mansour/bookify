@@ -8,13 +8,13 @@ import {
   FaLocationDot,
 } from "react-icons/fa6";
 import { useTheme } from "../../context/themeContext";
-
+import { Link } from "react-router-dom";
 export default function Footer() {
   const { theme } = useTheme();
 
   return (
-    <footer className="bg-alternate text-slate-600 dark:text-gray-300 pt-16 pb-10 border-t border-card-border dark:border-transparent transition-colors duration-300">
-      <div className="max-w-6xl mx-auto text-center mb-14 px-2">
+    <footer className="bg-alternate text-slate-600 dark:text-gray-300 pt-16 pb-10 border-t border-card-border dark:border-transparent transition-colors duration-300 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto text-center mb-14 px-4 md:px-8">
         <h2 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
           Subscribe to our Newsletter
         </h2>
@@ -35,7 +35,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-slate-200 dark:border-gray-700"></div>
-      <div className="max-w-6xl mx-auto mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 px-2">
+      <div className="max-w-6xl mx-auto mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 px-4 md:px-8">
         <div>
           <div className="flex items-center gap-3 mb-4">
             <img
@@ -99,7 +99,7 @@ export default function Footer() {
           <h3 className="text-slate-900 dark:text-white font-semibold mb-5 text-lg">Company</h3>
           <ul className="space-y-3 text-slate-500 dark:text-gray-400 font-medium">
             <li className="hover:text-blue-600 dark:hover:text-white cursor-pointer transition-colors">
-              About Us
+              <Link to="/aboutUs">About Us</Link>
             </li>
             <li className="hover:text-blue-600 dark:hover:text-white cursor-pointer transition-colors">
               Careers
@@ -161,7 +161,7 @@ export default function Footer() {
       <div className="mt-14 text-slate-500 dark:text-gray-400 text-sm font-medium">
         <div className="border-t border-slate-200 dark:border-gray-700 w-full"></div>
 
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 px-2">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 px-4 md:px-8">
           <span>© 2025 Bookify. All rights reserved.</span>
 
           <div className="flex flex-wrap gap-6 justify-center sm:justify-end">
