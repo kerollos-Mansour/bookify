@@ -6,6 +6,7 @@ export interface VisitedHotel {
   address?: string;
   price?: number;
   bestSeller?: boolean;
+  vip?: boolean;
   reviewCount?: number;
 }
 

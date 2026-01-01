@@ -21,6 +21,7 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
       rating: hotel.hotelRating,
       address: hotel.location?.address ?? hotel.location?.city ?? "",
       price: hotel.lowRate ?? hotel.highRate ?? 0,
+      vip: (hotel.confidenceRating ?? 0) > 50,
       bestSeller: !!hotel.featured,
     });
   };
@@ -36,6 +37,7 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
         rating: hotel.hotelRating,
         address: hotel.location?.address ?? hotel.location?.city ?? "",
         price: hotel.lowRate ?? hotel.highRate ?? 0,
+        vip: (hotel.confidenceRating ?? 0) > 50,
         bestSeller: !!hotel.featured,
       });
       setShowToast(true);
@@ -60,11 +62,15 @@ function DestinationCard({ hotel }: { hotel: Hotel }) {
               className="w-full h-52 sm:h-60 md:h-64 object-contain group-hover:scale-110 transition-transform duration-500"
             />
           </Link>
-          {hotel.featured && (
-            <span className="absolute top-3 left-3 bg-linear-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+          {(hotel.confidenceRating ?? 0) > 50 ? (
+            <span className="absolute top-3 left-3 bg-cyan-950 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+              VIP Access
+            </span>
+          ) : hotel.featured ? (
+            <span className="absolute top-3 left-3 bg-linear-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
               Best Seller
             </span>
-          )}
+          ) : null}
 
           <button
             onClick={handleFavorite}
