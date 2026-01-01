@@ -25,13 +25,13 @@ export default function FavBarSection() {
 
         {openSidebar && (
           <div
+            className="fixed inset-0 bg-black/50 z-[998] transition-opacity cursor-pointer"
             onClick={() => setOpenSidebar(false)}
-            className="fixed inset-0 bg-black/50 z-40"
           />
         )}
 
         <aside
-          className={`fixed top-0 right-0 h-full w-2/5 bg-card border-l border-card-border shadow-xl p-6 z-50 transition-transform duration-300
+          className={`fixed top-0 right-0 h-full w-full lg:w-2/5 bg-card border-l border-card-border shadow-xl p-6 z-[999] transition-transform duration-300
           ${openSidebar ? "translate-x-0" : "translate-x-full"}`}
         >
           <div className="p-4">
@@ -46,7 +46,7 @@ export default function FavBarSection() {
                 />
               </button>
 
-              <button
+              {/* <button
                 onClick={() => setOpenSidebar(false)}
                 className="flex items-center text-lg gap-2 font-medium text-blue-600 cursor-pointer rounded-full hover:bg-blue-600/10 transition p-2"
               >
@@ -56,12 +56,12 @@ export default function FavBarSection() {
                   alt="plan"
                 />
                 Plan a trip
-              </button>
+              </button> */}
             </div>
 
-            <h2 className="font-bold text-3xl mt-4 mb-4 text-foreground">Trips</h2>
+            {/* <h2 className="font-bold text-3xl mt-4 mb-4 text-foreground">Trips</h2> */}
 
-            <div
+            {/* <div
               onClick={() => navigate("/Trips")}
               className="border border-card-border rounded-2xl p-3 mb-4 cursor-pointer hover:shadow-md transition bg-background"
             >
@@ -69,7 +69,7 @@ export default function FavBarSection() {
               <p className="font-medium text-sm text-muted-foreground">
                 View your booking and saves
               </p>
-            </div>
+            </div> */}
 
             {favorites.length === 0 ? (
               <p className="text-muted-foreground">No saved properties yet.</p>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { DestinationType } from "../types/destination.type";
 
 type FavoritesContextType = {
@@ -14,8 +14,20 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(
 );
 
 export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
-  const [favorites, setFavorites] = useState<DestinationType[]>([]);
+  const [favorites, setFavorites] = useState<DestinationType[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("favorites");
+      return stored ? JSON.parse(stored) : [];
+    }
+    return [];
+  });
   const [openSidebar, setOpenSidebar] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+    }
+  }, [favorites]);
 
   const addFavorite = (item: DestinationType) => {
     if (!favorites.find((f) => f.id === item.id)) {
