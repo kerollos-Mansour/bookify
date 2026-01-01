@@ -10,6 +10,7 @@ interface FilterPropertiesProps {
   filters: PropertyFilters;
   priceBounds: { min: number; max: number };
   propertyTypeOptions: string[];
+  availableAmenities: string[];
   onChange: (updates: Partial<PropertyFilters>) => void;
   onReset: () => void;
 }
@@ -18,6 +19,7 @@ export default function FilterProperties({
   filters,
   priceBounds,
   propertyTypeOptions,
+  availableAmenities,
   onChange,
   onReset,
 }: FilterPropertiesProps) {
@@ -29,7 +31,10 @@ export default function FilterProperties({
     onChange({ selectedTypes: newTypes });
   };
 
-  const amenities = ["WiFi", "Pool", "Parking", "Spa", "Gym", "Restaurant"];
+  const amenities =
+    availableAmenities && availableAmenities.length > 0
+      ? availableAmenities
+      : ["WiFi", "Pool", "Parking", "Spa", "Gym", "Restaurant"];
   const guestRatingOptions = [
     { label: "Any", value: "0" },
     { label: "Wonderful 4.5+", value: "4.5" },
@@ -40,12 +45,6 @@ export default function FilterProperties({
     "Less than 1 km",
     "Less than 3 km",
     "Less than 5 km",
-  ];
-  const popularFilters = [
-    "Free Cancellation",
-    "Breakfast Included",
-    "Free WiFi",
-    "Pet Friendly",
   ];
 
   return (
@@ -169,40 +168,6 @@ export default function FilterProperties({
               </label>
             </li>
           ))}
-        </ul>
-      </div>
-
-      {/* Popular Filters */}
-      <div className="mb-6">
-        <h4 className="font-medium text-lg mb-3 text-foreground">Popular Filters</h4>
-        <ul className="space-y-2 text-sm">
-          {popularFilters.map((filter) => {
-            const key = filter.toLowerCase();
-
-            return (
-              <li key={filter} className="flex items-center">
-                <input
-                  id={`popular-${filter}`}
-                  type="checkbox"
-                  checked={filters.amenities?.includes(key)}
-                  onChange={() => {
-                    const current = filters.amenities || [];
-                    const newAmenities = current.includes(key)
-                      ? current.filter((a) => a !== key)
-                      : [...current, key];
-                    onChange({ amenities: newAmenities });
-                  }}
-                  className="w-4 h-4 bg-muted border border-card-border rounded text-blue-600"
-                />
-                <label
-                  htmlFor={`popular-${filter}`}
-                  className="ml-2 text-sm font-medium text-foreground"
-                >
-                  {filter}
-                </label>
-              </li>
-            );
-          })}
         </ul>
       </div>
 
