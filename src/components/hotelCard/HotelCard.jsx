@@ -1,10 +1,14 @@
 import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { useFavorites } from "../../context/favoritesContext";
 
-export default function HotelCard({ cardData }) {
-  const [isLiked, setIsLiked] = useState(false);
+export default function HotelCard({ cardData, hotelData }) {
+  const { favorites, addFavorite, setOpenSidebar } = useFavorites();
+  const isFavorite = favorites?.some((f) => f.id === cardData.id) ?? false;
   const [currentImage, setCurrentImage] = useState(0);
+  const [showToast, setShowToast] = useState(false);
 
   const nextImage = () => {
     setCurrentImage((prev) =>
@@ -18,39 +22,65 @@ export default function HotelCard({ cardData }) {
     );
   };
 
+  const handleFavorite = () => {
+    if (isFavorite) {
+      setOpenSidebar(true);
+    } else {
+      addFavorite({
+        id: cardData.id,
+        title: cardData.title,
+        image: cardData.img.img[0],
+        rating: cardData.reviews.avgReview,
+        address: cardData.location,
+        price: cardData.prices.nightly,
+        bestSeller: cardData.vip,
+      });
+      setShowToast(true);
+    }
+  };
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
   return (
     <div className="mb-4 w-full h-64 mx-auto bg-card rounded-2xl border border-card-border overflow-hidden font-sans flex flex-row hover:shadow-lg transition-shadow duration-300">
-      {/* Image Section - Fixed size */}
-      <div className="relative w-64 h-64 flex-shrink-0">
-        {/* Fixed aspect ratio container */}
-        <div className="w-full h-full overflow-hidden">
+      <div className="relative w-full lg:w-80 h-56 lg:h-auto flex-shrink-0">
+        <Link to={`/property/${cardData.id}`} className="block w-full h-full">
           <img
             className="w-full h-full object-cover"
             src={cardData.img.img[currentImage]}
             alt={cardData.img.alt}
           />
-        </div>
+        </Link>
 
-        {/* VIP Badge */}
-        {cardData.vip && (
+        {/* Badge */}
+        {cardData.vip ? (
           <div className="absolute top-3 left-3 bg-cyan-950 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
             VIP Access
           </div>
-        )}
+        ) : cardData.featured ? (
+          <div className="absolute top-3 left-3 bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+            Best Seller
+          </div>
+        ) : null}
 
         {/* Heart Icon */}
         <button
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={handleFavorite}
           className="cursor-pointer absolute z-10 top-3 right-3 bg-card/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-card hover:scale-110 transition-all duration-200"
         >
-          <Heart
-            className={`w-5 h-5 transition-all duration-300 ${
-              isLiked ? "fill-red-500 text-red-500 scale-110" : "text-muted-foreground"
-            }`}
-          />
+          {isFavorite ? (
+            <AiFillHeart className="text-red-500 w-6 h-6" />
+          ) : (
+            <AiOutlineHeart className="text-red-500 dark:text-red-400 w-6 h-6" />
+          )}
         </button>
 
-        {/* Navigate between images */}
+        {/* navigate between images */}
         <button
           onClick={prevImage}
           className="cursor-pointer z-10 absolute left-2 top-1/2 -translate-y-1/2 bg-card/90 backdrop-blur p-2 rounded-full shadow-md hover:bg-card transition-all duration-200"
@@ -65,15 +95,15 @@ export default function HotelCard({ cardData }) {
         </button>
       </div>
 
-      {/* Content Section - Fixed height */}
-      <div className="p-5 w-full flex flex-col min-h-0">
-        <div className="flex-1 overflow-hidden">
-          <h3 className="text-xl font-bold text-card-foreground mb-1 line-clamp-1">
-            {cardData.title}
+      {/* Content Section */}
+      <div className="p-5 lg:p-6 w-full flex flex-col">
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-card-foreground mb-1">
+            <Link to={`/property/${cardData.id}`} className="hover:text-blue-600 transition-colors">
+              {cardData.title}
+            </Link>
           </h3>
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-1">
-            {cardData.location}
-          </p>
+          <p className="text-sm text-muted-foreground mb-3">{cardData.location}</p>
 
           {/* Amenities */}
           <div className="flex flex-wrap gap-2 mb-4">
@@ -85,11 +115,6 @@ export default function HotelCard({ cardData }) {
                 {amenity}
               </span>
             ))}
-            {cardData.Amenities.length > 3 && (
-              <span className="text-xs bg-muted text-muted-foreground px-2.5 py-1 rounded-full">
-                +{cardData.Amenities.length - 3}
-              </span>
-            )}
           </div>
         </div>
 
@@ -146,6 +171,20 @@ export default function HotelCard({ cardData }) {
           </div>
         </div>
       </div>
+
+      {showToast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-sm text-white px-6 py-4 rounded-xl shadow-xl flex items-center justify-between gap-4 max-w-[90%] w-auto z-50 animate-toast">
+          <p className="text-sm text-gray-200 flex-1">
+            This property was saved to your {cardData.title} trip.
+          </p>
+          <button
+            onClick={() => setOpenSidebar(true)}
+            className="text-blue-400 font-medium hover:underline whitespace-nowrap"
+          >
+            Edit
+          </button>
+        </div>
+      )}
     </div>
   );
 }
