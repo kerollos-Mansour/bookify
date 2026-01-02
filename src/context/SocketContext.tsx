@@ -11,6 +11,7 @@ import { useAuth } from "./authContext";
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
+  unreadNotifications: number;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -21,6 +22,7 @@ const SOCKET_URL = "http://localhost:5000";
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const { token, user } = useAuth();
 
   useEffect(() => {
@@ -50,6 +52,29 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         setIsConnected(false);
       });
 
+      // ✅ Global notification listener for toast notifications
+      newSocket.on("new_notification", (notification: any) => {
+        console.log("🔔 New notification received globally:", notification);
+        setUnreadNotifications((prev) => prev + 1);
+
+        // Show browser notification if permission granted
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification(notification.title, {
+            body: notification.message,
+            icon: "/logo.png",
+          });
+        }
+      });
+
+      // Listen for notification read events to update count
+      newSocket.on("notification:updated", () => {
+        setUnreadNotifications((prev) => Math.max(0, prev - 1));
+      });
+
+      newSocket.on("notification:all_read", () => {
+        setUnreadNotifications(0);
+      });
+
       setSocket(newSocket);
 
       return () => {
@@ -69,7 +94,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   }, [token, user?.username]); // Re-connect only if token or username changes significantly
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider
+      value={{ socket, isConnected, unreadNotifications }}
+    >
       {children}
     </SocketContext.Provider>
   );

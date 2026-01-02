@@ -27,6 +27,31 @@ export const storage = {
     }
   },
 
+  getRefreshToken: () => {
+    try {
+      return localStorage.getItem("refreshToken");
+    } catch (error) {
+      console.error("Error getting refresh token from storage", error);
+      return null;
+    }
+  },
+
+  setRefreshToken: (token: string) => {
+    try {
+      localStorage.setItem("refreshToken", token);
+    } catch (error) {
+      console.error("Error setting refresh token to storage", error);
+    }
+  },
+
+  removeRefreshToken: () => {
+    try {
+      localStorage.removeItem("refreshToken");
+    } catch (error) {
+      console.error("Error removing refresh token from storage", error);
+    }
+  },
+
   getUser: () => {
     try {
       const user = localStorage.getItem("user");
@@ -50,6 +75,16 @@ export const storage = {
       localStorage.removeItem("user");
     } catch (error) {
       console.error("Error removing user from storage", error);
+    }
+  },
+
+  clearAuth: () => {
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+    } catch (error) {
+      console.error("Error clearing auth from storage", error);
     }
   },
 

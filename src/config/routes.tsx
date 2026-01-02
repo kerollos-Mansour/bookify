@@ -14,6 +14,9 @@ import Checkout from "../pages/checkout/checkout";
 import ProtectedRoute from "../components/auth/protectedRoute";
 import ContactUs from "../pages/contactUs/contactUs";
 import AboutUs from "../pages/aboutUs/aboutUs";
+import AuthCallback from "../pages/auth/callback/AuthCallback";
+import ForgotPassword from "../pages/forgotPassword/forgotPassword";
+import ResetPassword from "../pages/resetPassword/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +31,9 @@ export const router = createBrowserRouter([
       { path: "signUp", element: <SignUp /> },
       { path: "contact-us", element: <ContactUs /> },
       { path: "about-us", element: <AboutUs /> },
+      { path: "/auth/callback", element: <AuthCallback /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "reset-password/:token", element: <ResetPassword /> },
 
       {
         element: <ProtectedRoute />, //all children are protected
