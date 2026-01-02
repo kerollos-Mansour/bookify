@@ -1,7 +1,8 @@
 import { IoRestaurantOutline, IoWifiSharp } from "react-icons/io5";
 import { MdPets, MdPool, MdRestaurant, MdSpa } from "react-icons/md";
-import Map from "../../Map/Map";
+import Map from "../../map/map";
 import { Hotel } from "../../../types/hotel.type";
+import { useGetAllAmenitiesQuery } from "../../../store/api/amenities.api";
 
 type HotelSummary = {
   name?: string;
@@ -50,16 +51,25 @@ const amenityIcons = [
 
 export default function PropertyInfo({ hotel }: PropertyInfoProps) {
   console.log(hotel);
+
+  // Fetch amenities from API
+  const { data: apiAmenities } = useGetAllAmenitiesQuery({ limit: 50 });
+
   const detail = hotel.hotelDetails?.[0]; // Access embedded details
-  const amenities = (detail?.amenities ?? defaultAmenities).slice(0, 6);
+
+  // Prioritize hotel-specific amenities, then try to map IDs if needed, finally fallback
+  // If detail.amenities is strings, use them.
+  const hotelAmenities = detail?.amenities?.length ? detail.amenities : [];
+
+  const amenities = hotelAmenities.slice(0, 6);
+
+  // Calculate star rating (convert 0-100 to 0-5 scale)
   const ratingValue = hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0;
   const rating = Number.isFinite(ratingValue) ? Number(ratingValue) : 0;
-  const reviews = detail?.reviewCount ?? hotel.confidenceRating ?? 0;
-  const description =
-    detail?.tagline ??
-    hotel.hotelDetails?.[0]?.tagline ??
-    "Details about this property will be available soon.";
+  const starRating = Math.min(5, Math.max(0, Math.round((rating / 100) * 5)));
 
+  const reviews = detail?.reviewCount ?? hotel.confidenceRating ?? 0;
+  const description = detail?.tagline || hotel.hotelDetails;
   const address = [hotel.city, hotel.stateProvinceCode, hotel.countryCode]
     .filter(Boolean)
     .join(", ");
@@ -72,16 +82,28 @@ export default function PropertyInfo({ hotel }: PropertyInfoProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div
+        id="overview"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
+      >
         {/* Left column - Property Details */}
         <div className="lg:col-span-2">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">{hotel.name}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">
+            {hotel.name}
+          </h1>
 
           {/* Star rating */}
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex text-muted-foreground">
-              {[...Array(4)].map((_, i) => (
-                <span key={i}>★</span>
+            <div className="flex text-yellow-500 dark:text-yellow-400">
+              {[...Array(5)].map((_, i) => (
+                <span
+                  key={i}
+                  className={
+                    i < starRating ? "" : "text-gray-300 dark:text-gray-600"
+                  }
+                >
+                  ★
+                </span>
               ))}
             </div>
           </div>
@@ -102,8 +124,8 @@ export default function PropertyInfo({ hotel }: PropertyInfoProps) {
             </button>
           ) : null}
 
-          <div className="mb-8">
-            <h2 className="text-xl md:text-2xl font-bold mb-4">
+          <div id="about" className="mb-8">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 text-foreground">
               About this property
             </h2>
             <p className="text-muted-foreground mb-6 text-sm md:text-base">
@@ -117,22 +139,29 @@ export default function PropertyInfo({ hotel }: PropertyInfoProps) {
               </ul>
             )}
             {/* Amenities Grid */}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 mb-6">
-              {amenities.map((text, index) => (
-                <div
-                  key={`${text}-${index}`}
-                  className="flex items-center gap-3"
-                >
-                  <span className="text-xl md:text-2xl text-muted-foreground">
-                    {amenityIcons[index] ??
-                      amenityIcons[amenityIcons.length - 1]}
-                  </span>
-                  <span className="text-foreground text-sm md:text-base">
-                    {text}
-                  </span>
+            <div
+              id="amenities"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 mb-6"
+            >
+              {amenities.length > 0 ? (
+                amenities.map((text, index) => (
+                  <div
+                    key={`${text}-${index}`}
+                    className="flex items-center gap-3"
+                  >
+                    <span className="text-xl md:text-2xl text-muted-foreground">
+                      {amenityIcons[index % amenityIcons.length]}
+                    </span>
+                    <span className="text-foreground text-sm md:text-base">
+                      {text}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-2 text-muted-foreground text-sm">
+                  No specific amenities listed for this property.
                 </div>
-              ))}
+              )}
             </div>
 
             <button className="text-blue-600 hover:underline flex items-center gap-1 cursor-pointer text-sm md:text-base">

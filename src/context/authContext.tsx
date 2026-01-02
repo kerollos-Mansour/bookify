@@ -30,9 +30,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedToken && storedUser) {
       setUser(storedUser);
       setToken(storedToken);
-      return;
     }
-    setLoading(false);
+    setLoading(false); // Always set loading to false after checking storage
   }, []);
 
   const login = (userData: User, newToken: string) => {

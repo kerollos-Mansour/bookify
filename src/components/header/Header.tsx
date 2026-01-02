@@ -12,17 +12,25 @@ import ThemeToggle from "../UI/ThemeToggle";
 import { useTheme } from "../../context/themeContext";
 import { useLocation } from "../../context/locationContext";
 import { LocationSelector } from "../locationSelector/LocationSelector";
+import { useDispatch } from "react-redux";
+import { Logout } from "../../store/slices/authSlice";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showLocationSelector, setShowLocationSelector] = useState(false);
+  // Removed local state: const [showLocationSelector, setShowLocationSelector] = useState(false);
   const navigate = useNavigate();
   const routerLocation = useRouterLocation();
   const isHomePage = routerLocation.pathname === "/";
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { theme } = useTheme();
-  const { location: userLocation } = useLocation();
+  const { location: userLocation, openSelector } = useLocation();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(Logout());
+    navigate("/login");
+  };
 
   useEffect(() => {
     const handelScroll = () => {
@@ -85,7 +93,7 @@ export default function Header() {
           {/* Desktop Right Menu */}
           <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm font-medium">
             <button
-              onClick={() => setShowLocationSelector(true)}
+              onClick={openSelector}
               className={`hidden xl:flex items-center gap-2 transition-colors hover:opacity-80 ${textColor}`}
             >
               <span>{userLocation.currency}</span>
@@ -96,12 +104,6 @@ export default function Header() {
               className={`whitespace-nowrap transition-colors ${textColor}`}
             >
               List your property
-            </a>
-            <a href="#" className={`transition-colors ${textColor}`}>
-              Support
-            </a>
-            <a href="#" className={`transition-colors ${textColor}`}>
-              Trips
             </a>
 
             {/* Messages Icon Button */}
@@ -119,18 +121,26 @@ export default function Header() {
             <ThemeToggle />
 
             {isAuthenticated ? (
-              <Link to="/account">
+              <>
+                <Link to="/account">
+                  <button
+                    className={`flex items-center gap-2 p-2 rounded-full transition-colors ${iconHoverBg}`}
+                    aria-label="Account"
+                  >
+                    <User
+                      className={`w-5 h-5 ${
+                        scrolled ? "text-foreground" : "text-white"
+                      }`}
+                    />
+                  </button>
+                </Link>
                 <button
-                  className={`flex items-center gap-2 p-2 rounded-full transition-colors ${iconHoverBg}`}
-                  aria-label="Account"
+                  onClick={handleLogout}
+                  className={`transition-colors ${textColor} hover:text-red-500`}
                 >
-                  <User
-                    className={`w-5 h-5 ${
-                      scrolled ? "text-foreground" : "text-white"
-                    }`}
-                  />
+                  Logout
                 </button>
-              </Link>
+              </>
             ) : (
               <Link to="/login">
                 <span
@@ -293,7 +303,7 @@ export default function Header() {
                   )}
 
                   <button
-                    onClick={() => setShowLocationSelector(true)}
+                    onClick={openSelector}
                     className={`py-3 px-2 flex items-center gap-2 text-sm hover:bg-muted rounded-lg transition-colors ${
                       scrolled ? "text-foreground" : ""
                     }`}
@@ -310,11 +320,13 @@ export default function Header() {
         </AnimatePresence>
       </div>
 
-      {/* Location Selector Modal */}
-      <LocationSelector
-        isOpen={showLocationSelector}
-        onClose={() => setShowLocationSelector(false)}
-      />
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
     </header>
   );
 }

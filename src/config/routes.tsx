@@ -12,6 +12,8 @@ import NotFound from "../pages/notFound/NotFound";
 import Account from "../pages/account/account";
 import Checkout from "../pages/checkout/checkout";
 import ProtectedRoute from "../components/auth/protectedRoute";
+import ContactUs from "../pages/contactUs/contactUs";
+import AboutUs from "../pages/aboutUs/aboutUs";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +26,9 @@ export const router = createBrowserRouter([
       { path: "search", element: <SearchResults /> },
       { path: "login", element: <Login /> },
       { path: "signUp", element: <SignUp /> },
+      { path: "contact-us", element: <ContactUs /> },
+      { path: "about-us", element: <AboutUs /> },
+
       {
         element: <ProtectedRoute />, //all children are protected
 

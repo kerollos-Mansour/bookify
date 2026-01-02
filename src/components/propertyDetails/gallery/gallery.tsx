@@ -6,7 +6,9 @@ interface GalleryProps {
 }
 
 export default function Gallery({ images = [] }: GalleryProps) {
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const validImgs = images.filter((img) => img && img.trim() !== "");
@@ -57,7 +59,10 @@ export default function Gallery({ images = [] }: GalleryProps) {
   };
 
   const goToNext = () => {
-    if (selectedImageIndex !== null && selectedImageIndex < validImgs.length - 1) {
+    if (
+      selectedImageIndex !== null &&
+      selectedImageIndex < validImgs.length - 1
+    ) {
       setSelectedImageIndex(selectedImageIndex + 1);
     }
   };
@@ -70,14 +75,18 @@ export default function Gallery({ images = [] }: GalleryProps) {
     );
   }
 
-  const GalleryButton = ({ onClick, children, className = "" }: { 
-    onClick: () => void; 
+  const GalleryButton = ({
+    onClick,
+    children,
+    className = "",
+  }: {
+    onClick: () => void;
     children: React.ReactNode;
     className?: string;
   }) => (
     <button
       onClick={onClick}
-      className={`absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white gap-2 hover:bg-opacity-60 transition-opacity ${className}`}
+      className={`absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center text-white gap-2 hover:bg-opacity-40 transition-opacity ${className}`}
     >
       {children}
     </button>
@@ -87,7 +96,7 @@ export default function Gallery({ images = [] }: GalleryProps) {
     <div className="imageGallery mb-6 relative">
       {/* Mobile Layout */}
       <div className="block md:hidden space-y-2">
-        <div 
+        <div
           className="h-64 overflow-hidden rounded-lg cursor-pointer"
           onClick={() => openGallery(0)}
         >
@@ -103,7 +112,7 @@ export default function Gallery({ images = [] }: GalleryProps) {
         {displayImages.length > 1 && (
           <div className="grid grid-cols-2 gap-2">
             {displayImages.slice(1, 3).map((img, index) => (
-              <div 
+              <div
                 key={index}
                 className="relative cursor-pointer"
                 onClick={() => openGallery(index + 1)}
@@ -134,7 +143,7 @@ export default function Gallery({ images = [] }: GalleryProps) {
                 <span className="font-semibold">+{remainingCount}</span>
               </GalleryButton>
             ) : (
-              <div 
+              <div
                 className="absolute inset-0 cursor-pointer"
                 onClick={() => openGallery(3)}
               />
@@ -183,9 +192,9 @@ export default function Gallery({ images = [] }: GalleryProps) {
               return (
                 <div
                   key={index}
-                  className={`relative cursor-pointer ${isTopRight ? "rounded-tr-lg" : ""} ${
-                    isBottomRight ? "rounded-br-lg" : ""
-                  } overflow-hidden`}
+                  className={`relative cursor-pointer ${
+                    isTopRight ? "rounded-tr-lg" : ""
+                  } ${isBottomRight ? "rounded-br-lg" : ""} overflow-hidden`}
                   onClick={() => openGallery(actualIndex)}
                 >
                   <img
@@ -208,91 +217,85 @@ export default function Gallery({ images = [] }: GalleryProps) {
       </div>
 
       {/* Gallery Popup Modal */}
-{selectedImageIndex !== null && (
-  <>
-    {/* Fixed overlay that covers everything */}
-    <div 
-      className="fixed inset-0 bg-black z-[9998]" 
-      onClick={closeGallery}
-    />
-    
-    {/* Gallery content */}
-    <div className="fixed inset-0 z-[9999] pointer-events-none">
-      <div className="relative w-full h-full pointer-events-auto">
-        {/* Header */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
-          <button
+      {selectedImageIndex !== null && (
+        <>
+          {/* Fixed overlay that covers everything */}
+          <div
+            className="fixed inset-0 bg-black z-[9998]"
             onClick={closeGallery}
-            className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
-          >
-            <BsX size={28} />
-          </button>
-          <div className="text-white text-lg font-medium">
-            {selectedImageIndex + 1} / {validImgs.length}
-          </div>
-          <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
-          >
-            {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-          </button>
-        </div>
-
-        {/* Main Image */}
-        <div className="flex items-center justify-center h-full p-4">
-          <img
-            src={validImgs[selectedImageIndex]}
-            alt={`Gallery image ${selectedImageIndex + 1}`}
-            className={`max-h-full max-w-full object-contain ${isFullscreen ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
-            onClick={() => setIsFullscreen(!isFullscreen)}
           />
-        </div>
 
-        {/* Navigation and thumbnails */}
-        {selectedImageIndex > 0 && (
-          <button
-            onClick={goToPrev}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full transition-colors z-10"
-          >
-            <BsChevronLeft size={24} />
-          </button>
-        )}
-        
-        {selectedImageIndex < validImgs.length - 1 && (
-          <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full transition-colors z-10"
-          >
-            <BsChevronRight size={24} />
-          </button>
-        )}
+          {/* Gallery content */}
+          <div className="fixed inset-0 z-[9999] pointer-events-none">
+            <div className="relative w-full h-full pointer-events-auto">
+              {/* Header */}
+              <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
+                <button
+                  onClick={closeGallery}
+                  className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
+                >
+                  <BsX size={28} />
+                </button>
+                <div className="text-white text-lg font-medium">
+                  {selectedImageIndex + 1} / {validImgs.length}
+                </div>
+                <div className="w-10" /> {/* Spacer for balance */}
+              </div>
 
-        {/* Thumbnail Strip */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent py-4 z-10">
-          <div className="flex gap-2 justify-center px-4 overflow-x-auto">
-            {validImgs.map((img, index) => (
-              <button
-                key={index}
-                onClick={() => setSelectedImageIndex(index)}
-                className={`flex-shrink-0 w-20 h-14 rounded overflow-hidden border-2 transition-all ${
-                  index === selectedImageIndex 
-                    ? 'border-white scale-105' 
-                    : 'border-transparent opacity-70 hover:opacity-100'
-                }`}
-              >
+              {/* Main Image */}
+              <div className="flex items-center justify-center h-full p-4">
                 <img
-                  src={img}
-                  alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  src={validImgs[selectedImageIndex]}
+                  alt={`Gallery image ${selectedImageIndex + 1}`}
+                  className="max-h-full max-w-full object-contain cursor-pointer"
                 />
-              </button>
-            ))}
+              </div>
+
+              {/* Navigation and thumbnails */}
+              {selectedImageIndex > 0 && (
+                <button
+                  onClick={goToPrev}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full transition-colors z-10"
+                >
+                  <BsChevronLeft size={24} />
+                </button>
+              )}
+
+              {selectedImageIndex < validImgs.length - 1 && (
+                <button
+                  onClick={goToNext}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-3 rounded-full transition-colors z-10"
+                >
+                  <BsChevronRight size={24} />
+                </button>
+              )}
+
+              {/* Thumbnail Strip */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent py-4 z-10">
+                <div className="flex gap-2 justify-center px-4 overflow-x-auto">
+                  {validImgs.map((img, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={`flex-shrink-0 w-20 h-14 rounded overflow-hidden border-2 transition-all ${
+                        index === selectedImageIndex
+                          ? "border-white scale-105"
+                          : "border-transparent opacity-90 hover:opacity-100"
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </>
-)}
+        </>
+      )}
     </div>
   );
 }

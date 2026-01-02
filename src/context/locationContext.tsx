@@ -12,6 +12,9 @@ interface LocationContextType {
   location: UserLocation;
   setLocation: (location: UserLocation) => void;
   isLoading: boolean;
+  isSelectorOpen: boolean;
+  openSelector: () => void;
+  closeSelector: () => void;
 }
 
 const LocationContext = createContext<LocationContextType | undefined>(
@@ -28,6 +31,10 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     flag: "🇺🇸",
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+
+  const openSelector = () => setIsSelectorOpen(true);
+  const closeSelector = () => setIsSelectorOpen(false);
 
   useEffect(() => {
     const initializeLocation = async () => {
@@ -69,7 +76,16 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LocationContext.Provider value={{ location, setLocation, isLoading }}>
+    <LocationContext.Provider
+      value={{
+        location,
+        setLocation,
+        isLoading,
+        isSelectorOpen,
+        openSelector,
+        closeSelector,
+      }}
+    >
       {children}
     </LocationContext.Provider>
   );

@@ -7,6 +7,13 @@ import ScrollToTop from "./components/scrollToTop/scrollToTop";
 import FavBarSection from "./components/favBar/favBar";
 import { FavoritesProvider } from "./context/favoritesContext";
 import { ToastProvider } from "./components/UI/ToastProvider/ToastProvider";
+import { LocationSelector } from "./components/locationSelector/LocationSelector";
+import { useLocation } from "./context/locationContext";
+
+const LocationSelectorWrapper = () => {
+  const { isSelectorOpen, closeSelector } = useLocation();
+  return <LocationSelector isOpen={isSelectorOpen} onClose={closeSelector} />;
+};
 
 function App() {
   const navigation = useNavigation();
@@ -30,6 +37,7 @@ function App() {
             <FavBarSection />
             <main>
               <ScrollToTop />
+              <LocationSelectorWrapper />
               <Outlet />
             </main>
             {!hideLayout && <Footer />}

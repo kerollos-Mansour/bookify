@@ -46,14 +46,11 @@ export function LocationSelector({ isOpen, onClose }: LocationSelectorProps) {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Modal - Wrapper handles backdrop click */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      >
         <div
           className="bg-card rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
