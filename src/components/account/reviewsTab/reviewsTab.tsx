@@ -1,60 +1,30 @@
 import { useState } from "react";
 import { Star, MapPin, Calendar, Edit2, Trash2, ThumbsUp } from "lucide-react";
 import { useToast } from "../../UI/ToastProvider/ToastProvider";
-
-interface Review {
-  _id: string;
-  hotelName: string;
-  hotelLocation: string;
-  rating: number;
-  title: string;
-  comment: string;
-  createdAt: string;
-  helpful: number;
-  images?: string[];
-}
+import {
+  useGetUserReviewsQuery,
+  useDeleteReviewMutation,
+} from "../../../store/api/reviews.api";
+import { useAppSelector } from "../../../store/hooks";
 
 export default function ReviewsTab() {
   const toast = useToast();
-  const [reviews, setReviews] = useState<Review[]>([
+  const user = useAppSelector((state) => state.auth.user);
+  const { data: reviews = [], isLoading } = useGetUserReviewsQuery(
+    user?.id || "",
     {
-      _id: "1",
-      hotelName: "Grand Luxury Hotel",
-      hotelLocation: "New York, USA",
-      rating: 5,
-      title: "Amazing stay!",
-      comment:
-        "The hotel exceeded all expectations. The staff was incredibly friendly, the room was spotless, and the location was perfect for exploring the city. Would definitely recommend!",
-      createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      helpful: 12,
-    },
-    {
-      _id: "2",
-      hotelName: "Seaside Resort",
-      hotelLocation: "Miami, Florida",
-      rating: 4,
-      title: "Great beach access",
-      comment:
-        "Beautiful resort with direct beach access. The pool area was fantastic and the breakfast buffet had great variety. Only minor issue was the WiFi speed.",
-      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      helpful: 8,
-    },
-    {
-      _id: "3",
-      hotelName: "Mountain View Lodge",
-      hotelLocation: "Aspen, Colorado",
-      rating: 5,
-      title: "Perfect winter getaway",
-      comment:
-        "Stunning views, cozy rooms with fireplaces, and excellent ski-in/ski-out access. The hot tub after a day on the slopes was heavenly!",
-      createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-      helpful: 15,
-    },
-  ]);
+      skip: !user?.id,
+    }
+  );
+  const [deleteReviewApi] = useDeleteReviewMutation();
 
-  const deleteReview = (id: string) => {
-    setReviews((prev) => prev.filter((review) => review._id !== id));
-    toast.success("Review deleted successfully");
+  const deleteReview = async (id: string) => {
+    try {
+      await deleteReviewApi(id).unwrap();
+      toast.success("Review deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete review");
+    }
   };
 
   const editReview = (id: string) => {
@@ -76,6 +46,18 @@ export default function ReviewsTab() {
           reviews.length
         ).toFixed(1)
       : "0.0";
+
+  if (isLoading) {
+    return (
+      <div className="bg-card rounded-3xl shadow-sm overflow-hidden p-8 text-center animate-pulse">
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mx-auto mb-4"></div>
+        <div className="space-y-4">
+          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-2xl w-full"></div>
+          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-2xl w-full"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card rounded-3xl shadow-sm overflow-hidden">
@@ -107,9 +89,7 @@ export default function ReviewsTab() {
             <p className="text-muted-foreground mb-6">
               Share your experiences by reviewing your past stays
             </p>
-            <button className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg">
-              Write a Review
-            </button>
+            {/* Removed "Write a Review" button as it usually happens from a booking or hotel page */}
           </div>
         ) : (
           <div className="space-y-6">
@@ -122,11 +102,14 @@ export default function ReviewsTab() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-lg font-bold text-foreground">
-                      {review.hotelName}
+                      {review.hotelid?.name || "Unknown Hotel"}
                     </h3>
                     <div className="flex items-center gap-2 text-muted-foreground text-sm mt-1">
                       <MapPin className="w-4 h-4" />
-                      <span>{review.hotelLocation}</span>
+                      <span>
+                        {review.hotelid?.location?.city || ""}{" "}
+                        {review.hotelid?.location?.countryCode || ""}
+                      </span>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -166,9 +149,10 @@ export default function ReviewsTab() {
 
                 {/* Review Content */}
                 <div className="mb-4">
-                  <h4 className="font-semibold text-foreground mb-2">
+                  {/* Removed Title as backend doesn't support it yet */}
+                  {/* <h4 className="font-semibold text-foreground mb-2">
                     {review.title}
-                  </h4>
+                  </h4> */}
                   <p className="text-card-foreground/90 leading-relaxed">
                     {review.comment}
                   </p>
@@ -183,7 +167,7 @@ export default function ReviewsTab() {
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <ThumbsUp className="w-4 h-4" />
                     <span className="text-sm font-medium">
-                      {review.helpful} found this helpful
+                      {review.helpfulCount || 0} found this helpful
                     </span>
                   </div>
                 </div>
@@ -228,7 +212,7 @@ export default function ReviewsTab() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-foreground">
-                    {reviews.reduce((sum, r) => sum + r.helpful, 0)}
+                    {reviews.reduce((sum, r) => sum + (r.helpfulCount || 0), 0)}
                   </p>
                   <p className="text-sm text-foreground/70">Helpful Votes</p>
                 </div>

@@ -7,6 +7,7 @@ import PageTransition from "../../components/pageTransition/pageTransition";
 import { useGetHotelByIdQuery } from "../../store/api/hotels.api";
 import { useGetRoomsByHotelIdQuery } from "../../store/api/room.api";
 import { SearchBar } from "../../components/searchBar/SearchBar";
+import ReviewsSection from "../../components/propertyDetails/reviews/ReviewsSection";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
@@ -68,6 +69,7 @@ export default function PropertyDetailsPage() {
         <NavigationBar />
         <PropertyInfo hotel={hotel} />
         <RoomsSection rooms={rooms} hotel={hotel} />
+        <ReviewsSection hotelId={hotel._id} />
       </div>
     </PageTransition>
   );
