@@ -13,6 +13,7 @@ import Account from "../pages/account/account";
 import Checkout from "../pages/checkout/checkout";
 import ProtectedRoute from "../components/auth/protectedRoute";
 import AboutUs from "../pages/aboutUs/aboutUs";
+import ContactUs from "../pages/contactUs/contactUs";
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +22,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "categories", element: <Categories /> },
-      { path: "aboutUs", element: <AboutUs /> },  // ← ADD THIS LINE
+      { path: "aboutUs", element: <AboutUs /> },  // 
+      { path: "contactUs", element: <ContactUs /> },  //
+
       { path: "property/:id", element: <PropertyDetails /> },
       { path: "search", element: <SearchResults /> },
       { path: "login", element: <Login /> },

@@ -126,7 +126,7 @@ export default function Footer() {
               Cancellation Options
             </li>
             <li className="hover:text-blue-600 dark:hover:text-white cursor-pointer transition-colors">
-              Contact Us
+              <Link to="/contactUs">Contact Us</Link>
             </li>
           </ul>
         </div>

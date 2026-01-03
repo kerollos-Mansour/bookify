@@ -1,6 +1,9 @@
+import { useState, useEffect } from "react";
+
 export interface PropertyFilters {
   selectedTypes: string[];
   maxPrice: number;
+  minPrice: number;
   minRating: number;
   propertyName?: string;
   amenities?: string[];
@@ -14,6 +17,7 @@ interface FilterPropertiesProps {
   onReset: () => void;
 }
 
+
 export default function FilterProperties({
   filters,
   priceBounds,
@@ -21,6 +25,16 @@ export default function FilterProperties({
   onChange,
   onReset,
 }: FilterPropertiesProps) {
+  const [minPrice, setMinPrice] = useState(
+    filters.minPrice ?? priceBounds.min
+  );
+  const [maxPrice, setMaxPrice] = useState(
+    filters.maxPrice ?? priceBounds.max
+  );
+  useEffect(() => {
+    onChange({ minPrice, maxPrice });
+  }, [minPrice, maxPrice]);
+
   const handleTypeToggle = (type: string) => {
     const newTypes = filters.selectedTypes.includes(type)
       ? filters.selectedTypes.filter((t) => t !== type)
@@ -53,11 +67,15 @@ export default function FilterProperties({
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-medium text-3xl text-foreground">Filter By</h3>
         <button
-          onClick={onReset}
-          className="text-sm text-blue-600 hover:text-blue-800"
+          onClick={() => {
+            setMinPrice(priceBounds.min);
+            setMaxPrice(priceBounds.max);
+            onReset();
+          }}
         >
           Reset All
         </button>
+
       </div>
 
 
@@ -68,10 +86,14 @@ export default function FilterProperties({
           type="range"
           min={priceBounds.min}
           max={priceBounds.max}
-          value={filters.maxPrice || priceBounds.max}
-          onChange={(e) => onChange({ maxPrice: Number(e.target.value) })}
+          value={maxPrice}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setMaxPrice(Math.max(value, minPrice));
+          }}
           className="w-full"
         />
+
         <div className="flex justify-between text-sm text-muted-foreground mt-2">
           <span>${priceBounds.min}</span>
           <span>${priceBounds.max}</span>
@@ -79,16 +101,33 @@ export default function FilterProperties({
         <div className="flex gap-2 mt-3">
           <input
             type="number"
-            value={priceBounds.min}
+            placeholder="min"
+            min={priceBounds.min}
+            max={maxPrice}
+            value={minPrice === 0 ? "" : minPrice}
+            onChange={(e) => {
+              const value = e.target.value === "" ? 0 : Number(e.target.value);
+              setMinPrice(Math.min(value, maxPrice));
+            }}
+
             className="w-1/2 px-3 py-2 border border-card-border bg-background text-foreground rounded-lg text-sm"
-            readOnly
           />
+
           <input
             type="number"
-            value={filters.maxPrice || priceBounds.max}
+            min={minPrice}
+                        placeholder="max"
+
+            max={priceBounds.max}
+            value={maxPrice === 0 ? "" : maxPrice}
+            onChange={(e) => {
+              const value = e.target.value === "" ? 0 : Number(e.target.value);
+              setMaxPrice(Math.max(value, minPrice));
+            }}
+
             className="w-1/2 px-3 py-2 border border-card-border bg-background text-foreground rounded-lg text-sm"
-            readOnly
           />
+
         </div>
       </div>
 

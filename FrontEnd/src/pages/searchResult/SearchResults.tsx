@@ -81,35 +81,35 @@ export default function SearchResult() {
   const [propertyTypeOptions, setPropertyTypeOptions] = useState<string[]>([]);
   const [locationFilter, setLocationFilter] = useState("");
 
-  const searchParams = useMemo(() => {
+const searchParams = useMemo(() => {
     const params = new URLSearchParams(search);
 
     // Map activeTab to propertyCategory
     let category: string | undefined = undefined;
     if (activeTab === "hotels") category = "hotel";
-    if (activeTab === "homes") category = "home"; // Adjust 'home' if API expects something else
+    if (activeTab === "homes") category = "home";
 
     return {
-      location: params.get("location") || undefined,
-      city: params.get("city") || undefined,
-      country: params.get("country") || undefined,
-      checkIn: params.get("checkIn") || undefined,
-      checkOut: params.get("checkOut") || undefined,
-      adults: params.get("adults") ? Number(params.get("adults")) : undefined,
-      rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-      minRate: params.get("minRate")
-        ? Number(params.get("minRate"))
-        : undefined,
-      maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
-      search: filters.propertyName || undefined,
-      amenities: filters.amenities?.length ? filters.amenities : undefined,
-      propertyCategory: category,
-      sort: params.get("sort") || undefined,
-      page: params.get("page") ? Number(params.get("page")) : 1,
-      limit: params.get("limit") ? Number(params.get("limit")) : 20,
+        location: params.get("location") || undefined,
+        city: params.get("city") || undefined,
+        country: params.get("country") || undefined,
+        checkIn: params.get("checkIn") || undefined,
+        checkOut: params.get("checkOut") || undefined,
+        adults: params.get("adults") ? Number(params.get("adults")) : undefined,
+        rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
+        minRate: params.get("minRate")
+            ? Number(params.get("minRate"))
+            : undefined,
+        maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
+        search: params.get("location") || undefined, // Main search from SearchBar (hotel name or location)
+        name: filters.propertyName || undefined,      // Specific hotel name from sidebar
+        amenities: filters.amenities?.length ? filters.amenities : undefined,
+        propertyCategory: category,
+        sort: params.get("sort") || undefined,
+        page: params.get("page") ? Number(params.get("page")) : 1,
+        limit: params.get("limit") ? Number(params.get("limit")) : 20,
     };
-  }, [search, filters.maxPrice, filters.propertyName, activeTab]);
-
+}, [search, filters.maxPrice, filters.propertyName, activeTab, filters.amenities]);
   const {
     data: hotels = [],
     isLoading,
