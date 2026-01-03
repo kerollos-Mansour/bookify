@@ -34,6 +34,7 @@ export interface CreateBookingRequest {
   guests: number;
   currency?: string;
   couponId?: string;
+  couponCode?: string;
   paymentMethod: "stripe" | "paypal" | "cash" | "other";
   paymentIntentId?: string;
 }

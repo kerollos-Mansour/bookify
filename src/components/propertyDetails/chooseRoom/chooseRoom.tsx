@@ -37,11 +37,10 @@ export default function RoomsSection({ rooms = [], hotel }: RoomsSectionProps) {
             <button
               key={filter.id}
               onClick={() => setActiveFilter(filter.id)}
-              className={`px-5 py-2 rounded-full border-2 font-medium transition-colors ${
-                activeFilter === filter.id
+              className={`px-5 py-2 rounded-full border-2 font-medium transition-colors ${activeFilter === filter.id
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-card-border bg-card text-card-foreground hover:border-foreground"
-              }`}
+                }`}
             >
               {filter.label}
             </button>
