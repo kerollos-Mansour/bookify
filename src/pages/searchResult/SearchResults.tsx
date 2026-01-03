@@ -83,71 +83,35 @@ export default function SearchResult() {
   const [locationFilter, setLocationFilter] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const searchParams = useMemo(() => {
+const searchParams = useMemo(() => {
     const params = new URLSearchParams(search);
 
-    // Logic for combining Tab and Sidebar filters (Intersection)
-    let finalTypes: string[] | undefined;
-    let tabTypes: string[] | undefined = undefined;
+    // Map activeTab to propertyCategory
+    let category: string | undefined = undefined;
+    if (activeTab === "hotels") category = "hotel";
+    if (activeTab === "homes") category = "home";
 
-    if (activeTab === "hotels") tabTypes = ["hotel", "resort"];
-    if (activeTab === "homes") tabTypes = ["home", "apartment", "villa", "cabin", "cottage"];
-
-    if (tabTypes) {
-      if (filters.selectedTypes?.length) {
-        // Intersect: Only allow types that are in BOTH lists (case-insensitive)
-        finalTypes = tabTypes.filter(t =>
-          filters.selectedTypes.some(selected => selected.toLowerCase() === t.toLowerCase())
-        );
-
-        // If user selected a type NOT in this tab (e.g. "Home" while on "Hotels" tab)
-        // We must send a value that matches NOTHING instead of undefined
-        if (finalTypes.length === 0) finalTypes = ["__no_match__"];
-      } else {
-        finalTypes = tabTypes;
-      }
-    } else {
-      // All Stays tab -> use sidebar selection
-      finalTypes = filters.selectedTypes?.length ? filters.selectedTypes : undefined;
-    }
-
-    const rawParams = {
-      location: params.get("location") || undefined,
-      city: params.get("city") || undefined,
-      country: params.get("country") || undefined,
-      checkIn: params.get("checkIn") || undefined,
-      checkOut: params.get("checkOut") || undefined,
-      adults: params.get("adults") ? Number(params.get("adults")) : undefined,
-      rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-      minRate: params.get("minRate") ? Number(params.get("minRate")) : undefined,
-      maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
-      search: filters.propertyName || undefined,
-      hotelRating: filters.minRating > 0 ? filters.minRating : undefined,
-      sort: params.get("sort") || undefined,
-      page: params.get("page") ? Number(params.get("page")) : 1,
-      limit: params.get("limit") ? Number(params.get("limit")) : 20,
-      amenities: filters.amenities?.filter(Boolean).length ? filters.amenities.filter(Boolean).join(",") : undefined,
-      types: finalTypes?.filter(Boolean).length ? finalTypes.filter(Boolean).join(",") : undefined,
+    return {
+        location: params.get("location") || undefined,
+        city: params.get("city") || undefined,
+        country: params.get("country") || undefined,
+        checkIn: params.get("checkIn") || undefined,
+        checkOut: params.get("checkOut") || undefined,
+        adults: params.get("adults") ? Number(params.get("adults")) : undefined,
+        rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
+        minRate: params.get("minRate")
+            ? Number(params.get("minRate"))
+            : undefined,
+        maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
+        search: params.get("location") || undefined, // Main search from SearchBar (hotel name or location)
+        name: filters.propertyName || undefined,      // Specific hotel name from sidebar
+        amenities: filters.amenities?.length ? filters.amenities : undefined,
+        propertyCategory: category,
+        sort: params.get("sort") || undefined,
+        page: params.get("page") ? Number(params.get("page")) : 1,
+        limit: params.get("limit") ? Number(params.get("limit")) : 20,
     };
-
-    const cleanParams: Record<string, any> = {};
-    Object.entries(rawParams).forEach(([key, val]) => {
-      if (val !== undefined && val !== null && val !== "") {
-        cleanParams[key] = val;
-      }
-    });
-
-    return cleanParams as any;
-  }, [
-    search,
-    activeTab,
-    filters.maxPrice,
-    filters.propertyName,
-    filters.minRating,
-    filters.amenities,
-    filters.selectedTypes
-  ]);
-
+}, [search, filters.maxPrice, filters.propertyName, activeTab, filters.amenities]);
   const {
     data: hotels = [],
     isLoading,

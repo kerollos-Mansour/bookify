@@ -10,4 +10,6 @@ export interface LocationSuggestion {
   displayName: string;
   city: string;
   country?: string;
+   type?: "hotel" | "city";  // New field to differentiate
+  hotelName?: string;  
 }

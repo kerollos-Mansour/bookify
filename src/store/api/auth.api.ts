@@ -4,7 +4,7 @@ import { storage } from "../../utils/storage";
 
 const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<AuthResponse, LoginRequest>({
+    login: builder.mutation<AuthResponse["data"], LoginRequest>({
       query: (credentials) => ({
         url: "/auth/login",
         method: "POST",
@@ -21,7 +21,7 @@ const authApi = apiSlice.injectEndpoints({
       },
     }),
 
-    register: builder.mutation<AuthResponse, RegisterRequest>({
+    register: builder.mutation<AuthResponse["data"], RegisterRequest>({
       query: (credentials) => ({
         url: "/auth/register",
         method: "POST",
