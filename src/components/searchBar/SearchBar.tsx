@@ -6,19 +6,26 @@ import {
   MdPerson,
   MdClose,
 } from "react-icons/md";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useLocationAutocomplete } from "../../hooks/useLocationAutocomplete";
 import { DateRangePicker } from "../UI/DateRangePicker";
 import { DateRange } from "react-day-picker";
 import { format, addDays } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SearchBarProps {
   hideOnMobile?: boolean;
+  isMobileCompact?: boolean;
+  className?: string;
 }
 
-export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
+export function SearchBar({
+  hideOnMobile = false,
+  isMobileCompact = false,
+  className = "",
+}: SearchBarProps) {
   const navigate = useNavigate();
   const { search } = useLocation();
 
@@ -32,13 +39,14 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
   const [adults, setAdults] = useState(2);
   const [rooms, setRooms] = useState(1);
   const [recentSearches, setRecentSearches] = useState<VisitedSearch[]>([]);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   // Dropdown states
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [showDatesDropdown, setShowDatesDropdown] = useState(false);
   const [showTravelersDropdown, setShowTravelersDropdown] = useState(false);
 
-  // Refs للـ click outside
+  // Refs for click outside
   const locationRef = useRef<HTMLDivElement>(null);
   const datesRef = useRef<HTMLDivElement>(null);
   const travelersRef = useRef<HTMLDivElement>(null);
@@ -132,287 +140,355 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
       rooms: rooms,
     });
 
+    setIsMobileDrawerOpen(false);
     navigate(`/search?${params.toString()}`);
   };
 
-  return (
-    <div className={`relative ${hideOnMobile ? "hidden md:block" : ""}`}>
-      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-card rounded-xl md:rounded-full shadow-lg dark:shadow-lg p-1.5 sm:p-2 md:p-2 border border-card-border">
-        {/* Where to? */}
-        <div
-          ref={locationRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-card-border cursor-pointer hover:bg-muted rounded-t-xl md:rounded-t-none md:rounded-l-full transition-colors"
-          onClick={() => {
-            setShowLocationDropdown(!showLocationDropdown);
-            setShowDatesDropdown(false);
-            setShowTravelersDropdown(false);
-          }}
-        >
-          <MdLocationOn className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
-          <div className="flex flex-col min-w-0 flex-1">
-            <label className="text-xs text-muted-foreground font-medium mb-1">
-              Where to?
-            </label>
-            <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
-              {selectedLocation}
-            </span>
-          </div>
+  const FullSearchForm = () => (
+    <div className="flex flex-col md:flex-row items-stretch md:items-center gap-0 bg-card rounded-xl md:rounded-full shadow-lg dark:shadow-lg p-1.5 sm:p-2 md:p-2 border border-card-border overflow-visible">
+      {/* Where to? */}
+      <div
+        ref={locationRef}
+        className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-card-border cursor-pointer hover:bg-muted rounded-t-xl md:rounded-t-none md:rounded-l-full transition-colors"
+        onClick={() => {
+          setShowLocationDropdown(!showLocationDropdown);
+          setShowDatesDropdown(false);
+          setShowTravelersDropdown(false);
+        }}
+      >
+        <MdLocationOn className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
+        <div className="flex flex-col min-w-0 flex-1">
+          <label className="text-xs text-muted-foreground font-medium mb-1">
+            Where to?
+          </label>
+          <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
+            {selectedLocation}
+          </span>
+        </div>
 
-          {/* Location Dropdown */}
-          {showLocationDropdown && (
-            <div
-              className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 z-50 w-full md:w-96 max-h-[28rem] overflow-y-auto border border-card-border"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="mb-3">
-                <input
-                  type="text"
-                  placeholder="Search destinations..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground"
-                  autoFocus
-                />
-              </div>
+        {/* Location Dropdown */}
+        {showLocationDropdown && (
+          <div
+            className="absolute top-full left-0 right-0 md:right-auto mt-2 bg-card rounded-lg shadow-2xl p-4 z-50 w-full md:w-96 max-h-[28rem] overflow-y-auto border border-card-border"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3">
+              <input
+                type="text"
+                placeholder="Search destinations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 border border-card-border bg-background text-foreground rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-muted-foreground"
+                autoFocus
+              />
+            </div>
 
-              {/* Recent Searches */}
-              {!searchQuery && recentSearches.length > 0 && (
-                <div className="mb-4">
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-1">
-                    Recent Searches
-                  </h3>
-                  {recentSearches.slice(0, 3).map((recentSearch) => (
+            {/* Recent Searches */}
+            {!searchQuery && recentSearches.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-1">
+                  Recent Searches
+                </h3>
+                {recentSearches.slice(0, 3).map((recentSearch) => (
+                  <div
+                    key={recentSearch.id}
+                    className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg group transition-colors"
+                  >
+                    <MdLocationOn className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                     <div
-                      key={recentSearch.id}
-                      className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg group transition-colors"
-                    >
-                      <MdLocationOn className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <div
-                        className="flex-1 min-w-0 cursor-pointer"
-                        onClick={() => {
-                          setSelectedLocation(recentSearch.location);
-                          setSearchQuery("");
-                          setShowLocationDropdown(false);
-                        }}
-                      >
-                        <div className="text-sm text-card-foreground truncate">
-                          {recentSearch.location}
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          searchStorage.remove(recentSearch.id);
-                          setRecentSearches(searchStorage.get());
-                        }}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-background rounded transition-opacity"
-                        aria-label="Remove"
-                      >
-                        <MdClose className="w-4 h-4 text-muted-foreground" />
-                      </button>
-                    </div>
-                  ))}
-                  {recentSearches.length > 0 && searchQuery === "" && (
-                    <div className="border-t border-card-border my-3" />
-                  )}
-                </div>
-              )}
-
-              {/* Loading State */}
-              {isLoading && searchQuery && (
-                <div className="flex items-center justify-center py-8 text-muted-foreground">
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  <span className="text-sm">Searching...</span>
-                </div>
-              )}
-
-              {/* Suggestions from Backend */}
-              {!isLoading && searchQuery && suggestions.length > 0 && (
-                <div>
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-1">
-                    Suggestions
-                  </h3>
-                  {suggestions.map((suggestion) => (
-                    <div
-                      key={suggestion.id}
+                      className="flex-1 min-w-0 cursor-pointer"
                       onClick={() => {
-                        setSelectedLocation(suggestion.displayName);
+                        setSelectedLocation(recentSearch.location);
                         setSearchQuery("");
                         setShowLocationDropdown(false);
                       }}
-                      className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg cursor-pointer transition-colors"
                     >
-                      <MdLocationOn className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm text-card-foreground truncate">
-                          {suggestion.displayName}
-                        </div>
+                      <div className="text-sm text-card-foreground truncate">
+                        {recentSearch.location}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        searchStorage.remove(recentSearch.id);
+                        setRecentSearches(searchStorage.get());
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1 hover:bg-background rounded transition-opacity"
+                      aria-label="Remove"
+                    >
+                      <MdClose className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  </div>
+                ))}
+                {recentSearches.length > 0 && searchQuery === "" && (
+                  <div className="border-t border-card-border my-3" />
+                )}
+              </div>
+            )}
 
-              {/* No Results */}
-              {!isLoading && searchQuery && suggestions.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <MdLocationOn className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No locations found</p>
-                </div>
-              )}
+            {/* Loading State */}
+            {isLoading && searchQuery && (
+              <div className="flex items-center justify-center py-8 text-muted-foreground">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                <span className="text-sm">Searching...</span>
+              </div>
+            )}
 
-              {/* Error State */}
-              {error && (
-                <div className="text-center py-8 text-red-500">
-                  <p className="text-sm">Failed to load suggestions</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            {/* Suggestions from Backend */}
+            {!isLoading && searchQuery && suggestions.length > 0 && (
+              <div>
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-1">
+                  Suggestions
+                </h3>
+                {suggestions.map((suggestion) => (
+                  <div
+                    key={suggestion.id}
+                    onClick={() => {
+                      setSelectedLocation(suggestion.displayName);
+                      setSearchQuery("");
+                      setShowLocationDropdown(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg cursor-pointer transition-colors"
+                  >
+                    <MdLocationOn className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-card-foreground truncate">
+                        {suggestion.displayName}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
-        {/* Dates */}
-        <div
-          ref={datesRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-card-border cursor-pointer hover:bg-muted transition-colors"
-          onClick={() => {
-            setShowDatesDropdown(!showDatesDropdown);
-            setShowLocationDropdown(false);
-            setShowTravelersDropdown(false);
-          }}
-        >
-          <MdCalendarToday className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
-          <div className="flex flex-col min-w-0 flex-1">
-            <label className="text-xs text-muted-foreground font-medium mb-1">
-              Dates
-            </label>
-            <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
-              {formatDateRange(dateRange)}
-            </span>
+            {/* No Results */}
+            {!isLoading && searchQuery && suggestions.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <MdLocationOn className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No locations found</p>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+              <div className="text-center py-8 text-red-500">
+                <p className="text-sm">Failed to load suggestions</p>
+              </div>
+            )}
           </div>
+        )}
+      </div>
 
-          {/* Dates Dropdown */}
-          {showDatesDropdown && (
-            <div
-              className="absolute top-full left-0 md:left-1/2 md:-translate-x-1/2 mt-4 z-50"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <DateRangePicker
-                date={dateRange}
-                setDate={setDateRange}
-                className="w-auto"
-              />
-            </div>
-          )}
+      {/* Dates */}
+      <div
+        ref={datesRef}
+        className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 border-b md:border-b-0 md:border-r border-card-border cursor-pointer hover:bg-muted transition-colors"
+        onClick={() => {
+          setShowDatesDropdown(!showDatesDropdown);
+          setShowLocationDropdown(false);
+          setShowTravelersDropdown(false);
+        }}
+      >
+        <MdCalendarToday className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
+        <div className="flex flex-col min-w-0 flex-1">
+          <label className="text-xs text-muted-foreground font-medium mb-1">
+            Dates
+          </label>
+          <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
+            {formatDateRange(dateRange)}
+          </span>
         </div>
 
-        {/* Travelers */}
-        <div
-          ref={travelersRef}
-          className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 cursor-pointer hover:bg-muted transition-colors rounded-b-xl md:rounded-b-none"
-          onClick={() => {
-            setShowTravelersDropdown(!showTravelersDropdown);
-            setShowLocationDropdown(false);
-            setShowDatesDropdown(false);
-          }}
-        >
-          <MdPerson className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
-          <div className="flex flex-col min-w-0 flex-1">
-            <label className="text-xs text-muted-foreground font-medium mb-1">
+        {/* Dates Dropdown */}
+        {showDatesDropdown && (
+          <div
+            className="absolute top-full left-0 md:left-1/2 md:-translate-x-1/2 mt-4 z-50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DateRangePicker
+              date={dateRange}
+              setDate={setDateRange}
+              className="w-auto"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Travelers */}
+      <div
+        ref={travelersRef}
+        className="relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-5 lg:px-6 py-2.5 sm:py-3 md:py-3 flex-1 cursor-pointer hover:bg-muted transition-colors rounded-b-xl md:rounded-b-none"
+        onClick={() => {
+          setShowTravelersDropdown(!showTravelersDropdown);
+          setShowLocationDropdown(false);
+          setShowDatesDropdown(false);
+        }}
+      >
+        <MdPerson className="text-xl sm:text-2xl text-muted-foreground flex-shrink-0" />
+        <div className="flex flex-col min-w-0 flex-1">
+          <label className="text-xs text-muted-foreground font-medium mb-1">
+            Travelers
+          </label>
+          <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
+            {adults} traveler{adults > 1 ? "s" : ""}, {rooms} room
+            {rooms > 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {/* Travelers Dropdown */}
+        {showTravelersDropdown && (
+          <div
+            className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-semibold mb-4 text-card-foreground">
               Travelers
-            </label>
-            <span className="text-xs sm:text-sm font-medium text-card-foreground truncate">
-              {adults} traveler{adults > 1 ? "s" : ""}, {rooms} room
-              {rooms > 1 ? "s" : ""}
-            </span>
-          </div>
+            </h3>
 
-          {/* Travelers Dropdown */}
-          {showTravelersDropdown && (
-            <div
-              className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="font-semibold mb-4 text-card-foreground">
-                Travelers
-              </h3>
-
-              <div className="space-y-4">
-                {/* Adults */}
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="font-medium text-card-foreground">
-                      Adults
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Ages 18 or above
-                    </div>
+            <div className="space-y-4">
+              {/* Adults */}
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-medium text-card-foreground">
+                    Adults
                   </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setAdults(Math.max(1, adults - 1))}
-                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-                      disabled={adults <= 1}
-                    >
-                      -
-                    </button>
-                    <span className="w-8 text-center font-medium text-foreground">
-                      {adults}
-                    </span>
-                    <button
-                      onClick={() => setAdults(adults + 1)}
-                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground"
-                    >
-                      +
-                    </button>
+                  <div className="text-sm text-muted-foreground">
+                    Ages 18 or above
                   </div>
                 </div>
-
-                {/* Rooms */}
-                <div className="flex justify-between items-center pt-4 border-t border-card-border">
-                  <div>
-                    <div className="font-medium text-card-foreground">
-                      Rooms
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setRooms(Math.max(1, rooms - 1))}
-                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
-                      disabled={rooms <= 1}
-                    >
-                      -
-                    </button>
-                    <span className="w-8 text-center font-medium text-foreground">
-                      {rooms}
-                    </span>
-                    <button
-                      onClick={() => setRooms(rooms + 1)}
-                      className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground"
-                    >
-                      +
-                    </button>
-                  </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setAdults(Math.max(1, adults - 1))}
+                    className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+                    disabled={adults <= 1}
+                  >
+                    -
+                  </button>
+                  <span className="w-8 text-center font-medium text-foreground">
+                    {adults}
+                  </span>
+                  <button
+                    onClick={() => setAdults(adults + 1)}
+                    className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowTravelersDropdown(false)}
-                className="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Done
-              </button>
+              {/* Rooms */}
+              <div className="flex justify-between items-center pt-4 border-t border-card-border">
+                <div>
+                  <div className="font-medium text-card-foreground">
+                    Rooms
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setRooms(Math.max(1, rooms - 1))}
+                    className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
+                    disabled={rooms <= 1}
+                  >
+                    -
+                  </button>
+                  <span className="w-8 text-center font-medium text-foreground">
+                    {rooms}
+                  </span>
+                  <button
+                    onClick={() => setRooms(rooms + 1)}
+                    className="w-8 h-8 rounded-full border-2 border-card-border hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-foreground"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Search Button */}
-        <button
-          onClick={handleSearch}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-3.5 rounded-xl md:rounded-full font-semibold transition-colors flex-shrink-0 mt-2 md:mt-0 md:ml-2 shadow-md text-sm sm:text-base w-full md:w-auto"
-        >
-          Search
-        </button>
+            <button
+              onClick={() => setShowTravelersDropdown(false)}
+              className="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Done
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Search Button */}
+      <button
+        onClick={handleSearch}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-3.5 rounded-xl md:rounded-full font-semibold transition-colors flex-shrink-0 mt-2 md:mt-0 md:ml-2 shadow-md text-sm sm:text-base w-full md:w-auto"
+      >
+        Search
+      </button>
+    </div>
+  );
+
+  return (
+    <div
+      className={`relative ${className} ${hideOnMobile ? "hidden md:block" : ""}`}
+    >
+      {/* Desktop View */}
+      <div className="hidden md:block">
+        <FullSearchForm />
+      </div>
+
+      {/* Mobile View - Choice between full or compact */}
+      <div className="md:hidden">
+        {isMobileCompact ? (
+          <>
+            <button
+              onClick={() => setIsMobileDrawerOpen(true)}
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-card border border-card-border rounded-full shadow-sm hover:shadow-md transition-all text-sm group"
+            >
+              <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
+                <Search className="w-4 h-4 text-primary shrink-0" />
+                <div className="flex flex-col items-start min-w-0">
+                  <span className="font-bold text-card-foreground truncate w-full text-left">
+                    {selectedLocation}
+                  </span>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>{formatDateRange(dateRange)}</span>
+                    <span className="opacity-40">•</span>
+                    <span>
+                      {adults} traveler{adults > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-2 bg-muted rounded-full group-hover:bg-primary/5 transition-colors">
+                <MdCalendarToday className="w-4 h-4 text-muted-foreground" />
+              </div>
+            </button>
+
+            <AnimatePresence>
+              {isMobileDrawerOpen && (
+                <motion.div
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                  className="fixed inset-0 z-[100] bg-background flex flex-col pt-safe"
+                >
+                  <div className="flex items-center gap-4 px-4 h-16 border-b border-card-border shrink-0">
+                    <button
+                      onClick={() => setIsMobileDrawerOpen(false)}
+                      className="p-2 -ml-2 rounded-full hover:bg-muted"
+                    >
+                      <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <h2 className="font-bold text-lg">Modify trip</h2>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                    <FullSearchForm />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>
+        ) : (
+          <FullSearchForm />
+        )}
       </div>
     </div>
   );

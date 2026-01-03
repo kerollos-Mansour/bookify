@@ -255,7 +255,7 @@ export default function SearchResult() {
         {/* Sticky Search Bar */}
         <div className="sticky top-0 z-50 bg-card border-b border-card-border shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <SearchBar />
+            <SearchBar isMobileCompact={true} />
           </div>
         </div>
 
