@@ -15,7 +15,7 @@ import ProfileTab from "../../components/account/profileTab/profileTab";
 import TabEmptyState from "../../components/account/tabEmptyState/tabEmptyState";
 import SettingTap from "../../components/account/settingTap/settingTap";
 import PageTransition from "../../components/pageTransition/pageTransition";
-import PaymentTap from "../../components/paymentTap/paymentTap";
+import PaymentTap from "../../components/paymentTap/PaymentTap";
 import CommunicationsTab from "../../components/account/communicationsTab/communicationsTab";
 import CouponsTab from "../../components/account/couponsTab/couponsTab";
 import ReviewsTab from "../../components/account/reviewsTab/reviewsTab";

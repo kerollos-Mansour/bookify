@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useFavorites } from "../../context/favoritesContext";
 
-export default function HotelCard({ cardData, hotelData }) {
+export default function HotelCard({ cardData }) {
   const { favorites, addFavorite, setOpenSidebar } = useFavorites();
   const isFavorite = favorites?.some((f) => f.id === cardData.id) ?? false;
   const [currentImage, setCurrentImage] = useState(0);

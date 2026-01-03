@@ -6,7 +6,7 @@ import SearchResults from "../pages/searchResult/SearchResults";
 import PaymentSuccess from "../pages/paymentSuccess/PaymentSuccess";
 import BookingInfo from "../pages/paymentSuccess/BookingInfo";
 import PropertyDetails from "../pages/propertyDetails/PropertyDetails";
-import Login from "../pages/login/login";
+import Login from "../pages/login/Login";
 import SignUp from "../pages/signUp/SignUp";
 import NotFound from "../pages/notFound/NotFound";
 import Account from "../pages/account/account";

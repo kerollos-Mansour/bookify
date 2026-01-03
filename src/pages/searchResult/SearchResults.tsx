@@ -1,8 +1,8 @@
 import { SearchBar } from "../../components/searchBar/SearchBar";
-import HotelCard from "../../components/HotelCard/HotelCard";
+import HotelCard from "../../components/hotelCard/HotelCard";
 import { useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
-import Map from "../../components/Map/Map";
+import Map from "../../components/map/map";
 import Tabs from "../../components/filterProperties/tabs/Tabs";
 import FilterProperties, {
   PropertyFilters,
