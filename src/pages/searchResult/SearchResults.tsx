@@ -1,8 +1,8 @@
 import { SearchBar } from "../../components/searchBar/SearchBar";
-import HotelCard from "../../components/hotelCard/HotelCard";
+import HotelCard from "../../components/HotelCard/HotelCard";
 import { useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
-import Map from "../../components/map/map";
+import Map from "../../components/Map/Map";
 import Tabs from "../../components/filterProperties/tabs/Tabs";
 import FilterProperties, {
   PropertyFilters,
@@ -23,22 +23,11 @@ const getNightlyRate = (hotel: Hotel) =>
   hotel.nightlyPrice ?? hotel.lowRate ?? hotel.highRate ?? 0;
 const toCardData = (hotel: Hotel): HotelCardData => {
   const nightly = getNightlyRate(hotel);
-  const originalNightly = hotel.highRate ?? nightly;
+  const total = hotel.highRate ?? nightly;
   // hotelDetails can be string or array based on API. Safeguard it.
   const detail = Array.isArray(hotel.hotelDetails)
     ? hotel.hotelDetails[0]
     : null;
-
-  const getRatingText = (rating: number) => {
-    if (rating >= 4.5) return "Exceptional";
-    if (rating >= 4.0) return "Excellent";
-    if (rating >= 3.5) return "Very Good";
-    if (rating >= 3.0) return "Good";
-    return "Pleasant";
-  };
-
-  const reviewCount = detail?.reviewCount ?? hotel.confidenceRating ?? 0;
-  const rating = Number(hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0);
 
   return {
     id: hotel._id,
@@ -57,19 +46,20 @@ const toCardData = (hotel: Hotel): HotelCardData => {
       .join(", "),
     Amenities: detail?.amenities?.slice(0, 3) || [],
     reviews: {
-      reviewsCount: reviewCount,
-      avgReview: rating,
-      ratingText: getRatingText(rating),
+      reviewsCount: detail?.reviewCount ?? 0,
+      avgReview: Number(hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0),
     },
     withFees: true,
     prices: {
-      day: Number(nightly), // In search result, 'day' is used as the current price in HotelCard
+      day: Number(total),
       nightly: Number(nightly),
-      originalPrice: Number(originalNightly),
       offer:
-        originalNightly > nightly
-          ? Math.round(((originalNightly - nightly) / originalNightly) * 100)
-          : 0,
+        total && nightly
+          ? Math.max(
+            5,
+            Math.min(40, Math.round(((total - nightly) / total) * 100))
+          )
+          : 10,
     },
     vip: (hotel.confidenceRating ?? 0) > 50,
     featured: !!hotel.featured,
@@ -84,7 +74,6 @@ export default function SearchResult() {
   const [filters, setFilters] = useState<SearchFilters>({
     propertyName: "",
     selectedTypes: [],
-    minPrice: 0,
     maxPrice: 0,
     minRating: 0,
     amenities: [],
@@ -97,12 +86,32 @@ export default function SearchResult() {
   const searchParams = useMemo(() => {
     const params = new URLSearchParams(search);
 
-    // Map activeTab to propertyCategory
-    let category: string | undefined = undefined;
-    if (activeTab === "hotels") category = "hotel";
-    if (activeTab === "homes") category = "home";
+    // Logic for combining Tab and Sidebar filters (Intersection)
+    let finalTypes: string[] | undefined;
+    let tabTypes: string[] | undefined = undefined;
 
-    return {
+    if (activeTab === "hotels") tabTypes = ["hotel", "resort"];
+    if (activeTab === "homes") tabTypes = ["home", "apartment", "villa", "cabin", "cottage"];
+
+    if (tabTypes) {
+      if (filters.selectedTypes?.length) {
+        // Intersect: Only allow types that are in BOTH lists (case-insensitive)
+        finalTypes = tabTypes.filter(t =>
+          filters.selectedTypes.some(selected => selected.toLowerCase() === t.toLowerCase())
+        );
+
+        // If user selected a type NOT in this tab (e.g. "Home" while on "Hotels" tab)
+        // We must send a value that matches NOTHING instead of undefined
+        if (finalTypes.length === 0) finalTypes = ["__no_match__"];
+      } else {
+        finalTypes = tabTypes;
+      }
+    } else {
+      // All Stays tab -> use sidebar selection
+      finalTypes = filters.selectedTypes?.length ? filters.selectedTypes : undefined;
+    }
+
+    const rawParams = {
       location: params.get("location") || undefined,
       city: params.get("city") || undefined,
       country: params.get("country") || undefined,
@@ -110,19 +119,35 @@ export default function SearchResult() {
       checkOut: params.get("checkOut") || undefined,
       adults: params.get("adults") ? Number(params.get("adults")) : undefined,
       rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-      minRate: params.get("minRate")
-        ? Number(params.get("minRate"))
-        : undefined,
+      minRate: params.get("minRate") ? Number(params.get("minRate")) : undefined,
       maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
-      search: params.get("location") || undefined, // Main search from SearchBar (hotel name or location)
-      name: filters.propertyName || undefined,      // Specific hotel name from sidebar
-      amenities: filters.amenities?.length ? filters.amenities : undefined,
-      propertyCategory: category,
+      search: filters.propertyName || undefined,
+      hotelRating: filters.minRating > 0 ? filters.minRating : undefined,
       sort: params.get("sort") || undefined,
       page: params.get("page") ? Number(params.get("page")) : 1,
       limit: params.get("limit") ? Number(params.get("limit")) : 20,
+      amenities: filters.amenities?.filter(Boolean).length ? filters.amenities.filter(Boolean).join(",") : undefined,
+      types: finalTypes?.filter(Boolean).length ? finalTypes.filter(Boolean).join(",") : undefined,
     };
-  }, [search, filters.maxPrice, filters.propertyName, activeTab, filters.amenities]);
+
+    const cleanParams: Record<string, any> = {};
+    Object.entries(rawParams).forEach(([key, val]) => {
+      if (val !== undefined && val !== null && val !== "") {
+        cleanParams[key] = val;
+      }
+    });
+
+    return cleanParams as any;
+  }, [
+    search,
+    activeTab,
+    filters.maxPrice,
+    filters.propertyName,
+    filters.minRating,
+    filters.amenities,
+    filters.selectedTypes
+  ]);
+
   const {
     data: hotels = [],
     isLoading,
@@ -219,7 +244,6 @@ export default function SearchResult() {
       propertyName: "",
       selectedTypes: [],
       minRating: 0,
-      minPrice: 0,
       maxPrice: 3000,
       amenities: [],
     }));
@@ -231,7 +255,7 @@ export default function SearchResult() {
         {/* Sticky Search Bar */}
         <div className="sticky top-0 z-50 bg-card border-b border-card-border shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <SearchBar isMobileCompact={true} />
+            <SearchBar />
           </div>
         </div>
 
@@ -274,7 +298,6 @@ export default function SearchResult() {
                 <FilterProperties
                   filters={{
                     selectedTypes: filters.selectedTypes,
-                    minPrice: filters.minPrice,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
                     amenities: filters.amenities,
@@ -389,7 +412,6 @@ export default function SearchResult() {
                 <FilterProperties
                   filters={{
                     selectedTypes: filters.selectedTypes,
-                    minPrice: filters.minPrice,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
                     amenities: filters.amenities,
