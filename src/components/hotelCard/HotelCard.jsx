@@ -121,47 +121,59 @@ export default function HotelCard({ cardData }) {
         {/* Bottom Section: Rating and Price */}
         <div className="flex items-end justify-between gap-4 mt-auto pt-4 border-t border-card-border">
           {/* Rating */}
-          <div className="flex items-center gap-2.5">
-            <div className="bg-blue-600 text-white px-3 py-2 rounded-lg text-base font-bold">
-              {cardData.reviews.avgReview.toFixed(1)}
+          {cardData.reviews ? (
+            <div className="flex items-center gap-2.5">
+              <div className="bg-blue-600 text-white px-3 py-2 rounded-lg text-base font-bold">
+                {cardData.reviews.avgReview.toFixed(1)}
+              </div>
+              <div>
+                <p className="font-semibold text-card-foreground text-sm">
+                  {cardData.reviews.ratingText || "Excellent"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {cardData.reviews.reviewsCount.toLocaleString()} reviews
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-card-foreground text-sm">Excellent</p>
-              <p className="text-xs text-muted-foreground">
-                {cardData.reviews.reviewsCount.toLocaleString()} reviews
-              </p>
-            </div>
-          </div>
+          ) : null}
 
           {/* Prices */}
           <div className="text-right">
             {/* Discount Badge */}
-            <div className="flex items-center gap-2 justify-end mb-1.5">
-              <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full">
-                {cardData.prices.offer}% off
-              </span>
-            </div>
+            {cardData.prices.offer > 0 && (
+              <div className="flex items-center gap-2 justify-end mb-1.5">
+                <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                  {cardData.prices.offer}% off
+                </span>
+              </div>
+            )}
 
             {/* Nightly Rate */}
-            <p className="text-sm text-muted-foreground mb-0.5">
-              <span className="text-xl font-bold text-card-foreground">
-                EGP {cardData.prices.nightly}
-              </span>{" "}
-              <span className="text-sm font-normal">/ night</span>
-            </p>
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-2">
+                {cardData.prices.originalPrice > cardData.prices.nightly && (
+                  <span className="text-sm text-muted-foreground line-through">
+                    EGP {cardData.prices.originalPrice.toLocaleString()}
+                  </span>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  <span className="text-xl font-bold text-card-foreground">
+                    EGP {cardData.prices.nightly.toLocaleString()}
+                  </span>{" "}
+                  <span className="text-sm font-normal">/ night</span>
+                </p>
+              </div>
 
-            {/* Total Price */}
-            <div className="flex items-center gap-2 justify-end">
-              <span className="text-sm text-muted-foreground line-through">
-                EGP {cardData.prices.originalPrice}
-              </span>
-              <span className="text-lg font-bold text-card-foreground">
-                {cardData.prices.day}
-              </span>
+              {/* Total Price (Only shown if different from nightly) */}
+              {cardData.prices.day > 0 && cardData.prices.day !== cardData.prices.nightly && (
+                <div className="mt-1">
+                  <span className="text-lg font-bold text-card-foreground">
+                    EGP {cardData.prices.day.toLocaleString()}
+                  </span>
+                  <p className="text-xs text-muted-foreground">total price</p>
+                </div>
+              )}
             </div>
-
-            {/* Total Label */}
-            <p className="text-xs text-muted-foreground mt-0.5">total price</p>
 
             {cardData.withFees && (
               <p className="text-xs text-muted-foreground mt-1">

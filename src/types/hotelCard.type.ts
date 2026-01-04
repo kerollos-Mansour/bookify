@@ -10,12 +10,14 @@ export type HotelCardData = {
   reviews: {
     reviewsCount: number;
     avgReview: number;
+    ratingText?: string;
   };
   withFees: boolean;
   prices: {
     day: number;
     nightly: number;
     offer: number;
+    originalPrice?: number;
   };
   vip: boolean;
   featured?: boolean;
