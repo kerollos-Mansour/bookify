@@ -30,7 +30,7 @@ interface FAQ {
   answer: string;
 }
 
-const SUPPORT_AGENT_ID = "6952ea4876f3c3957941b93b";
+const SUPPORT_AGENT_ID = "6949337c106a70a2a131bcbd";
 
 export default function HelpTab() {
   const toast = useToast();

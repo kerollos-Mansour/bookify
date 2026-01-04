@@ -13,8 +13,7 @@ interface UseLocationAutocompleteResult {
 /**
  * Hook to fetch location suggestions from backend hotel API
  * Searches hotels and extracts unique cities for autocomplete
- */
-export function useLocationAutocomplete(
+ */export function useLocationAutocomplete(
   query: string
 ): UseLocationAutocompleteResult {
   const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
@@ -36,11 +35,13 @@ export function useLocationAutocomplete(
 
       try {
         const params = new URLSearchParams({
-          location: debouncedQuery,
+          search: debouncedQuery, // 🔑 search by name  
           limit: "10",
         });
 
-        const response = await fetch(`${API_BASE_URL}/hotels?${params}`);
+        const response = await fetch(
+          `http://localhost:5000/api/v1/hotels?${params}`
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch suggestions");
@@ -49,31 +50,48 @@ export function useLocationAutocomplete(
         const data = await response.json();
         const hotels = data.data?.hotels || [];
 
-        // Extract unique cities from hotels
         const uniqueLocations = new Map<string, LocationSuggestion>();
 
-        hotels.forEach((hotel: any) => {
-          const city = hotel.location?.city;
-          const country = hotel.location?.country || "";
+hotels.forEach((hotel: any) => {
+  const city = hotel.location?.city || "";
+  const country = hotel.location?.country || "";
+  const hotelName = hotel.name || "";
 
-          if (city) {
-            const key = `${city}-${country}`;
+  // Add city
+  if (city) {
+    const key = `city-${city}-${country}`;
+    if (!uniqueLocations.has(key)) {
+      uniqueLocations.set(key, {
+        id: key,
+        type: "city",
+        displayName: country ? `${city}, ${country}` : city,
+        city,
+        country,
+      });
+    }
+  }
 
-            if (!uniqueLocations.has(key)) {
-              uniqueLocations.set(key, {
-                id: key,
-                displayName: country ? `${city}, ${country}` : city,
-                city: city,
-                country: country,
-              });
-            }
-          }
-        });
+  // Add hotel
+  if (hotelName) {
+    const key = `hotel-${hotelName}-${city}`;
+    if (!uniqueLocations.has(key)) {
+      uniqueLocations.set(key, {
+        id: key,
+        type: "hotel",
+        displayName: hotelName,
+        city,
+        country,
+        hotelName,
+      });
+    }
+  }
+});
 
-        setSuggestions(Array.from(uniqueLocations.values()));
+setSuggestions(Array.from(uniqueLocations.values()));
+
       } catch (err) {
-        console.error("Location autocomplete error:", err);
-        setError(err instanceof Error ? err.message : "Failed to fetch");
+        console.error("Hotel name autocomplete error:", err);
+        setError("Failed to fetch hotels");
         setSuggestions([]);
       } finally {
         setIsLoading(false);

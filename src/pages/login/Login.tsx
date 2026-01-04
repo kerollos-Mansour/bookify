@@ -36,8 +36,8 @@ export default function Login() {
       // Note: result.data contains user and accessToken based on your interface
       dispatch(
         setCredentials({
-          user: result.data.user,
-          accessToken: result.data.accessToken,
+          user: result.user,
+          accessToken: result.accessToken,
         })
       );
       navigate("/");
