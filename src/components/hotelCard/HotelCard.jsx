@@ -1,8 +1,9 @@
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useFavorites } from "../../context/favoritesContext";
+import { visitedStorage } from "../../utils/visitedStorage";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function HotelCard({ cardData }) {
   const { favorites, addFavorite, setOpenSidebar } = useFavorites();
@@ -38,6 +39,18 @@ export default function HotelCard({ cardData }) {
       setShowToast(true);
     }
   };
+  const handleVisit = () => {
+    visitedStorage.add({
+      id: cardData.id,
+      title: cardData.title,
+      image: cardData.img.img[0],
+      rating: cardData.reviews.avgReview,
+      address: cardData.location,
+      price: cardData.prices.nightly,
+      vip: cardData.vip,
+      bestSeller: cardData.featured,
+    });
+  };
 
   useEffect(() => {
     if (showToast) {
@@ -49,7 +62,11 @@ export default function HotelCard({ cardData }) {
   return (
     <div className="mb-4 w-full h-64 mx-auto bg-card rounded-2xl border border-card-border overflow-hidden font-sans flex flex-row hover:shadow-lg transition-shadow duration-300">
       <div className="relative w-full lg:w-80 h-56 lg:h-auto flex-shrink-0">
-        <Link to={`/property/${cardData.id}`} className="block w-full h-full">
+        <Link
+          to={`/property/${cardData.id}`}
+          className="block w-full h-full"
+          onClick={handleVisit}
+        >
           <img
             className="w-full h-full object-cover"
             src={cardData.img.img[currentImage]}
@@ -99,11 +116,17 @@ export default function HotelCard({ cardData }) {
       <div className="p-5 lg:p-6 w-full flex flex-col">
         <div className="flex-1">
           <h3 className="text-xl font-bold text-card-foreground mb-1">
-            <Link to={`/property/${cardData.id}`} className="hover:text-blue-600 transition-colors">
+            <Link
+              to={`/property/${cardData.id}`}
+              className="hover:text-blue-600 transition-colors"
+              onClick={handleVisit}
+            >
               {cardData.title}
             </Link>
           </h3>
-          <p className="text-sm text-muted-foreground mb-3">{cardData.location}</p>
+          <p className="text-sm text-muted-foreground mb-3">
+            {cardData.location}
+          </p>
 
           {/* Amenities */}
           <div className="flex flex-wrap gap-2 mb-4">
@@ -165,14 +188,15 @@ export default function HotelCard({ cardData }) {
               </div>
 
               {/* Total Price (Only shown if different from nightly) */}
-              {cardData.prices.day > 0 && cardData.prices.day !== cardData.prices.nightly && (
-                <div className="mt-1">
-                  <span className="text-lg font-bold text-card-foreground">
-                    EGP {cardData.prices.day.toLocaleString()}
-                  </span>
-                  <p className="text-xs text-muted-foreground">total price</p>
-                </div>
-              )}
+              {cardData.prices.day > 0 &&
+                cardData.prices.day !== cardData.prices.nightly && (
+                  <div className="mt-1">
+                    <span className="text-lg font-bold text-card-foreground">
+                      EGP {cardData.prices.day.toLocaleString()}
+                    </span>
+                    <p className="text-xs text-muted-foreground">total price</p>
+                  </div>
+                )}
             </div>
 
             {cardData.withFees && (

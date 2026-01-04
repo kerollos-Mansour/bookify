@@ -1,8 +1,8 @@
 import { SearchBar } from "../../components/searchBar/SearchBar";
-import HotelCard from "../../components/HotelCard/HotelCard";
+import HotelCard from "../../components/hotelCard/HotelCard";
 import { useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
-import Map from "../../components/Map/Map";
+import Map from "../../components/map/map";
 import Tabs from "../../components/filterProperties/tabs/Tabs";
 import FilterProperties, {
   PropertyFilters,
@@ -36,8 +36,8 @@ const toCardData = (hotel: Hotel): HotelCardData => {
         hotel.images && hotel.images.length > 0
           ? hotel.images
           : [
-            "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-          ],
+              "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+            ],
       alt: hotel.name,
     },
     title: hotel.name,
@@ -56,9 +56,9 @@ const toCardData = (hotel: Hotel): HotelCardData => {
       offer:
         total && nightly
           ? Math.max(
-            5,
-            Math.min(40, Math.round(((total - nightly) / total) * 100))
-          )
+              5,
+              Math.min(40, Math.round(((total - nightly) / total) * 100))
+            )
           : 10,
     },
     vip: (hotel.confidenceRating ?? 0) > 50,
@@ -91,13 +91,16 @@ export default function SearchResult() {
     let tabTypes: string[] | undefined = undefined;
 
     if (activeTab === "hotels") tabTypes = ["hotel", "resort"];
-    if (activeTab === "homes") tabTypes = ["home", "apartment", "villa", "cabin", "cottage"];
+    if (activeTab === "homes")
+      tabTypes = ["home", "apartment", "villa", "cabin", "cottage"];
 
     if (tabTypes) {
       if (filters.selectedTypes?.length) {
         // Intersect: Only allow types that are in BOTH lists (case-insensitive)
-        finalTypes = tabTypes.filter(t =>
-          filters.selectedTypes.some(selected => selected.toLowerCase() === t.toLowerCase())
+        finalTypes = tabTypes.filter((t) =>
+          filters.selectedTypes.some(
+            (selected) => selected.toLowerCase() === t.toLowerCase()
+          )
         );
 
         // If user selected a type NOT in this tab (e.g. "Home" while on "Hotels" tab)
@@ -108,7 +111,9 @@ export default function SearchResult() {
       }
     } else {
       // All Stays tab -> use sidebar selection
-      finalTypes = filters.selectedTypes?.length ? filters.selectedTypes : undefined;
+      finalTypes = filters.selectedTypes?.length
+        ? filters.selectedTypes
+        : undefined;
     }
 
     const rawParams = {
@@ -119,15 +124,21 @@ export default function SearchResult() {
       checkOut: params.get("checkOut") || undefined,
       adults: params.get("adults") ? Number(params.get("adults")) : undefined,
       rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-      minRate: params.get("minRate") ? Number(params.get("minRate")) : undefined,
+      minRate: params.get("minRate")
+        ? Number(params.get("minRate"))
+        : undefined,
       maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
       search: filters.propertyName || undefined,
       hotelRating: filters.minRating > 0 ? filters.minRating : undefined,
       sort: params.get("sort") || undefined,
       page: params.get("page") ? Number(params.get("page")) : 1,
       limit: params.get("limit") ? Number(params.get("limit")) : 20,
-      amenities: filters.amenities?.filter(Boolean).length ? filters.amenities.filter(Boolean).join(",") : undefined,
-      types: finalTypes?.filter(Boolean).length ? finalTypes.filter(Boolean).join(",") : undefined,
+      amenities: filters.amenities?.filter(Boolean).length
+        ? filters.amenities.filter(Boolean).join(",")
+        : undefined,
+      types: finalTypes?.filter(Boolean).length
+        ? finalTypes.filter(Boolean).join(",")
+        : undefined,
     };
 
     const cleanParams: Record<string, any> = {};
@@ -145,7 +156,7 @@ export default function SearchResult() {
     filters.propertyName,
     filters.minRating,
     filters.amenities,
-    filters.selectedTypes
+    filters.selectedTypes,
   ]);
 
   const {
@@ -189,12 +200,19 @@ export default function SearchResult() {
 
   // Reset type filters when switching tabs
   useEffect(() => {
-    setFilters(prev => ({ ...prev, selectedTypes: [] }));
+    setFilters((prev) => ({ ...prev, selectedTypes: [] }));
   }, [activeTab]);
 
   // Static property types to prevent options from disappearing when filtered
   useEffect(() => {
-    setPropertyTypeOptions(["Hotel", "Resort", "Apartment", "Villa", "Cabin", "Cottage"]);
+    setPropertyTypeOptions([
+      "Hotel",
+      "Resort",
+      "Apartment",
+      "Villa",
+      "Cabin",
+      "Cottage",
+    ]);
   }, []);
 
   const hotelCards = useMemo(
@@ -221,17 +239,18 @@ export default function SearchResult() {
             number
           ],
           title: card.title,
-          description: `${card.location || "Unknown"} • $${card.prices.nightly
-            }`,
+          description: `${card.location || "Unknown"} • $${
+            card.prices.nightly
+          }`,
         })),
     [hotelCards]
   );
 
   const mapCenter = mapMarkers.length
     ? {
-      latitude: mapMarkers[0].position[0],
-      longitude: mapMarkers[0].position[1],
-    }
+        latitude: mapMarkers[0].position[0],
+        longitude: mapMarkers[0].position[1],
+      }
     : undefined;
 
   const handleFilterChange = (updates: Partial<PropertyFilters>) => {
@@ -429,7 +448,8 @@ export default function SearchResult() {
                   onClick={() => setShowMobileFilters(false)}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-colors"
                 >
-                  Show {hotelCards.length} {hotelCards.length === 1 ? 'property' : 'properties'}
+                  Show {hotelCards.length}{" "}
+                  {hotelCards.length === 1 ? "property" : "properties"}
                 </button>
               </div>
             </div>

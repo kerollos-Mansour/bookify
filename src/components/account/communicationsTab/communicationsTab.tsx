@@ -258,7 +258,7 @@ export default function CommunicationsTab() {
         </section>
 
         {/* Notification Preferences */}
-        <section>
+        {/* <section>
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Notification Preferences
           </h3>
@@ -309,7 +309,7 @@ export default function CommunicationsTab() {
               {isLoading ? "Saving..." : "Save Preferences"}
             </button>
           </div>
-        </section>
+        </section> */}
       </div>
     </div>
   );

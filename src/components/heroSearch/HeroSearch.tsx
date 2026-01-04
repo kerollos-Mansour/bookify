@@ -1,8 +1,7 @@
 import { SearchBar } from "../searchBar/SearchBar";
 
 // Constants for maintainability
-const HERO_VIDEO =
-  "https://res.cloudinary.com/diftkhbq5/video/upload/v1767509716/Bookify_header_-_Made_with_Clipchamp_bwlq79.mp4";
+const HERO_IMAGE = "/hero-img.jpg";
 const CONTENT = {
   title: "Find Your Perfect Stay",
   description:
@@ -12,21 +11,18 @@ const CONTENT = {
 export function HeroSection() {
   return (
     <div className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] lg:min-h-[85vh] flex flex-col justify-center pb-20">
-      {/* Background Video */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-        aria-label="Hero background video"
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('${HERO_IMAGE}')`,
+        }}
+        role="img"
+        aria-label="Hero background"
       >
-        <source src={HERO_VIDEO} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-
-      {/* Dark Overlay Gradient - Fixed gradient class */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70" />
+        {/* Dark Overlay Gradient - Fixed gradient class */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70" />
+      </div>
 
       {/* Main Content */}
       <div className="relative z-10 pt-20 sm:pt-24 md:pt-32">
@@ -66,5 +62,5 @@ export function HeroSearch() {
         <HeroFloatingSearch />
       </div>
     </div>
-  );
+  )
 }
