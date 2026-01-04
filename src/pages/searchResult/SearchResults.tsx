@@ -23,11 +23,22 @@ const getNightlyRate = (hotel: Hotel) =>
   hotel.nightlyPrice ?? hotel.lowRate ?? hotel.highRate ?? 0;
 const toCardData = (hotel: Hotel): HotelCardData => {
   const nightly = getNightlyRate(hotel);
-  const total = hotel.highRate ?? nightly;
+  const originalNightly = hotel.highRate ?? nightly;
   // hotelDetails can be string or array based on API. Safeguard it.
   const detail = Array.isArray(hotel.hotelDetails)
     ? hotel.hotelDetails[0]
     : null;
+
+  const getRatingText = (rating: number) => {
+    if (rating >= 4.5) return "Exceptional";
+    if (rating >= 4.0) return "Excellent";
+    if (rating >= 3.5) return "Very Good";
+    if (rating >= 3.0) return "Good";
+    return "Pleasant";
+  };
+
+  const reviewCount = detail?.reviewCount ?? hotel.confidenceRating ?? 0;
+  const rating = Number(hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0);
 
   return {
     id: hotel._id,
@@ -46,20 +57,19 @@ const toCardData = (hotel: Hotel): HotelCardData => {
       .join(", "),
     Amenities: detail?.amenities?.slice(0, 3) || [],
     reviews: {
-      reviewsCount: detail?.reviewCount ?? 0,
-      avgReview: Number(hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0),
+      reviewsCount: reviewCount,
+      avgReview: rating,
+      ratingText: getRatingText(rating),
     },
     withFees: true,
     prices: {
-      day: Number(total),
+      day: Number(nightly), // In search result, 'day' is used as the current price in HotelCard
       nightly: Number(nightly),
+      originalPrice: Number(originalNightly),
       offer:
-        total && nightly
-          ? Math.max(
-            5,
-            Math.min(40, Math.round(((total - nightly) / total) * 100))
-          )
-          : 10,
+        originalNightly > nightly
+          ? Math.round(((originalNightly - nightly) / originalNightly) * 100)
+          : 0,
     },
     vip: (hotel.confidenceRating ?? 0) > 50,
     featured: !!hotel.featured,
@@ -74,6 +84,7 @@ export default function SearchResult() {
   const [filters, setFilters] = useState<SearchFilters>({
     propertyName: "",
     selectedTypes: [],
+    minPrice: 0,
     maxPrice: 0,
     minRating: 0,
     amenities: [],
@@ -83,7 +94,7 @@ export default function SearchResult() {
   const [locationFilter, setLocationFilter] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-const searchParams = useMemo(() => {
+  const searchParams = useMemo(() => {
     const params = new URLSearchParams(search);
 
     // Map activeTab to propertyCategory
@@ -92,26 +103,26 @@ const searchParams = useMemo(() => {
     if (activeTab === "homes") category = "home";
 
     return {
-        location: params.get("location") || undefined,
-        city: params.get("city") || undefined,
-        country: params.get("country") || undefined,
-        checkIn: params.get("checkIn") || undefined,
-        checkOut: params.get("checkOut") || undefined,
-        adults: params.get("adults") ? Number(params.get("adults")) : undefined,
-        rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-        minRate: params.get("minRate")
-            ? Number(params.get("minRate"))
-            : undefined,
-        maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
-        search: params.get("location") || undefined, // Main search from SearchBar (hotel name or location)
-        name: filters.propertyName || undefined,      // Specific hotel name from sidebar
-        amenities: filters.amenities?.length ? filters.amenities : undefined,
-        propertyCategory: category,
-        sort: params.get("sort") || undefined,
-        page: params.get("page") ? Number(params.get("page")) : 1,
-        limit: params.get("limit") ? Number(params.get("limit")) : 20,
+      location: params.get("location") || undefined,
+      city: params.get("city") || undefined,
+      country: params.get("country") || undefined,
+      checkIn: params.get("checkIn") || undefined,
+      checkOut: params.get("checkOut") || undefined,
+      adults: params.get("adults") ? Number(params.get("adults")) : undefined,
+      rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
+      minRate: params.get("minRate")
+        ? Number(params.get("minRate"))
+        : undefined,
+      maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
+      search: params.get("location") || undefined, // Main search from SearchBar (hotel name or location)
+      name: filters.propertyName || undefined,      // Specific hotel name from sidebar
+      amenities: filters.amenities?.length ? filters.amenities : undefined,
+      propertyCategory: category,
+      sort: params.get("sort") || undefined,
+      page: params.get("page") ? Number(params.get("page")) : 1,
+      limit: params.get("limit") ? Number(params.get("limit")) : 20,
     };
-}, [search, filters.maxPrice, filters.propertyName, activeTab, filters.amenities]);
+  }, [search, filters.maxPrice, filters.propertyName, activeTab, filters.amenities]);
   const {
     data: hotels = [],
     isLoading,
@@ -208,6 +219,7 @@ const searchParams = useMemo(() => {
       propertyName: "",
       selectedTypes: [],
       minRating: 0,
+      minPrice: 0,
       maxPrice: 3000,
       amenities: [],
     }));
@@ -262,6 +274,7 @@ const searchParams = useMemo(() => {
                 <FilterProperties
                   filters={{
                     selectedTypes: filters.selectedTypes,
+                    minPrice: filters.minPrice,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
                     amenities: filters.amenities,
@@ -376,6 +389,7 @@ const searchParams = useMemo(() => {
                 <FilterProperties
                   filters={{
                     selectedTypes: filters.selectedTypes,
+                    minPrice: filters.minPrice,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
                     amenities: filters.amenities,
