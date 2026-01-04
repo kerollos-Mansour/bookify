@@ -78,10 +78,10 @@ export default function PaymentTap() {
     };
 
     return (
-        <div className="mx-auto bg-card rounded-2xl shadow-xl overflow-hidden">
+        <div className="mx-auto bg-card rounded-2xl shadow-xl overflow-hidden max-w-full">
             <div className="p-8">
                 {/* Card Preview */}
-                <div className="relative bg-linear-to-br from-blue-600 to-indigo-800 rounded-2xl p-8 text-white mb-8 shadow-2xl h-56 w-100 mx-auto">
+                <div className="relative bg-linear-to-br from-blue-600 to-indigo-800 rounded-2xl p-8 text-white mb-8 shadow-2xl h-56 max-w-100 w-full mx-auto">
                     {/* Chip & Contactless */}
                     <div className="absolute top-6 left-6 flex gap-4">
                         <svg
@@ -110,7 +110,7 @@ export default function PaymentTap() {
                     </div>
 
                     {/* Card Number */}
-                    <div className="absolute top-24 left-8 right-8 font-mono text-2xl tracking-wider">
+                    <div className="absolute top-24 left-8 right-8 font-mono not-sm:text-2xl sm:text-md tracking-wider">
                         {cardPreview.number}
                     </div>
 

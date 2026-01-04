@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, MessageSquare, User } from "lucide-react";
 import {
-  Link,
-  useLocation as useRouterLocation,
-  useNavigate,
+    Link,
+    useLocation as useRouterLocation,
+    useNavigate,
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
@@ -16,317 +16,331 @@ import { useDispatch } from "react-redux";
 import { Logout } from "../../store/slices/authSlice";
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  // Removed local state: const [showLocationSelector, setShowLocationSelector] = useState(false);
-  const navigate = useNavigate();
-  const routerLocation = useRouterLocation();
-  const isHomePage = routerLocation.pathname === "/";
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const { theme } = useTheme();
-  const { location: userLocation, openSelector } = useLocation();
-  const dispatch = useDispatch();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    // Removed local state: const [showLocationSelector, setShowLocationSelector] = useState(false);
+    const navigate = useNavigate();
+    const routerLocation = useRouterLocation();
+    const isHomePage = routerLocation.pathname === "/";
+    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+    const { theme } = useTheme();
+    const { location: userLocation, openSelector } = useLocation();
+    const dispatch = useDispatch();
 
-  const handleLogout = () => {
-    dispatch(Logout());
-    navigate("/login");
-  };
-
-  useEffect(() => {
-    const handelScroll = () => {
-      if (!isHomePage) {
-        setScrolled(true);
-        return;
-      }
-      setScrolled(window.scrollY > 20);
+    const handleLogout = () => {
+        dispatch(Logout());
+        navigate("/login");
     };
-    handelScroll();
-    window.addEventListener("scroll", handelScroll);
-    return () => window.removeEventListener("scroll", handelScroll);
-  }, [isHomePage]);
 
-  const textColor = scrolled
-    ? "text-foreground hover:text-foreground/80"
-    : "text-white hover:text-gray-200";
-  const iconHoverBg = scrolled ? "hover:bg-accent" : "hover:bg-white/20";
+    useEffect(() => {
+        const handelScroll = () => {
+            if (!isHomePage) {
+                setScrolled(true);
+                return;
+            }
+            setScrolled(window.scrollY > 20);
+        };
+        handelScroll();
+        window.addEventListener("scroll", handelScroll);
+        return () => window.removeEventListener("scroll", handelScroll);
+    }, [isHomePage]);
 
-  const headerBg =
-    isHomePage && !scrolled && !mobileMenuOpen
-      ? "bg-transparent fixed"
-      : "bg-card/95 backdrop-blur-md shadow-sm border-b border-card-border";
+    const textColor = scrolled
+        ? "text-foreground hover:text-foreground/80"
+        : "text-white hover:text-gray-200";
+    const iconHoverBg = scrolled ? "hover:bg-accent" : "hover:bg-white/20";
 
-  return (
-    <header
-      className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBg} ${
-        isHomePage ? "fixed" : ""
-      }`}
-    >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-40 py-3 lg:py-2">
-        <div className="flex items-center justify-between">
-          {/* Logo + Shop Travel */}
-          <div className="flex items-center gap-3 sm:gap-4 lg:gap-8">
-            {/* Logo */}
-            <div className="flex items-center gap-2 w-24 sm:w-32 lg:w-40 font-bold text-lg sm:text-xl">
-              <img
-                src={
-                  scrolled || !isHomePage || mobileMenuOpen
-                    ? theme === "dark"
-                      ? "/white-logo.png"
-                      : "/full-logo.png"
-                    : "/white-logo.png"
-                }
-                alt="Logo"
-                className="logo cursor-pointer w-full h-auto"
-                onClick={() => navigate("/")}
-              />
-            </div>
+    const headerBg =
+        isHomePage && !scrolled && !mobileMenuOpen
+            ? "bg-transparent fixed"
+            : "bg-card/95 backdrop-blur-md shadow-sm border-b border-card-border";
 
-            {/* Shop Travel Dropdown - Desktop only */}
-            <button
-              className={`hidden lg:flex items-center gap-1.5 text-sm font-medium transition-colors ${textColor}`}
-            >
-              Shop travel
-              <ChevronDown className="w-4 h-4" />
-            </button>
-          </div>
+    return (
+        <header
+            className={`top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBg} ${
+                isHomePage ? "fixed" : ""
+            }`}
+        >
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-40 py-3 lg:py-2">
+                <div className="flex items-center justify-between">
+                    {/* Logo + Shop Travel */}
+                    <div className="flex items-center gap-3 sm:gap-4 lg:gap-8">
+                        {/* Logo */}
+                        <div className="flex items-center gap-2 w-24 sm:w-32 lg:w-40 font-bold text-lg sm:text-xl">
+                            <img
+                                src={
+                                    scrolled || !isHomePage || mobileMenuOpen
+                                        ? theme === "dark"
+                                            ? "/white-logo.png"
+                                            : "/full-logo.png"
+                                        : "/white-logo.png"
+                                }
+                                alt="Logo"
+                                className="logo cursor-pointer w-full h-auto"
+                                onClick={() => navigate("/")}
+                            />
+                        </div>
 
-          {/* Desktop Right Menu */}
-          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm font-medium">
-            <button
-              onClick={openSelector}
-              className={`hidden xl:flex items-center gap-2 transition-colors hover:opacity-80 ${textColor}`}
-            >
-              <span>{userLocation.currency}</span>
-              <span className="text-xl">{userLocation.flag}</span>
-            </button>
-            <a
-              href="#"
-              className={`whitespace-nowrap transition-colors ${textColor}`}
-            >
-              List your property
-            </a>
-
-            {/* Messages Icon Button */}
-            <button
-              className={`p-2 rounded-full transition-colors ${iconHoverBg}`}
-            >
-              <MessageSquare
-                className={`w-5 h-5 ${
-                  scrolled ? "text-foreground" : "text-white"
-                }`}
-              />
-            </button>
-
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
-            {isAuthenticated ? (
-              <>
-                <Link to="/account">
-                  <button
-                    className={`flex items-center gap-2 p-2 rounded-full transition-colors ${iconHoverBg}`}
-                    aria-label="Account"
-                  >
-                    <User
-                      className={`w-5 h-5 ${
-                        scrolled ? "text-foreground" : "text-white"
-                      }`}
-                    />
-                  </button>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className={`transition-colors ${textColor} hover:text-red-500`}
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <Link to="/login">
-                <span
-                  className={`cursor-pointer transition-colors ${textColor}`}
-                >
-                  Sign In
-                </span>
-              </Link>
-            )}
-          </nav>
-
-          {/* Tablet/Mobile Right Section */}
-          <div className="flex lg:hidden items-center gap-2 sm:gap-3">
-            {/* Sign In / Account - visible on tablet */}
-            <div className="hidden md:block">
-              {isAuthenticated ? (
-                <Link to="/account">
-                  <User
-                    className={`w-6 h-6 ${
-                      scrolled ? "text-foreground" : "text-white"
-                    }`}
-                  />
-                </Link>
-              ) : (
-                <Link to="/login">
-                  <span
-                    className={`text-sm font-medium cursor-pointer transition-colors ${textColor}`}
-                  >
-                    Sign In
-                  </span>
-                </Link>
-              )}
-            </div>
-
-            {/* Theme Toggle Mobile */}
-            <ThemeToggle />
-
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`p-2 rounded-lg transition-colors ${
-                scrolled
-                  ? "hover:bg-accent text-foreground"
-                  : "hover:bg-white/20 "
-              }`}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="lg:hidden overflow-hidden"
-            >
-              <div
-                className={`lg:hidden mt-4 pt-4 border-t ${
-                  scrolled ? "border-card-border" : "border-white/20"
-                }`}
-              >
-                <nav className="flex flex-col gap-2 pb-4">
-                  <button
-                    className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${
-                      scrolled
-                        ? "text-foreground hover:bg-accent"
-                        : "hover:bg-white/10"
-                    }`}
-                  >
-                    Shop travel
-                    <ChevronDown className="w-5 h-5" />
-                  </button>
-
-                  <a
-                    href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-foreground hover:bg-accent"
-                        : " hover:bg-white/10"
-                    }`}
-                  >
-                    List your property
-                  </a>
-                  <a
-                    href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-foreground hover:bg-accent"
-                        : " hover:bg-white/10"
-                    }`}
-                  >
-                    Support
-                  </a>
-                  <a
-                    href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-foreground hover:bg-accent"
-                        : " hover:bg-white/10"
-                    }`}
-                  >
-                    Trips
-                  </a>
-                  <a
-                    href="#"
-                    className={`py-2 px-2 rounded-lg transition-colors ${
-                      scrolled
-                        ? "text-foreground hover:bg-accent"
-                        : " hover:bg-white/10"
-                    }`}
-                  >
-                    Messages
-                  </a>
-
-                  {isAuthenticated ? (
-                    <Link
-                      to="/account"
-                      className={`py-2 px-2 rounded-lg transition-colors ${
-                        scrolled
-                          ? "text-foreground hover:bg-accent"
-                          : " hover:bg-white/10"
-                      }`}
-                    >
-                      Account
-                    </Link>
-                  ) : (
-                    <div
-                      className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
-                        scrolled ? "border-gray-200" : "border-white/20"
-                      }`}
-                    >
-                      <Link to="/login" className="flex-1">
+                        {/* Shop Travel Dropdown - Desktop only */}
                         <button
-                          className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
-                            scrolled
-                              ? "border-card-border text-foreground hover:bg-accent"
-                              : "border-white/40 text-white hover:bg-white/10"
-                          }`}
+                            className={`hidden lg:flex items-center gap-1.5 text-sm font-medium transition-colors ${textColor}`}
                         >
-                          Sign In
+                            Shop travel
+                            <ChevronDown className="w-4 h-4" />
                         </button>
-                      </Link>
-                      <button
-                        onClick={() => navigate("/signUp")}
-                        className="flex-1 py-3 px-5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                      >
-                        Sign Up
-                      </button>
                     </div>
-                  )}
 
-                  <button
-                    onClick={openSelector}
-                    className={`py-3 px-2 flex items-center gap-2 text-sm hover:bg-muted rounded-lg transition-colors ${
-                      scrolled ? "text-foreground" : ""
-                    }`}
-                  >
-                    <span>
-                      {userLocation.flag} {userLocation.country}
-                    </span>
-                    <span>• {userLocation.currency}</span>
-                  </button>
-                </nav>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+                    {/* Desktop Right Menu */}
+                    <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm font-medium">
+                        <button
+                            onClick={openSelector}
+                            className={`hidden xl:flex items-center gap-2 transition-colors hover:opacity-80 ${textColor}`}
+                        >
+                            <span>{userLocation.currency}</span>
+                            <span className="text-xl">{userLocation.flag}</span>
+                        </button>
+                        <a
+                            href="#"
+                            className={`whitespace-nowrap transition-colors ${textColor}`}
+                        >
+                            List your property
+                        </a>
 
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-    </header>
-  );
+                        {/* Messages Icon Button */}
+                        <button
+                            className={`p-2 rounded-full transition-colors ${iconHoverBg}`}
+                        >
+                            <MessageSquare
+                                className={`w-5 h-5 ${
+                                    scrolled ? "text-foreground" : "text-white"
+                                }`}
+                            />
+                        </button>
+
+                        {/* Theme Toggle */}
+                        <ThemeToggle />
+
+                        {isAuthenticated ? (
+                            <>
+                                <Link to="/account">
+                                    <button
+                                        className={`flex items-center gap-2 p-2 rounded-full transition-colors ${iconHoverBg}`}
+                                        aria-label="Account"
+                                    >
+                                        <User
+                                            className={`w-5 h-5 ${
+                                                scrolled
+                                                    ? "text-foreground"
+                                                    : "text-white"
+                                            }`}
+                                        />
+                                    </button>
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className={`transition-colors ${textColor} hover:text-red-500`}
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <Link to="/login">
+                                <span
+                                    className={`cursor-pointer transition-colors ${textColor}`}
+                                >
+                                    Sign In
+                                </span>
+                            </Link>
+                        )}
+                    </nav>
+
+                    {/* Tablet/Mobile Right Section */}
+                    <div className="flex lg:hidden items-center gap-2 sm:gap-3">
+                        {/* Sign In / Account - visible on tablet */}
+                        <div className="hidden md:block">
+                            {isAuthenticated ? (
+                                <Link to="/account">
+                                    <User
+                                        className={`w-6 h-6 ${
+                                            scrolled
+                                                ? "text-foreground"
+                                                : "text-white"
+                                        }`}
+                                    />
+                                </Link>
+                            ) : (
+                                <Link to="/login">
+                                    <span
+                                        className={`text-sm font-medium cursor-pointer transition-colors ${textColor}`}
+                                    >
+                                        Sign In
+                                    </span>
+                                </Link>
+                            )}
+                        </div>
+
+                        {/* Theme Toggle Mobile */}
+                        <ThemeToggle />
+
+                        {/* Mobile Menu Toggle */}
+                        <button
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className={`p-2 rounded-lg transition-colors ${
+                                scrolled
+                                    ? "hover:bg-accent text-foreground"
+                                    : "hover:bg-white/20 "
+                            }`}
+                            aria-label="Toggle menu"
+                        >
+                            {mobileMenuOpen ? (
+                                <X className="w-6 h-6" />
+                            ) : (
+                                <Menu className="w-6 h-6" />
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile Menu */}
+                <AnimatePresence>
+                    {mobileMenuOpen && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="lg:hidden overflow-hidden"
+                        >
+                            <div
+                                className={`lg:hidden mt-4 pt-4 border-t ${
+                                    scrolled
+                                        ? "border-card-border"
+                                        : "border-white/20"
+                                }`}
+                            >
+                                <nav className="flex flex-col gap-2 pb-4">
+                                    <button
+                                        className={`flex items-center justify-between py-3 px-2 rounded-lg text-left font-medium transition-colors ${
+                                            scrolled
+                                                ? "text-foreground hover:bg-accent"
+                                                : "hover:bg-white/10"
+                                        }`}
+                                    >
+                                        Shop travel
+                                        <ChevronDown className="w-5 h-5" />
+                                    </button>
+
+                                    <a
+                                        href="#"
+                                        className={`py-2 px-2 rounded-lg transition-colors ${
+                                            scrolled
+                                                ? "text-foreground hover:bg-accent"
+                                                : " hover:bg-white/10"
+                                        }`}
+                                    >
+                                        List your property
+                                    </a>
+                                    <a
+                                        href="#"
+                                        className={`py-2 px-2 rounded-lg transition-colors ${
+                                            scrolled
+                                                ? "text-foreground hover:bg-accent"
+                                                : " hover:bg-white/10"
+                                        }`}
+                                    >
+                                        Support
+                                    </a>
+                                    <a
+                                        href="#"
+                                        className={`py-2 px-2 rounded-lg transition-colors ${
+                                            scrolled
+                                                ? "text-foreground hover:bg-accent"
+                                                : " hover:bg-white/10"
+                                        }`}
+                                    >
+                                        Trips
+                                    </a>
+                                    <a
+                                        href="#"
+                                        className={`py-2 px-2 rounded-lg transition-colors ${
+                                            scrolled
+                                                ? "text-foreground hover:bg-accent"
+                                                : " hover:bg-white/10"
+                                        }`}
+                                    >
+                                        Messages
+                                    </a>
+
+                                    {isAuthenticated ? (
+                                        <Link
+                                            to="/account"
+                                            className={`py-2 px-2 rounded-lg transition-colors ${
+                                                scrolled
+                                                    ? "text-foreground hover:bg-accent"
+                                                    : " hover:bg-white/10"
+                                            }`}
+                                        >
+                                            Account
+                                        </Link>
+                                    ) : (
+                                        <div
+                                            className={`flex flex-col sm:flex-row gap-3 pt-4 mt-2 border-t ${
+                                                scrolled
+                                                    ? "border-gray-200"
+                                                    : "border-white/20"
+                                            }`}
+                                        >
+                                            <Link
+                                                to="/login"
+                                                className="flex-1"
+                                            >
+                                                <button
+                                                    className={`w-full py-3 px-5 border rounded-lg font-medium transition-colors ${
+                                                        scrolled
+                                                            ? "border-card-border text-foreground hover:bg-accent"
+                                                            : "border-white/40 text-white hover:bg-white/10"
+                                                    }`}
+                                                >
+                                                    Sign In
+                                                </button>
+                                            </Link>
+                                            <button
+                                                onClick={() =>
+                                                    navigate("/signUp")
+                                                }
+                                                className="flex-1 py-3 px-5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                                            >
+                                                Sign Up
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={openSelector}
+                                        className={`py-3 px-2 flex items-center gap-2 text-sm hover:bg-muted rounded-lg transition-colors ${
+                                            scrolled ? "text-foreground" : ""
+                                        }`}
+                                    >
+                                        <span>
+                                            {userLocation.flag}{" "}
+                                            {userLocation.country}
+                                        </span>
+                                        <span>• {userLocation.currency}</span>
+                                    </button>
+                                </nav>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            {mobileMenuOpen && (
+                <div
+                    className="fixed hidden inset-0 z-40 bg-black/50 lg:hidden"
+                    onClick={() => setMobileMenuOpen(false)}
+                />
+            )}
+        </header>
+    );
 }

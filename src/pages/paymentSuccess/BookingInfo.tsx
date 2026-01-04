@@ -286,7 +286,7 @@ export default function BookingInfo() {
 
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-6 w-110">
+            <div className="space-y-6 w-110 max-w-full">
               <div className="bg-card rounded-lg shadow-sm p-4 border border-card-border">
                 <div className="aspect-video w-full rounded-xl overflow-hidden mb-4 bg-gray-200">
                   <img
