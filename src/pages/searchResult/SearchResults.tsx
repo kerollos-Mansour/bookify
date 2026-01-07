@@ -6,7 +6,7 @@ import Map from "../../components/map/map";
 import Tabs from "../../components/filterProperties/tabs/Tabs";
 import FilterProperties, {
   PropertyFilters,
-} from "../../components/filterProperties/filterProperties/filterProperties";
+} from "../../components/filterProperties/filterSidebar/filterSidebar";
 import { Link, useLocation } from "react-router-dom";
 import PageTransition from "../../components/pageTransition/pageTransition";
 import { Hotel } from "../../types/hotel.type";
@@ -74,6 +74,7 @@ export default function SearchResult() {
   const [filters, setFilters] = useState<SearchFilters>({
     propertyName: "",
     selectedTypes: [],
+    minPrice: 0,
     maxPrice: 0,
     minRating: 0,
     amenities: [],
@@ -124,9 +125,12 @@ export default function SearchResult() {
       checkOut: params.get("checkOut") || undefined,
       adults: params.get("adults") ? Number(params.get("adults")) : undefined,
       rooms: params.get("rooms") ? Number(params.get("rooms")) : undefined,
-      minRate: params.get("minRate")
-        ? Number(params.get("minRate"))
-        : undefined,
+      minRate:
+        filters.minPrice > 0
+          ? filters.minPrice
+          : params.get("minRate")
+          ? Number(params.get("minRate"))
+          : undefined,
       maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
       search: filters.propertyName || undefined,
       hotelRating: filters.minRating > 0 ? filters.minRating : undefined,
@@ -152,6 +156,7 @@ export default function SearchResult() {
   }, [
     search,
     activeTab,
+    filters.minPrice,
     filters.maxPrice,
     filters.propertyName,
     filters.minRating,
@@ -263,6 +268,7 @@ export default function SearchResult() {
       propertyName: "",
       selectedTypes: [],
       minRating: 0,
+      minPrice: 0,
       maxPrice: 3000,
       amenities: [],
     }));
@@ -317,6 +323,7 @@ export default function SearchResult() {
                 <FilterProperties
                   filters={{
                     selectedTypes: filters.selectedTypes,
+                    minPrice: filters.minPrice,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
                     amenities: filters.amenities,
@@ -431,6 +438,7 @@ export default function SearchResult() {
                 <FilterProperties
                   filters={{
                     selectedTypes: filters.selectedTypes,
+                    minPrice: filters.minPrice,
                     maxPrice: filters.maxPrice,
                     minRating: filters.minRating,
                     amenities: filters.amenities,
