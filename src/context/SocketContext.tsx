@@ -7,6 +7,7 @@ import {
 } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./authContext";
+import { API_CONFIG } from "../config/api.config";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -17,7 +18,8 @@ interface SocketContextType {
 const SocketContext = createContext<SocketContextType | null>(null);
 
 // Using localhost:3000 as inferred from app.js in backend
-const SOCKET_URL = "http://localhost:5000";
+// Using localhost:5000 as inferred from env
+const SOCKET_URL = API_CONFIG.SOCKET_URL;
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);

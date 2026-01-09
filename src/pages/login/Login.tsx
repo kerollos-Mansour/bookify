@@ -9,6 +9,7 @@ import { setCredentials } from "../../store/slices/authSlice";
 import { useLoginMutation } from "../../store/api/auth.api";
 import { useToast } from "../../components/UI/ToastProvider/ToastProvider";
 import { useAuth } from "../../context/authContext";
+import { API_CONFIG } from "../../config/api.config";
 
 type Inputs = {
   userName: string;
@@ -203,10 +204,7 @@ export default function Login() {
                   type="button"
                   onClick={() => {
                     // Redirect to Google OAuth endpoint
-                    window.location.href = `${
-                      import.meta.env.VITE_API_BASE_URL ||
-                      "http://localhost:5000/api/v1"
-                    }/auth/google`;
+                    window.location.href = `${API_CONFIG.BASE_URL}/auth/google`;
                   }}
                   className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-semibold py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                 >

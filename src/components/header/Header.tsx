@@ -15,6 +15,7 @@ import { LocationSelector } from "../locationSelector/LocationSelector";
 import { useDispatch } from "react-redux";
 import { Logout } from "../../store/slices/authSlice";
 import { useAuth } from "../../context/authContext";
+import { API_CONFIG } from "../../config/api.config";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function Header() {
   const { theme } = useTheme();
   const { location: userLocation, openSelector } = useLocation();
   const dispatch = useDispatch();
-   const { logout } = useAuth();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -103,7 +104,7 @@ export default function Header() {
               <span className="text-xl">{userLocation.flag}</span>
             </button>
             <a
-              href="http://localhost:3000/vendor-join"
+              href={`${API_CONFIG.DASHBOARD_URL}/vendor-join`}
               target="_blank"
               className={`whitespace-nowrap transition-colors ${textColor}`}
             >
@@ -114,13 +115,13 @@ export default function Header() {
             <button
               className={`p-2 rounded-full transition-colors ${iconHoverBg}`}
             >
-              <a href="http://localhost:5173/account">
+              <Link to="/account">
                 <MessageSquare
                   className={`w-5 h-5 ${
                     scrolled ? "text-foreground" : "text-white"
                   }`}
                 />
-              </a>
+              </Link>
             </button>
 
             {/* Theme Toggle */}

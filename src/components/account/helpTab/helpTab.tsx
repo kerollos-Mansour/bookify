@@ -13,6 +13,7 @@ import { useToast } from "../../UI/ToastProvider/ToastProvider";
 import { io, Socket } from "socket.io-client";
 import { storage } from "../../../utils/storage";
 import { useAuth } from "../../../context/authContext";
+import { API_CONFIG } from "../../../config/api.config";
 
 interface Message {
   _id?: string;
@@ -86,7 +87,7 @@ export default function HelpTab() {
     console.log("🔌 Connecting to socket with user:", user);
 
     // Replace with your actual backend URL
-    const newSocket = io("http://localhost:5000", {
+    const newSocket = io(API_CONFIG.SOCKET_URL, {
       auth: {
         token: token,
       },
@@ -175,7 +176,7 @@ export default function HelpTab() {
 
   useEffect(() => {
     scrollChatToBottom();
-  }, [messages,isTyping]);
+  }, [messages, isTyping]);
 
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
