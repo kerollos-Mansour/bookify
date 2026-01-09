@@ -1,7 +1,7 @@
 import { SearchBar } from "../../components/searchBar/SearchBar";
 import HotelCard from "../../components/hotelCard/HotelCard";
 import { useEffect, useMemo, useState } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, SlidersHorizontal } from "lucide-react";
 import Map from "../../components/map/map";
 import Tabs from "../../components/filterProperties/tabs/Tabs";
 import FilterProperties, {
@@ -83,6 +83,7 @@ export default function SearchResult() {
   const [propertyTypeOptions, setPropertyTypeOptions] = useState<string[]>([]);
   const [locationFilter, setLocationFilter] = useState("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showSearchBar, setShowSearchBar] = useState(false);
 
   const searchParams = useMemo(() => {
     const params = new URLSearchParams(search);
@@ -220,8 +221,6 @@ export default function SearchResult() {
     ]);
   }, []);
 
-  
-
   const hotelCards = useMemo(
     () =>
       hotels.map((hotel) => ({
@@ -279,12 +278,39 @@ export default function SearchResult() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background transition-colors duration-300">
-        {/* Sticky Search Bar */}
-        <div className="sticky top-0 z-50 bg-card border-b border-card-border shadow-sm">
+        {/* Sticky Search Bar - Desktop Always Visible, Mobile/Tablet Collapsible */}
+        <div
+          className={`sticky top-0 z-50 bg-card border-b border-card-border shadow-sm transition-all duration-300 ${
+            showSearchBar ? "block" : "hidden lg:block"
+          }`}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <SearchBar />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex-1">
+                <SearchBar />
+              </div>
+              {/* Close button for mobile/tablet */}
+              <button
+                onClick={() => setShowSearchBar(false)}
+                className="lg:hidden p-2 hover:bg-muted rounded-full transition-colors"
+                aria-label="Close search"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Floating Search Button - Mobile/Tablet Only */}
+        {!showSearchBar && (
+          <button
+            onClick={() => setShowSearchBar(true)}
+            className="lg:hidden fixed top-20 right-4 z-40 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all hover:scale-110"
+            aria-label="Open search"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+        )}
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

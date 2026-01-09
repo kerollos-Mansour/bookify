@@ -15,8 +15,8 @@ export function FeaturedFlights() {
     return (
       <div className="animate-pulse">
         <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {[1, 2, 3].map((i) => (
             <div
               key={i}
               className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl"
@@ -59,11 +59,21 @@ export function FeaturedFlights() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {flights.map((flight: any) => (
             <div
               key={flight._id}
-              onClick={() => navigate(`/flights/${flight._id}`)}
+              onClick={() => {
+                // Navigate to flight search with pre-filled origin and destination
+                const searchParams = new URLSearchParams({
+                  origin: flight.departure.airport.code,
+                  destination: flight.arrival.airport.code,
+                  departureDate: new Date(flight.departure.dateTime)
+                    .toISOString()
+                    .split("T")[0],
+                });
+                navigate(`/flights/search?${searchParams.toString()}`);
+              }}
               className="group bg-card border border-card-border rounded-xl overflow-hidden hover:shadow-xl transition-all cursor-pointer"
             >
               {/* Header */}

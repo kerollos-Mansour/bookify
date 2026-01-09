@@ -60,8 +60,8 @@ export default function HotelCard({ cardData }) {
   }, [showToast]);
 
   return (
-    <div className="mb-4 w-full h-64 mx-auto bg-card rounded-2xl border border-card-border overflow-hidden font-sans flex flex-row hover:shadow-lg transition-shadow duration-300">
-      <div className="relative w-full lg:w-80 h-56 lg:h-auto flex-shrink-0">
+    <div className="mb-4 w-full mx-auto bg-card rounded-2xl border border-card-border overflow-hidden font-sans flex flex-col md:flex-row md:h-64 hover:shadow-lg transition-shadow duration-300">
+      <div className="relative w-full md:w-80 h-56 md:h-auto flex-shrink-0">
         <Link
           to={`/property/${cardData.id}`}
           className="block w-full h-full"
@@ -100,22 +100,22 @@ export default function HotelCard({ cardData }) {
         {/* navigate between images */}
         <button
           onClick={prevImage}
-          className="cursor-pointer z-10 absolute left-2 top-1/2 -translate-y-1/2 bg-card/90 backdrop-blur p-2 rounded-full shadow-md hover:bg-card transition-all duration-200"
+          className="cursor-pointer z-10 absolute left-2 top-1/2 -translate-y-1/2 bg-card/90 backdrop-blur p-1.5 md:p-2 rounded-full shadow-md hover:bg-card transition-all duration-200"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-5 h-5 md:w-4 md:h-4" />
         </button>
         <button
           onClick={nextImage}
-          className="cursor-pointer z-10 absolute right-2 top-1/2 -translate-y-1/2 bg-card/90 backdrop-blur p-2 rounded-full shadow-md hover:bg-card transition-all duration-200"
+          className="cursor-pointer z-10 absolute right-2 top-1/2 -translate-y-1/2 bg-card/90 backdrop-blur p-1.5 md:p-2 rounded-full shadow-md hover:bg-card transition-all duration-200"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-5 h-5 md:w-4 md:h-4" />
         </button>
       </div>
 
       {/* Content Section */}
-      <div className="p-5 lg:p-6 w-full flex flex-col">
+      <div className="p-4 md:p-5 lg:p-6 w-full flex flex-col">
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-card-foreground mb-1">
+          <h3 className="text-lg md:text-xl font-bold text-card-foreground mb-1">
             <Link
               to={`/property/${cardData.id}`}
               className="hover:text-blue-600 transition-colors"
@@ -142,7 +142,7 @@ export default function HotelCard({ cardData }) {
         </div>
 
         {/* Bottom Section: Rating and Price */}
-        <div className="flex items-end justify-between gap-4 mt-auto pt-4 border-t border-card-border">
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 sm:gap-4 mt-auto pt-4 border-t border-card-border">
           {/* Rating */}
           {cardData.reviews ? (
             <div className="flex items-center gap-2.5">
