@@ -7,8 +7,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { useCreateBookingMutation } from "../../store/api/booking.api";
 import { useCreatePaymentIntentMutation } from "../../store/api/payment.api";
+import { useLazyGetCouponByCodeQuery } from "../../store/api/coupon.api";
 import { Hotel } from "../../types/hotel.type";
 import { Room } from "../../types/rooms.type";
+import { Coupon } from "../../types/coupon.type";
+import { Tag, Ticket, CheckCircle2, XCircle } from "lucide-react";
 
 export default function BookingInfo() {
   const navigate = useNavigate();
@@ -28,11 +31,19 @@ export default function BookingInfo() {
   const [guests, setGuests] = useState<number>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Coupon states
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [isCouponToggled, setIsCouponToggled] = useState(false);
+
   // Mutations
   const [createBooking, { isLoading: isBookingLoading }] =
     useCreateBookingMutation();
   const [createPaymentIntent, { isLoading: isPaymentLoading }] =
     useCreatePaymentIntentMutation();
+  const [getCouponByCode, { isLoading: isCouponValidating }] =
+    useLazyGetCouponByCodeQuery();
 
   useEffect(() => {
     if (!room || !hotel) {
@@ -67,12 +78,85 @@ export default function BookingInfo() {
   const calculatePrice = () => {
     const pricePerNight = room?.price?.discounted || room?.price?.original || 0;
     const subtotal = pricePerNight * nights;
-    const serviceFee = subtotal * 0.1; // 10% service fee
-    const total = subtotal + serviceFee;
-    return { pricePerNight, subtotal, serviceFee, total };
+
+    let discountAmount = 0;
+    if (appliedCoupon) {
+      if (appliedCoupon.discountType === "percentage") {
+        discountAmount = (subtotal * appliedCoupon.discountValue) / 100;
+        if (
+          appliedCoupon.maxDiscount &&
+          discountAmount > appliedCoupon.maxDiscount
+        ) {
+          discountAmount = appliedCoupon.maxDiscount;
+        }
+      } else {
+        // Assume fixed_amount
+        discountAmount = appliedCoupon.discountValue;
+      }
+    }
+
+    const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+    const serviceFee = discountedSubtotal * 0.1; // 10% service fee
+    const total = discountedSubtotal + serviceFee;
+
+    return { pricePerNight, subtotal, discountAmount, serviceFee, total };
   };
 
-  const { pricePerNight, subtotal, serviceFee, total } = calculatePrice();
+  const { pricePerNight, subtotal, discountAmount, serviceFee, total } =
+    calculatePrice();
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    setCouponError(null);
+
+    try {
+      const result = await getCouponByCode(couponInput).unwrap();
+
+      const couponData = (result as any).data?.coupons?.[0] || (result as any);
+
+      if (!couponData || (Array.isArray(couponData) && couponData.length === 0)) {
+        setCouponError("Invalid coupon code.");
+        setAppliedCoupon(null);
+        return;
+      }
+
+      const coupon = Array.isArray(couponData) ? couponData[0] : couponData;
+
+      if (!coupon.isActive) {
+        setCouponError("This coupon is no longer active.");
+        setAppliedCoupon(null);
+        return;
+      }
+
+      // Check min purchase
+      if (coupon.minPurchase && subtotal < coupon.minPurchase) {
+        setCouponError(
+          `Minimum purchase of $${coupon.minPurchase} required for this coupon.`
+        );
+        setAppliedCoupon(null);
+        return;
+      }
+
+      // Date validation
+      const now = new Date();
+      if (coupon.validFrom && now < new Date(coupon.validFrom)) {
+        setCouponError("This coupon is not yet valid.");
+        setAppliedCoupon(null);
+        return;
+      }
+      if (coupon.validTo && now > new Date(coupon.validTo)) {
+        setCouponError("This coupon has expired.");
+        setAppliedCoupon(null);
+        return;
+      }
+
+      setAppliedCoupon(coupon);
+      setCouponError(null);
+    } catch (err: any) {
+      setCouponError("Failed to validate coupon.");
+      setAppliedCoupon(null);
+    }
+  };
 
   const handleBookNow = async () => {
     setErrorMsg(null);
@@ -90,10 +174,10 @@ export default function BookingInfo() {
     }
     try {
       // 1. Create Booking
-      const bookingData = {
+      const bookingData: any = {
         userId: user.id,
-        hotelId: hotel._id, // Handle consistent ID
-        roomId: room._id, // or room._id
+        hotelId: hotel._id,
+        roomId: room._id,
         checkIn: checkInDate,
         checkOut: checkOutDate,
         nights,
@@ -103,11 +187,11 @@ export default function BookingInfo() {
         totalPrice: total,
         currency: "USD",
         paymentMethod: "stripe" as const,
-        // Dummy values to satisfy backend validator
-        // status: "pending",
-        // bookingNumber: 1,
       };
-      console.log(bookingData);
+
+      if (appliedCoupon?.code) {
+        bookingData.couponCode = appliedCoupon.code;
+      }
 
       const bookingResponse = await createBooking(bookingData).unwrap();
 
@@ -148,12 +232,12 @@ export default function BookingInfo() {
         },
       });
     } catch (err: any) {
-      console.error("Booking Error:", err);
-      setErrorMsg(
+      console.error("Booking Error Full Object:", JSON.stringify(err, null, 2));
+      const message =
         err?.data?.message ||
-          err?.message ||
-          "Something went wrong. Please try again."
-      );
+        err?.message ||
+        "Something went wrong. Please try again.";
+      setErrorMsg(message);
     }
   };
 
@@ -204,12 +288,12 @@ export default function BookingInfo() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-6 w-110 max-w-full">
               <div className="bg-card rounded-lg shadow-sm p-4 border border-card-border">
-                 <div className="aspect-video w-full rounded-xl overflow-hidden mb-4 bg-gray-200">
-                <img
-                  src={room.images[0] || (hotel.image&& hotel.images[0]) || ""}
-                  alt={hotel.name}
-                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500" 
-                />
+                <div className="aspect-video w-full rounded-xl overflow-hidden mb-4 bg-gray-200">
+                  <img
+                    src={room.images[0] || (hotel.images && hotel.images[0]) || ""}
+                    alt={hotel.name}
+                    className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
                 <h3 className="text-xl font-bold text-card-foreground">
                   {hotel.name}
@@ -221,13 +305,13 @@ export default function BookingInfo() {
                   <MapPin className="w-4 h-4 mr-1 text-red-500" />
                   <span>
                     {hotel.location
-                      ? `${hotel.city || "Unknown City"}`
+                      ? `${(hotel.location?.city || hotel.city) || "Unknown City"}`
                       : hotel.city || "Location available"}
                   </span>
                 </div>
 
                 {/* Amenities Tags */}
-                <div className="flex flex-wrap gap-2 mt-4">
+                {/* <div className="flex flex-wrap gap-2 mt-4">
                   {room.amenities && (
                     <>
                       <span className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600 flex items-center gap-1">
@@ -238,7 +322,26 @@ export default function BookingInfo() {
                       </span>
                     </>
                   )}
-                </div>
+                </div> */}
+<div className="flex flex-wrap gap-2 mt-4">
+ {room.amenities && (
+     <>
+       {room.amenities.size && (
+         <span className="px-3 py-1 bg-muted rounded-full text-xs text-muted-foreground flex items-center gap-1 border border-card-border">
+           <Info className="w-3 h-3" /> {room.amenities.size}
+         </span>
+       )}
+       {room.amenities.sleeps && (
+         <span className="px-3 py-1 bg-muted rounded-full text-xs text-muted-foreground border border-card-border">
+           Max {room.amenities.sleeps} Guests
+         </span>
+       )}
+     </>
+   )}
+ </div>
+
+
+                
               </div>
             </div>
 
@@ -248,10 +351,10 @@ export default function BookingInfo() {
               <div className="bg-card rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold text-card-foreground">Your Stay</h3>
-                  <div className="flex items-center gap-3 bg-muted  px-4 py-2 rounded-lg">
+                  <div className="flex items-center gap-3 bg-muted px-4 py-2 rounded-lg">
                     <button
                       onClick={() => handleNightsChange(nights - 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:text-blue-600 disabled:opacity-50"
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-background shadow-sm text-foreground hover:text-blue-600 disabled:opacity-50"
                       disabled={nights <= 1}
                     >
                       <Minus className="w-4 h-4" />
@@ -261,7 +364,7 @@ export default function BookingInfo() {
                     </span>
                     <button
                       onClick={() => handleNightsChange(nights + 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-600 hover:text-blue-600"
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-background shadow-sm text-foreground hover:text-blue-600"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -279,7 +382,7 @@ export default function BookingInfo() {
                         value={checkInDate}
                         onChange={(e) => setCheckInDate(e.target.value)}
                         min={new Date().toISOString().split("T")[0]}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl font-medium text-gray-700 outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-background border border-card-border rounded-xl font-medium text-foreground outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                       />
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     </div>
@@ -310,11 +413,11 @@ export default function BookingInfo() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => setGuests(Math.max(1, guests - 1))}
-                        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                        className="w-8 h-8 rounded-full border border-card-border flex items-center justify-center hover:bg-muted text-foreground"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
-                      <span className="w-8 text-center font-medium">
+                      <span className="w-8 text-center font-medium text-foreground">
                         {guests}
                       </span>
                       <button
@@ -323,7 +426,7 @@ export default function BookingInfo() {
                             Math.min(room.amenities.sleeps || 4, guests + 1)
                           )
                         }
-                        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                        className="w-8 h-8 rounded-full border border-card-border flex items-center justify-center hover:bg-muted text-foreground"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
@@ -347,6 +450,18 @@ export default function BookingInfo() {
                       ${subtotal.toLocaleString()}
                     </span>
                   </div>
+
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span className="flex items-center gap-1">
+                        <Tag className="w-3 h-3" />
+                        Discount ({appliedCoupon?.code})
+                      </span>
+                      <span className="font-medium">
+                        -${discountAmount.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
 
                   <div className="flex justify-between text-muted-foreground">
                     <span className="flex items-center gap-1">
@@ -374,6 +489,92 @@ export default function BookingInfo() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Coupon Section */}
+              <div className="bg-card rounded-2xl shadow-sm p-6 border border-card-border">
+                {!isCouponToggled ? (
+                  <button
+                    onClick={() => setIsCouponToggled(true)}
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                  >
+                    <Ticket className="w-5 h-5" />
+                    Have a coupon code?
+                  </button>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-sm font-bold text-card-foreground">
+                        Apply Coupon
+                      </h3>
+                      <button
+                        onClick={() => {
+                          setIsCouponToggled(false);
+                          setAppliedCoupon(null);
+                          setCouponInput("");
+                          setCouponError(null);
+                        }}
+                        className="text-xs text-gray-500 hover:text-gray-700"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={couponInput}
+                          onChange={(e) =>
+                            setCouponInput(e.target.value.toUpperCase())
+                          }
+                          placeholder="Enter code"
+                          className="w-full px-4 py-2 bg-background border border-card-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 uppercase"
+                          disabled={!!appliedCoupon}
+                        />
+                      </div>
+                      <button
+                        onClick={handleApplyCoupon}
+                        disabled={
+                          !couponInput.trim() ||
+                          isCouponValidating ||
+                          !!appliedCoupon
+                        }
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {isCouponValidating ? "..." : "Apply"}
+                      </button>
+                    </div>
+
+                    {couponError && (
+                      <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50/10 border border-red-200/20 p-2 rounded-lg">
+                        <XCircle className="w-3.5 h-3.5" />
+                        {couponError}
+                      </div>
+                    )}
+
+                    {appliedCoupon && (
+                      <div className="flex items-center justify-between gap-1.5 text-xs text-green-700 bg-green-50 p-2 rounded-lg">
+                        <div className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>
+                            Coupon <strong>{appliedCoupon.code}</strong> applied
+                            successfully!
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setAppliedCoupon(null);
+                            setCouponInput("");
+                          }}
+                          className="text-green-800 hover:underline font-bold"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

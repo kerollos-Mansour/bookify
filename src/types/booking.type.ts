@@ -1,6 +1,6 @@
 // Booking interface matching backend
 export interface Booking {
-  id: string; // Using 'id' to match backend
+  _id: string; // Using 'id' to match backend
   userId: string;
   hotelId: string;
   roomId: string;
@@ -34,6 +34,7 @@ export interface CreateBookingRequest {
   guests: number;
   currency?: string;
   couponId?: string;
+  couponCode?: string;
   paymentMethod: "stripe" | "paypal" | "cash" | "other";
   paymentIntentId?: string;
 }

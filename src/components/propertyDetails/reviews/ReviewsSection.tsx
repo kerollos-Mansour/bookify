@@ -55,7 +55,7 @@ export default function ReviewsSection({ hotelId }: ReviewsSectionProps) {
   }
 
   return (
-    <div className="py-8 border-t border-gray-100">
+    <div id="reviews" className="py-8 border-t border-gray-100">
       <h2 className="text-2xl font-bold mb-6">Guest Reviews</h2>
 
       {/* Reviews List */}
@@ -122,11 +122,10 @@ export default function ReviewsSection({ hotelId }: ReviewsSectionProps) {
                     className="focus:outline-none transition-transform hover:scale-110"
                   >
                     <Star
-                      className={`w-8 h-8 ${
-                        star <= (hoveredStar || rating)
+                      className={`w-8 h-8 ${star <= (hoveredStar || rating)
                           ? "text-amber-400 fill-amber-400"
                           : "text-gray-300"
-                      }`}
+                        }`}
                     />
                   </button>
                 ))}

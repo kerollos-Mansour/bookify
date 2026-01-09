@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { SearchBar } from "../searchBar/SearchBar";
+import { FlightSearchBar } from "../flightSearchBar/FlightSearchBar";
+import { SearchTabs, SearchMode } from "../searchTabs/SearchTabs";
 
 // Constants for maintainability
 const HERO_VIDEO =
   "https://res.cloudinary.com/diftkhbq5/video/upload/v1767509716/Bookify_header_-_Made_with_Clipchamp_bwlq79.mp4";
 const CONTENT = {
-  title: "Find Your Perfect Stay",
+  title: "Your Journey Begins Here",
   description:
-    "Discover amazing hotels, apartments, and unique stays around the world",
+    "Discover amazing hotels, flights, and unique travel experiences around the world",
 } as const;
 
 export function HeroSection() {
@@ -47,17 +50,18 @@ export function HeroSection() {
 }
 
 export function HeroFloatingSearch() {
+  const [searchMode, setSearchMode] = useState<SearchMode>("hotels");
+
   return (
     <div className="max-w-5xl mx-auto px-2 sm:px-4">
-      {/* <div className="bg-card rounded-full shadow-2xl dark:shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 border border-card-border transition-colors duration-300">
-        <SearchBar />
-      </div> */}
-      <SearchBar />
+      <div className="bg-card rounded-[45px] shadow-2xl p-4 sm:p-6 border border-card-border">
+        <SearchTabs activeTab={searchMode} onTabChange={setSearchMode} />
+        {searchMode === "hotels" ? <SearchBar /> : <FlightSearchBar />}
+      </div>
     </div>
   );
 }
 
-// Keep default export for backward compatibility if needed, but composed
 export function HeroSearch() {
   return (
     <div className="relative">

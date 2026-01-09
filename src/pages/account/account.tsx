@@ -1,6 +1,7 @@
 import { ReactNode, useMemo, useState } from "react";
 import {
   Bell,
+  Calendar,
   CreditCard,
   DollarSign,
   HelpCircle,
@@ -20,11 +21,13 @@ import CommunicationsTab from "../../components/account/communicationsTab/commun
 import CouponsTab from "../../components/account/couponsTab/couponsTab";
 import ReviewsTab from "../../components/account/reviewsTab/reviewsTab";
 import HelpTab from "../../components/account/helpTab/helpTab";
+import BookingsTab from "../../components/account/bookingsTab/bookingsTab";
 import { useGetUserByIdQuery } from "../../store/api/user.api";
 import { storage } from "../../utils/storage";
 
 type TabId =
   | "profile"
+  | "bookings"
   | "communications"
   | "payments"
   | "coupons"
@@ -45,6 +48,13 @@ const tabs: Array<{
     label: "Profile",
     description: "Provide your personal details and travel documents",
     icon: <User className="w-5 h-5" />,
+  },
+  // bookings tab
+  {
+    id: "bookings",
+    label: "My Bookings",
+    description: "View and manage your hotel reservations",
+    icon: <Calendar className="w-5 h-5" />,
   },
   // communication tab
   {
@@ -94,6 +104,11 @@ const emptyCopy: Record<TabId, { title: string; message: string }> = {
   profile: {
     title: "",
     message: "",
+  },
+  bookings: {
+    title: "No bookings yet",
+    message:
+      "Your hotel reservations will appear here once you make a booking.",
   },
   communications: {
     title: "No communications preferences yet",
@@ -159,6 +174,7 @@ export default function Account() {
             {/* Tab Content */}
             <section>
               {activeTab === "profile" && <ProfileTab />}
+              {activeTab === "bookings" && <BookingsTab />}
               {activeTab === "communications" && <CommunicationsTab />}
               {activeTab === "payments" && <PaymentTap />}
               {activeTab === "coupons" && <CouponsTab />}

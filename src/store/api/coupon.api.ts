@@ -13,15 +13,15 @@ export const couponsApi = apiSlice.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ _id }) => ({ type: "Coupon" as const, _id })),
-              { type: "Coupon", id: "LIST" },
-            ]
+            ...result.map(({ _id }) => ({ type: "Coupon" as const, _id })),
+            { type: "Coupon", id: "LIST" },
+          ]
           : [{ type: "Coupon", id: "LIST" }],
     }),
 
     // Get coupon by code
     getCouponByCode: builder.query<Coupon, string>({
-      query: (code) => `/coupons?code=${code}`,
+      query: (code) => `/coupons?search=${code}`,
       providesTags: (result, error, code) => [{ type: "Coupon", id: code }],
     }),
 
@@ -48,7 +48,9 @@ export const couponsApi = apiSlice.injectEndpoints({
 
 export const {
   useGetAllCouponsQuery,
+  useLazyGetAllCouponsQuery,
   useGetCouponByCodeQuery,
+  useLazyGetCouponByCodeQuery,
   useCreateCouponMutation,
   useDeleteCouponMutation,
 } = couponsApi;

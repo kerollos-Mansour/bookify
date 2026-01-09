@@ -22,14 +22,18 @@ export const bookingsApi = apiSlice.injectEndpoints({
     }),
 
     // Get bookings for a specific user
-    getUserBookings: builder.query<Booking[], string>({
-      query: (userId) => `/bookings?userId=${userId}`,
+    getUserBookings: builder.query<Booking[], void>({
+      query: () => `/bookings/my-bookings`,
+      transformResponse: (response: { data: Booking[] } | Booking[]) => {
+        // Handle both response formats: { data: [...] } or [...]
+        return Array.isArray(response) ? response : response.data;
+      },
       providesTags: (result, error, userId) =>
         result
           ? [
-              ...result.map(({ id }) => ({
+              ...result.map(({ _id }) => ({
                 type: "Booking" as const,
-                id: id,
+                id: _id,
               })),
               { type: "Booking", id: `USER-${userId}` },
             ]
