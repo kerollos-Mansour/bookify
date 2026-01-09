@@ -8,6 +8,7 @@ import { LoginRequest } from "types/auth.type";
 import { setCredentials } from "../../store/slices/authSlice";
 import { useLoginMutation } from "../../store/api/auth.api";
 import { useToast } from "../../components/UI/ToastProvider/ToastProvider";
+import { useAuth } from "../../context/authContext";
 
 type Inputs = {
   userName: string;
@@ -19,6 +20,7 @@ export default function Login() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
+  const { login: authLogin } = useAuth();
 
   const [login, { isLoading }] = useLoginMutation();
 
@@ -34,6 +36,10 @@ export default function Login() {
       const result = await login(data).unwrap();
       // 2. Update Redux Store & LocalStorage (handled by slice)
       // Note: result.data contains user and accessToken based on your interface
+
+      // Update Context
+      authLogin(result.user, result.accessToken);
+
       dispatch(
         setCredentials({
           user: result.user,

@@ -18,6 +18,9 @@ import AboutUs from "../pages/aboutUs/aboutUs";
 import AuthCallback from "../pages/auth/callback/AuthCallback";
 import ForgotPassword from "../pages/forgotPassword/forgotPassword";
 import ResetPassword from "../pages/resetPassword/ResetPassword";
+import FlightSearchResults from "../pages/flightSearch/FlightSearchResults";
+import ReturningFlightSelection from "../pages/flightSearch/ReturningFlightSelection";
+import FlightPassengers from "../pages/flightPassengers/FlightPassengers";
 
 export const router = createBrowserRouter([
   {
@@ -26,11 +29,14 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "categories", element: <Categories /> },
-      { path: "aboutUs", element: <AboutUs /> },  // 
-      { path: "contactUs", element: <ContactUs /> },  //
+      { path: "aboutUs", element: <AboutUs /> }, //
+      { path: "contactUs", element: <ContactUs /> }, //
 
       { path: "property/:id", element: <PropertyDetails /> },
       { path: "search", element: <SearchResults /> },
+      { path: "flights/search", element: <FlightSearchResults /> },
+      { path: "flights/returning", element: <ReturningFlightSelection /> },
+      { path: "flights/passengers", element: <FlightPassengers /> },
 
       {
         element: <GuestRoute />, // Prevent authenticated users from accessing these pages

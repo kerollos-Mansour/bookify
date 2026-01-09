@@ -1,6 +1,6 @@
 // Booking interface matching backend
 export interface Booking {
-  id: string; // Using 'id' to match backend
+  _id: string; // Using 'id' to match backend
   userId: string;
   hotelId: string;
   roomId: string;

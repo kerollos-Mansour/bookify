@@ -6,12 +6,14 @@ import PageTransition from "../../components/pageTransition/pageTransition";
 import { RegisterRequest } from "types/auth.type";
 import { setCredentials } from "../../store/slices/authSlice";
 import { useRegisterMutation } from "../../store/api/auth.api";
+import { useAuth } from "../../context/authContext";
 
 export default function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [registerUser, { isLoading }] = useRegisterMutation();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,6 +41,8 @@ export default function SignUp() {
         password: formData.password,
       };
       const result = await registerUser(payload).unwrap();
+
+      login(result.user, result.accessToken);
 
       dispatch(
         setCredentials({

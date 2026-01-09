@@ -14,6 +14,7 @@ import { useLocation } from "../../context/locationContext";
 import { LocationSelector } from "../locationSelector/LocationSelector";
 import { useDispatch } from "react-redux";
 import { Logout } from "../../store/slices/authSlice";
+import { useAuth } from "../../context/authContext";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,8 +27,10 @@ export default function Header() {
   const { theme } = useTheme();
   const { location: userLocation, openSelector } = useLocation();
   const dispatch = useDispatch();
+   const { logout } = useAuth();
 
   const handleLogout = () => {
+    logout();
     dispatch(Logout());
     navigate("/login");
   };

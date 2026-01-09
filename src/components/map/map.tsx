@@ -1,8 +1,7 @@
 // components/Map/Map.tsx
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { MapPin } from "lucide-react";
-import L from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useEffect } from "react";
 
 // Types
 interface Location {
@@ -18,7 +17,7 @@ interface MapMarker {
 
 interface MapProps {
   location?: Location;
-  markers?: MapMarker[] | any;
+  markers?: MapMarker[];
   zoom?: number;
   height?: string;
   width?: string;
@@ -28,12 +27,45 @@ interface MapProps {
   className?: string;
 }
 
+// ✅ مكون جديد لتحديث مركز الخريطة
+function ChangeMapView({ 
+  center, 
+  zoom 
+}: { 
+  center: [number, number]; 
+  zoom: number;
+}) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (center && center[0] && center[1]) {
+      map.setView(center, zoom);
+    }
+  }, [center, zoom, map]);
+  
+  return null;
+}
+
+// ✅ مكون لضبط الخريطة لتشمل جميع الـ markers
+function FitBoundsToMarkers({ markers }: { markers: MapMarker[] }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (markers.length > 1) {
+      const bounds = markers.map(m => m.position);
+      map.fitBounds(bounds, { padding: [20, 20] });
+    }
+  }, [markers, map]);
+  
+  return null;
+}
+
 export default function Map({
   location,
   markers = [],
   zoom = 11,
   height = "200px",
-  width = "250px",
+  width = "100%",
   showViewButton = true,
   onViewInMapClick,
   scrollWheelZoom = true,
@@ -41,27 +73,36 @@ export default function Map({
 }: MapProps) {
   const defaultPosition: [number, number] = [29.9792, 31.1342];
 
-  const centerPosition: [number, number] = location
-    ? [location.latitude, location.longitude]
-    : defaultPosition;
+  const centerPosition: [number, number] = (() => {
+    if (markers.length > 0) {
+      const avgLat = markers.reduce((sum, m) => sum + m.position[0], 0) / markers.length;
+      const avgLng = markers.reduce((sum, m) => sum + m.position[1], 0) / markers.length;
+      return [avgLat, avgLng];
+    }
+    if (location) {
+      return [location.latitude, location.longitude];
+    }
+    return defaultPosition;
+  })();
 
-  // If no markers provided, create one at center
-  const displayMarkers =
+  // ✅ إذا لم يكن هناك markers، أنشئ واحد في المركز
+  const displayMarkers: MapMarker[] =
     markers.length > 0
       ? markers
-      : [
+      : location
+      ? [
           {
-            position: centerPosition,
+            position: [location.latitude, location.longitude],
             title: "Location",
             description: "Point of interest",
           },
-        ];
+        ]
+      : [];
 
   const handleViewInMap = () => {
     if (onViewInMapClick) {
       onViewInMapClick();
     } else {
-      // Default behavior: open in Google Maps
       const [lat, lng] = centerPosition;
       window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
     }
@@ -80,6 +121,10 @@ export default function Map({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+
+        <ChangeMapView center={centerPosition} zoom={zoom} />
+        
+        {markers.length > 1 && <FitBoundsToMarkers markers={markers} />}
 
         {displayMarkers.map((marker, index) => (
           <Marker key={index} position={marker.position}>

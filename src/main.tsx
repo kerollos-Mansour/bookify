@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/authContext";
 import { ThemeProvider } from "./context/themeContext";
 import { LocationProvider } from "./context/locationContext";
 import { SocketProvider } from "./context/SocketContext";
+import { FlightBookingProvider } from "./context/flightBookingContext";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
@@ -17,7 +18,9 @@ createRoot(document.getElementById("root") as HTMLElement).render(
         <LocationProvider>
           <AuthProvider>
             <SocketProvider>
-              <RouterProvider router={router} />
+              <FlightBookingProvider>
+                <RouterProvider router={router} />
+              </FlightBookingProvider>
             </SocketProvider>
           </AuthProvider>
         </LocationProvider>

@@ -220,6 +220,8 @@ export default function SearchResult() {
     ]);
   }, []);
 
+  
+
   const hotelCards = useMemo(
     () =>
       hotels.map((hotel) => ({
