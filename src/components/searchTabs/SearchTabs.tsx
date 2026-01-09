@@ -13,22 +13,20 @@ export function SearchTabs({ activeTab, onTabChange }: SearchTabsProps) {
     <div className="flex gap-2 mb-4">
       <button
         onClick={() => onTabChange("hotels")}
-        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-          activeTab === "hotels"
+        className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all ${activeTab === "hotels"
             ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
             : "bg-card text-card-foreground hover:bg-muted border border-card-border"
-        }`}
+          }`}
       >
         <MdHotel className="text-xl" />
         Hotels
       </button>
       <button
         onClick={() => onTabChange("flights")}
-        className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-          activeTab === "flights"
+        className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all ${activeTab === "flights"
             ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
             : "bg-card text-card-foreground hover:bg-muted border border-card-border"
-        }`}
+          }`}
       >
         <MdFlight className="text-xl" />
         Flights

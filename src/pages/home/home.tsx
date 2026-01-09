@@ -15,7 +15,7 @@ export default function Home() {
     <>
       <PageTransition>
         <HeroSection />
-        <div className="relative z-0 -mt-24 bg-alternate dark:bg-[#0F172A]">
+        <div className="relative z-0 -mt-8 sm:-mt-24 bg-alternate dark:bg-[#0F172A]">
           <div className="container mx-auto -translate-y-1/2 px-4 z-20 relative">
             <HeroFloatingSearch />
           </div>

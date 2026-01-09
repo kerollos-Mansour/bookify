@@ -111,6 +111,20 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Lock body scroll when dropdowns are open on mobile
+  useEffect(() => {
+    const isAnyDropdownOpen =
+      showLocationDropdown || showDatesDropdown || showTravelersDropdown;
+    if (isAnyDropdownOpen && window.innerWidth < 768) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showLocationDropdown, showDatesDropdown, showTravelersDropdown]);
+
   const handleSearch = () => {
     const checkIn = dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : "";
     const checkOut = dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : "";
@@ -232,30 +246,30 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-1">
                     Suggestions
                   </h3>
-                 {suggestions.map((suggestion) => (
-  <div
-    key={suggestion.id}
-    onClick={() => {
-      setSelectedLocation(
-        suggestion.type === "hotel"
-          ? suggestion.hotelName || suggestion.displayName
-          : suggestion.displayName
-      );
-      setSearchQuery("");
-      setShowLocationDropdown(false);
-    }}
-    className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg cursor-pointer transition-colors"
-  >
-    <MdLocationOn className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-    <div className="flex-1 min-w-0">
-      <div className="text-sm text-card-foreground truncate">
-        {suggestion.type === "hotel"
-          ? `${suggestion.hotelName} (${suggestion.city})`
-          : suggestion.displayName}
-      </div>
-    </div>
-  </div>
-))}
+                  {suggestions.map((suggestion) => (
+                    <div
+                      key={suggestion.id}
+                      onClick={() => {
+                        setSelectedLocation(
+                          suggestion.type === "hotel"
+                            ? suggestion.hotelName || suggestion.displayName
+                            : suggestion.displayName
+                        );
+                        setSearchQuery("");
+                        setShowLocationDropdown(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg cursor-pointer transition-colors"
+                    >
+                      <MdLocationOn className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-card-foreground truncate">
+                          {suggestion.type === "hotel"
+                            ? `${suggestion.hotelName} (${suggestion.city})`
+                            : suggestion.displayName}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
 
                 </div>
               )}
@@ -301,13 +315,13 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
           {/* Dates Dropdown */}
           {showDatesDropdown && (
             <div
-              className="absolute top-full left-0 md:left-1/2 md:-translate-x-1/2 mt-4 z-50"
+              className="absolute top-full left-0 right-0 md:left-1/2 md:-translate-x-1/2 mt-4 z-50 flex justify-center"
               onClick={(e) => e.stopPropagation()}
             >
               <DateRangePicker
                 date={dateRange}
                 setDate={setDateRange}
-                className="w-auto"
+                className="w-[95vw] sm:w-auto"
               />
             </div>
           )}
@@ -337,7 +351,7 @@ export function SearchBar({ hideOnMobile = false }: SearchBarProps) {
           {/* Travelers Dropdown */}
           {showTravelersDropdown && (
             <div
-              className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
+              className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border max-h-[80vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="font-semibold mb-4 text-card-foreground">

@@ -14,7 +14,7 @@ const CONTENT = {
 
 export function HeroSection() {
   return (
-    <div className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] lg:min-h-[85vh] flex flex-col justify-center pb-20">
+    <div className="relative min-h-[90vh] sm:min-h-[75vh] md:min-h-[80vh] lg:min-h-[85vh] flex flex-col justify-center pb-56 sm:pb-32 md:pb-20">
       {/* Background Video */}
       <video
         className="absolute inset-0 w-full h-full object-cover"
@@ -36,10 +36,10 @@ export function HeroSection() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           {/* Hero Text */}
           <header className="text-center text-white">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 drop-shadow-2xl leading-tight px-2">
+            <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-1 sm:mb-3 md:mb-4 drop-shadow-2xl leading-tight px-2">
               {CONTENT.title}
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto opacity-90 drop-shadow-lg px-4 sm:px-6 mt-2 sm:mt-3">
+            <p className="text-xs sm:text-base md:text-lg lg:text-xl max-w-xs sm:max-w-2xl mx-auto opacity-90 drop-shadow-lg px-4 sm:px-6 mt-1 sm:mt-3">
               {CONTENT.description}
             </p>
           </header>
@@ -54,7 +54,7 @@ export function HeroFloatingSearch() {
 
   return (
     <div className="max-w-5xl mx-auto px-2 sm:px-4">
-      <div className="bg-card rounded-[45px] shadow-2xl p-4 sm:p-6 border border-card-border">
+      <div className="bg-card rounded-3xl sm:rounded-[45px] shadow-2xl p-3 sm:p-6 border border-card-border">
         <SearchTabs activeTab={searchMode} onTabChange={setSearchMode} />
         {searchMode === "hotels" ? <SearchBar /> : <FlightSearchBar />}
       </div>
