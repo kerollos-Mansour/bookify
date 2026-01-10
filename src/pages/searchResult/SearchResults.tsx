@@ -21,45 +21,56 @@ type SearchFilters = PropertyFilters & {
 
 const getNightlyRate = (hotel: Hotel) =>
   hotel.nightlyPrice ?? hotel.lowRate ?? hotel.highRate ?? 0;
+const getRatingText = (rating: number) => {
+  if (rating >= 4.7) return "Exceptional";
+  if (rating >= 4.5) return "Excellent";
+  if (rating >= 4.0) return "Very Good";
+  if (rating >= 3.5) return "Good";
+  return "Fair";
+};
+
 const toCardData = (hotel: Hotel): HotelCardData => {
   const nightly = getNightlyRate(hotel);
   const total = hotel.highRate ?? nightly;
-  // hotelDetails can be string or array based on API. Safeguard it.
-  const detail = Array.isArray(hotel.hotelDetails)
-    ? hotel.hotelDetails[0]
-    : null;
+
+  // Extract detail object if array, or handle as string
+  const detail = Array.isArray(hotel.hotelDetails) ? hotel.hotelDetails[0] : null;
+
+  // Logic to extract review count from string if numeric field is missing
+  let reviewsCount = detail?.reviewCount ?? 0;
+  if (reviewsCount === 0 && typeof hotel.hotelDetails === "string") {
+    const match = hotel.hotelDetails.match(/rating from (\d+) reviews/i);
+    if (match) {
+      reviewsCount = parseInt(match[1], 10);
+    }
+  }
+
+  const avgReview = Number(hotel.tripAdvisorRating || hotel.confidenceRating || hotel.hotelRating || 0);
 
   return {
     id: hotel._id,
     img: {
-      img:
-        hotel.images && hotel.images.length > 0
-          ? hotel.images
-          : [
-              "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
-            ],
+      img: hotel.images && hotel.images.length > 0 ? hotel.images : [
+        "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80",
+      ],
       alt: hotel.name,
     },
     title: hotel.name,
-    location: [hotel.city, hotel.stateProvinceCode, hotel.countryCode]
-      .filter(Boolean)
-      .join(", "),
+    location: [hotel.city, hotel.stateProvinceCode, hotel.countryCode].filter(Boolean).join(", "),
     Amenities: detail?.amenities?.slice(0, 3) || [],
     reviews: {
-      reviewsCount: detail?.reviewCount ?? 0,
-      avgReview: Number(hotel.tripAdvisorRating ?? hotel.hotelRating ?? 0),
+      reviewsCount: reviewsCount,
+      avgReview: avgReview,
+      ratingText: getRatingText(avgReview),
     },
     withFees: true,
     prices: {
       day: Number(total),
       nightly: Number(nightly),
-      offer:
-        total && nightly
-          ? Math.max(
-              5,
-              Math.min(40, Math.round(((total - nightly) / total) * 100))
-            )
-          : 10,
+      originalPrice: hotel.highRate && hotel.highRate > nightly ? Number(hotel.highRate) : undefined,
+      offer: total && nightly && total > nightly
+        ? Math.max(5, Math.min(40, Math.round(((total - nightly) / total) * 100)))
+        : 0,
     },
     vip: (hotel.confidenceRating ?? 0) > 50,
     featured: !!hotel.featured,
@@ -130,8 +141,8 @@ export default function SearchResult() {
         filters.minPrice > 0
           ? filters.minPrice
           : params.get("minRate")
-          ? Number(params.get("minRate"))
-          : undefined,
+            ? Number(params.get("minRate"))
+            : undefined,
       maxRate: filters.maxPrice > 0 ? filters.maxPrice : undefined,
       search: filters.propertyName || undefined,
       hotelRating: filters.minRating > 0 ? filters.minRating : undefined,
@@ -221,6 +232,8 @@ export default function SearchResult() {
     ]);
   }, []);
 
+
+
   const hotelCards = useMemo(
     () =>
       hotels.map((hotel) => ({
@@ -245,18 +258,17 @@ export default function SearchResult() {
             number
           ],
           title: card.title,
-          description: `${card.location || "Unknown"} • $${
-            card.prices.nightly
-          }`,
+          description: `${card.location || "Unknown"} • $${card.prices.nightly
+            }`,
         })),
     [hotelCards]
   );
 
   const mapCenter = mapMarkers.length
     ? {
-        latitude: mapMarkers[0].position[0],
-        longitude: mapMarkers[0].position[1],
-      }
+      latitude: mapMarkers[0].position[0],
+      longitude: mapMarkers[0].position[1],
+    }
     : undefined;
 
   const handleFilterChange = (updates: Partial<PropertyFilters>) => {
@@ -285,19 +297,7 @@ export default function SearchResult() {
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex-1">
-                <SearchBar />
-              </div>
-              {/* Close button for mobile/tablet */}
-              <button
-                onClick={() => setShowSearchBar(false)}
-                className="lg:hidden p-2 hover:bg-muted rounded-full transition-colors"
-                aria-label="Close search"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <SearchBar isCompact={true} />
           </div>
         </div>
 

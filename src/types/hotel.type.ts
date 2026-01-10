@@ -16,7 +16,7 @@ export interface Hotel {
   stateProvinceCode?: string;
   countryCode?: string;
   type?: string;
-  featured:Boolean;
+  featured: Boolean;
   images?: string[];
   tripAdvisorRating?: number;
   hotelRating?: number;
@@ -30,7 +30,7 @@ export interface Hotel {
     address?: string;
     city?: string;
   };
-  hotelDetails?: HotelDetail[]; // Embedded hotel details
+  hotelDetails?: string | HotelDetail[]; // Embedded hotel details
   createdAt?: string;
   updatedAt?: string;
   nightlyPrice?: number;

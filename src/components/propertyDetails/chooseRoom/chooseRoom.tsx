@@ -75,16 +75,16 @@ export default function RoomsSection({ rooms = [], hotel }: RoomsSectionProps) {
   return (
     <div id="rooms" className="mt-12 mb-9">
       {/* Header with Filters */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         {/* Filter Pills */}
-        <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
           {availableFilters.map((filter) => (
             <button
               key={filter.id}
               onClick={() => setActiveFilter(filter.id)}
-              className={`px-5 py-2 rounded-full border-2 font-medium transition-colors ${activeFilter === filter.id
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-card-border bg-card text-card-foreground hover:border-foreground"
+              className={`px-4 sm:px-6 py-2 rounded-full border font-semibold text-xs sm:text-sm transition-all whitespace-nowrap flex-shrink-0 ${activeFilter === filter.id
+                  ? "border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                  : "border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-600 dark:text-gray-400 hover:border-blue-400"
                 }`}
             >
               {filter.label}
@@ -93,7 +93,7 @@ export default function RoomsSection({ rooms = [], hotel }: RoomsSectionProps) {
         </div>
 
         {/* Room Count */}
-        <div className="text-sm text-muted-foreground">
+        <div className="text-xs sm:text-sm font-bold text-slate-500 dark:text-gray-500 bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/5 whitespace-nowrap self-start sm:self-auto">
           Showing {filteredRooms.length} of {rooms.length} rooms
         </div>
       </div>

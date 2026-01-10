@@ -122,10 +122,31 @@ export function FlightSearchBar({
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Lock body scroll when dropdowns are open on mobile
+  useEffect(() => {
+    const isAnyDropdownOpen =
+      showOriginDropdown ||
+      showDestinationDropdown ||
+      showDatesDropdown ||
+      showTravelersDropdown;
+    if (isAnyDropdownOpen && window.innerWidth < 768) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [
+    showOriginDropdown,
+    showDestinationDropdown,
+    showDatesDropdown,
+    showTravelersDropdown,
+  ]);
 
     const handleSearch = () => {
         const departureDate = dateRange?.from
@@ -417,20 +438,20 @@ export function FlightSearchBar({
                         </span>
                     </div>
 
-                    {/* Dates Dropdown */}
-                    {showDatesDropdown && (
-                        <div
-                            className="absolute top-full left-0 md:left-1/2 md:-translate-x-1/2 mt-4 z-50"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <DateRangePicker
-                                date={dateRange}
-                                setDate={setDateRange}
-                                className="w-auto"
-                            />
-                        </div>
-                    )}
-                </div>
+          {/* Dates Dropdown */}
+          {showDatesDropdown && (
+            <div
+              className="absolute top-full left-0 right-0 md:left-1/2 md:-translate-x-1/2 mt-4 z-50 flex justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DateRangePicker
+                date={dateRange}
+                setDate={setDateRange}
+                className="w-[95vw] sm:w-auto"
+              />
+            </div>
+          )}
+        </div>
 
                 {/* Travelers & Class */}
                 <div
@@ -454,15 +475,15 @@ export function FlightSearchBar({
                         </span>
                     </div>
 
-                    {/* Travelers Dropdown */}
-                    {showTravelersDropdown && (
-                        <div
-                            className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <h3 className="font-semibold mb-4 text-card-foreground">
-                                Travelers & Class
-                            </h3>
+          {/* Travelers Dropdown */}
+          {showTravelersDropdown && (
+            <div
+              className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-card rounded-lg shadow-2xl p-4 sm:p-6 z-50 w-full md:w-80 border border-card-border max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="font-semibold mb-4 text-card-foreground">
+                Travelers & Class
+              </h3>
 
                             <div className="space-y-4">
                                 {/* Passengers */}
