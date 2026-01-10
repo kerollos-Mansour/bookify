@@ -60,8 +60,8 @@ export default function HotelCard({ cardData }) {
   }, [showToast]);
 
   return (
-    <div className="mb-4 w-full h-64 mx-auto bg-card rounded-2xl border border-card-border overflow-hidden font-sans flex flex-row hover:shadow-lg transition-shadow duration-300">
-      <div className="relative w-full lg:w-80 h-56 lg:h-auto flex-shrink-0">
+    <div className="mb-4 w-full h-auto lg:h-64 mx-auto bg-card rounded-2xl border border-card-border overflow-hidden font-sans flex flex-col lg:flex-row hover:shadow-lg transition-shadow duration-300">
+      <div className="relative w-full lg:w-80 h-64 lg:h-auto flex-shrink-0">
         <Link
           to={`/property/${cardData.id}`}
           className="block w-full h-full"
@@ -187,16 +187,6 @@ export default function HotelCard({ cardData }) {
                 </p>
               </div>
 
-              {/* Total Price (Only shown if different from nightly) */}
-              {cardData.prices.day > 0 &&
-                cardData.prices.day !== cardData.prices.nightly && (
-                  <div className="mt-1">
-                    <span className="text-lg font-bold text-card-foreground">
-                      EGP {cardData.prices.day.toLocaleString()}
-                    </span>
-                    <p className="text-xs text-muted-foreground">total price</p>
-                  </div>
-                )}
             </div>
 
             {cardData.withFees && (
