@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
 
       { path: "contact-us", element: <ContactUs /> },
       { path: "about-us", element: <AboutUs /> },
-      { path: "/auth/callback", element: <AuthCallback /> },
+      { path: "auth/callback", element: <AuthCallback /> },
 
       {
         element: <ProtectedRoute />, //all children are protected
