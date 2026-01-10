@@ -232,7 +232,7 @@ export default function Header() {
                   </button>
 
                   <a
-                    href="#"
+                    href={`${API_CONFIG.DASHBOARD_URL}/vendor-join`}
                     className={`py-2 px-2 rounded-lg transition-colors ${
                       scrolled
                         ? "text-foreground hover:bg-accent"

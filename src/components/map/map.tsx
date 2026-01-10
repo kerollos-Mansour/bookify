@@ -2,6 +2,18 @@
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { useEffect } from "react";
+import L from "leaflet";
+
+// ✅ Fix Leaflet default icon issue in production
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+});
 
 // Types
 interface Location {
@@ -28,35 +40,34 @@ interface MapProps {
 }
 
 // ✅ مكون جديد لتحديث مركز الخريطة
-function ChangeMapView({ 
-  center, 
-  zoom 
-}: { 
-  center: [number, number]; 
+function ChangeMapView({
+  center,
+  zoom,
+}: {
+  center: [number, number];
   zoom: number;
 }) {
   const map = useMap();
-  
+
   useEffect(() => {
     if (center && center[0] && center[1]) {
       map.setView(center, zoom);
     }
   }, [center, zoom, map]);
-  
+
   return null;
 }
 
-// ✅ مكون لضبط الخريطة لتشمل جميع الـ markers
 function FitBoundsToMarkers({ markers }: { markers: MapMarker[] }) {
   const map = useMap();
-  
+
   useEffect(() => {
     if (markers.length > 1) {
-      const bounds = markers.map(m => m.position);
+      const bounds = markers.map((m) => m.position);
       map.fitBounds(bounds, { padding: [20, 20] });
     }
   }, [markers, map]);
-  
+
   return null;
 }
 
@@ -75,8 +86,10 @@ export default function Map({
 
   const centerPosition: [number, number] = (() => {
     if (markers.length > 0) {
-      const avgLat = markers.reduce((sum, m) => sum + m.position[0], 0) / markers.length;
-      const avgLng = markers.reduce((sum, m) => sum + m.position[1], 0) / markers.length;
+      const avgLat =
+        markers.reduce((sum, m) => sum + m.position[0], 0) / markers.length;
+      const avgLng =
+        markers.reduce((sum, m) => sum + m.position[1], 0) / markers.length;
       return [avgLat, avgLng];
     }
     if (location) {
@@ -123,7 +136,7 @@ export default function Map({
         />
 
         <ChangeMapView center={centerPosition} zoom={zoom} />
-        
+
         {markers.length > 1 && <FitBoundsToMarkers markers={markers} />}
 
         {displayMarkers.map((marker, index) => (
